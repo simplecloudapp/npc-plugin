@@ -22,12 +22,6 @@ data class NpcConfig(
         val options: List<NpcOption> = listOf()
     )
 
-    @ConfigSerializable
-    data class NpcOption(
-        val key: String = "",
-        val value: String = ""
-    )
-
     fun getPlayerInteraction(playerInteraction: PlayerInteraction): NpcInteraction? {
         return this.actions.firstOrNull { it.playerInteraction == playerInteraction }
     }
