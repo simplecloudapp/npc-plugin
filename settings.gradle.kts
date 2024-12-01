@@ -9,3 +9,5 @@ include("npc-namespace:npc-namespace-citizens")
 findProject(":npc-namespace:npc-namespace-citizens")?.name = "npc-namespace-citizens"
 include("npc-namespace:npc-namespace-standalone")
 findProject(":npc-namespace:npc-namespace-standalone")?.name = "npc-namespace-standalone"
+include("npc-namespace:npc-namespace-playernpc")
+findProject(":npc-namespace:npc-namespace-playernpc")?.name = "npc-namespace-playernpc"
