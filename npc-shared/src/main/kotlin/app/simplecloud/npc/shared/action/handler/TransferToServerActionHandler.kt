@@ -24,6 +24,7 @@ class TransferToServerActionHandler : ActionHandler {
             return
         }
         player.transfer(serverIp, serverPort.toInt())
+        MessageHelper.executeMessageFromOption(player, optionProvider)
     }
 
 }
