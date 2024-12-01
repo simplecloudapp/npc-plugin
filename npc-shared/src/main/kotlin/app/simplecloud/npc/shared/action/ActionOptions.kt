@@ -12,4 +12,6 @@ object ActionOptions {
 
     val SEND_MESSAGE = Pair("send.message", "")
 
+    val OPEN_INVENTORY = Pair("inventory.name", "")
+
 }
