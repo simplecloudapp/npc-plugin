@@ -1,5 +1,6 @@
 package app.simplecloud.npc.shared.action
 
+import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.npc.shared.option.OptionProvider
 import org.bukkit.entity.Player
 
@@ -9,6 +10,6 @@ import org.bukkit.entity.Player
 
 interface ActionHandler {
 
-    fun handle(player: Player, optionProvider: OptionProvider)
+    fun handle(player: Player, namespace: NpcNamespace<out Any>, optionProvider: OptionProvider)
 
 }

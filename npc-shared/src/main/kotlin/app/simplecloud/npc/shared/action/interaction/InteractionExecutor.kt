@@ -28,7 +28,7 @@ class InteractionExecutor<N : Any>(
             *interaction.options.map { Option.of(it) }.toTypedArray(),
             *config.options.map { Option.of(it) }.toTypedArray()
         )
-        interaction.action.actionHandler.handle(player, optionProvider)
+        interaction.action.actionHandler.handle(player, this.namespace, optionProvider)
     }
 
 }

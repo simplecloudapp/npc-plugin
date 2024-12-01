@@ -3,6 +3,7 @@ package app.simplecloud.npc.shared.action.handler
 import app.simplecloud.npc.shared.action.Action
 import app.simplecloud.npc.shared.action.ActionHandler
 import app.simplecloud.npc.shared.action.ActionOptions
+import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.npc.shared.option.OptionProvider
 import app.simplecloud.npc.shared.utils.MessageHelper
 import com.google.common.io.ByteStreams
@@ -15,7 +16,7 @@ import org.bukkit.entity.Player
 
 class ConnectToServerActionHandler : ActionHandler {
 
-    override fun handle(player: Player, optionProvider: OptionProvider) {
+    override fun handle(player: Player, namespace: NpcNamespace<out Any>, optionProvider: OptionProvider) {
         val action = ActionOptions.CONNECT_TO_SERVER_NAME
         val serverName = optionProvider.getOption(action)
         if (serverName.isBlank()) {
