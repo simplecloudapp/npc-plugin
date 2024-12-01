@@ -1,7 +1,6 @@
 package app.simplecloud.npc.shared.option
 
-import app.simplecloud.npc.shared.config.NpcConfig
-import org.spongepowered.configurate.objectmapping.ConfigSerializable
+import app.simplecloud.npc.shared.config.NpcOption
 
 /**
  * @author Niklas Nieberler
@@ -13,7 +12,7 @@ data class Option(
 ) {
 
     companion object {
-        fun of(npcOption: NpcConfig.NpcOption): Option {
+        fun of(npcOption: NpcOption): Option {
             return Option(npcOption.key, npcOption.value)
         }
 
