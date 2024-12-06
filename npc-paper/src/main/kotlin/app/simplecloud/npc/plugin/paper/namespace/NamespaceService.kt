@@ -1,6 +1,7 @@
 package app.simplecloud.npc.plugin.paper.namespace
 
 import app.simplecloud.npc.namespace.citizens.CitizensNamespace
+import app.simplecloud.npc.namespace.fancynpc.FancyNPCNamespace
 import app.simplecloud.npc.namespace.playernpc.PlayerNPCNamespace
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import org.bukkit.Bukkit
@@ -13,7 +14,8 @@ object NamespaceService {
 
     private val spaces = arrayOf<NpcNamespace<out Any>>(
         CitizensNamespace(),
-        PlayerNPCNamespace()
+        PlayerNPCNamespace(),
+        FancyNPCNamespace()
     )
 
     /**

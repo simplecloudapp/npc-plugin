@@ -24,6 +24,7 @@ allprojects {
         }
         maven("https://maven.citizensnpcs.co/repo/citizens-repo")
         maven("https://buf.build/gen/maven")
+        maven("https://repo.fancyplugins.de/releases")
         maven {
             name = "ranullRepoExternal"
             url = uri("https://repo.ranull.com/maven/external")
