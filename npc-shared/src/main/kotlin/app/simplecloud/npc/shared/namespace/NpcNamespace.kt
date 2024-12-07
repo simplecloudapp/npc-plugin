@@ -1,6 +1,7 @@
 package app.simplecloud.npc.shared.namespace
 
 import app.simplecloud.npc.shared.action.interaction.InteractionExecutor
+import app.simplecloud.npc.shared.event.EventManager
 import app.simplecloud.npc.shared.manager.NpcManager
 import app.simplecloud.npc.shared.inventory.configuration.InventoryRepository
 import app.simplecloud.npc.shared.repository.NpcRepository
@@ -22,6 +23,7 @@ abstract class NpcNamespace(
     val npcRepository = NpcRepository()
     val inventoryRepository = InventoryRepository()
 
+    val eventManager = EventManager(this)
     val npcManager = NpcManager(this)
     val interactionExecutor = InteractionExecutor(this)
 

@@ -1,4 +1,4 @@
-package app.simplecloud.npc.namespace.citizens.listener.action
+package app.simplecloud.npc.namespace.citizens.listener
 
 import app.simplecloud.npc.namespace.citizens.CitizensNamespace
 import app.simplecloud.npc.namespace.citizens.option.CitizensOptionProviders

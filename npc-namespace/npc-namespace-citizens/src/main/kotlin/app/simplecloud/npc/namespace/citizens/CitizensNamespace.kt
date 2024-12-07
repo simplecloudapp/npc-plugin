@@ -1,11 +1,11 @@
 package app.simplecloud.npc.namespace.citizens
 
-import app.simplecloud.npc.namespace.citizens.listener.NpcRemoveListener
-import app.simplecloud.npc.namespace.citizens.listener.PlayerCreateNpcListener
-import app.simplecloud.npc.namespace.citizens.listener.action.NpcLeftClickListener
-import app.simplecloud.npc.namespace.citizens.listener.action.NpcRightClickListener
+import app.simplecloud.npc.namespace.citizens.listener.NpcLeftClickListener
+import app.simplecloud.npc.namespace.citizens.listener.NpcRightClickListener
+import app.simplecloud.npc.shared.event.EventActionType
+import app.simplecloud.npc.shared.event.registerActionEvent
 import app.simplecloud.npc.shared.namespace.NpcNamespace
-import net.citizensnpcs.api.npc.NPC
+import net.citizensnpcs.api.event.*
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.PluginManager
 
@@ -25,8 +25,8 @@ class CitizensNamespace : NpcNamespace(
         pluginManager.registerEvents(NpcRightClickListener(this), plugin)
         pluginManager.registerEvents(NpcLeftClickListener(this), plugin)
 
-        pluginManager.registerEvents(PlayerCreateNpcListener(this), plugin)
-        pluginManager.registerEvents(NpcRemoveListener(this), plugin)
+        eventManager.registerActionEvent<PlayerCreateNPCEvent>(plugin, EventActionType.SPAWN, { it.npc.id.toString() })
+        eventManager.registerActionEvent<NPCRemoveEvent>(plugin, EventActionType.REMOVE, { it.npc.id.toString() })
     }
 
 }
