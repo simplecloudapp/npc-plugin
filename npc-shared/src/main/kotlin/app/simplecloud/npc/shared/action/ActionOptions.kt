@@ -6,7 +6,7 @@ package app.simplecloud.npc.shared.action
 
 object ActionOptions {
 
-    val EXECUTE_COMMAND_NAME = Pair("execute.command", "")
+    val EXECUTE_COMMAND_NAME = Pair("command.name", "")
 
     val CONNECT_TO_SERVER_NAME = Pair("server.name", "")
 
