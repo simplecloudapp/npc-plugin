@@ -6,7 +6,7 @@ package app.simplecloud.npc.shared.option
 
 object DefaultOptions {
 
-    val NPC_ID = Pair("npc.id", 0)
+    val NPC_ID = Pair("npc.id", "")
 
     val NPC_NAME = Pair("npc.name", "")
 
