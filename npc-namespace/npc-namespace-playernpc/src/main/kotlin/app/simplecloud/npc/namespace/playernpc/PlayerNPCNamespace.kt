@@ -1,7 +1,6 @@
 package app.simplecloud.npc.namespace.playernpc
 
 import app.simplecloud.npc.shared.namespace.NpcNamespace
-import dev.sergiferry.playernpc.api.NPC
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.PluginManager
 
