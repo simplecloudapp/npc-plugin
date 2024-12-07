@@ -13,9 +13,8 @@ import org.bukkit.plugin.PluginManager
  * @author Niklas Nieberler
  */
 
-class CitizensNamespace : NpcNamespace<NPC>(
-    "Citizens",
-    { it.id.toString() }
+class CitizensNamespace : NpcNamespace(
+    "Citizens"
 ) {
 
     override fun onEnable() {

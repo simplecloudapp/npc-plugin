@@ -19,7 +19,7 @@ class RunCommandActionHandler : ActionHandler {
         "<playeruuid>" to { it.uniqueId }
     )
 
-    override fun handle(player: Player, namespace: NpcNamespace<out Any>, optionProvider: OptionProvider) {
+    override fun handle(player: Player, namespace: NpcNamespace, optionProvider: OptionProvider) {
         val action = ActionOptions.EXECUTE_COMMAND_NAME
         val commandOption = optionProvider.getOption(action)
         if (commandOption.isBlank()) {

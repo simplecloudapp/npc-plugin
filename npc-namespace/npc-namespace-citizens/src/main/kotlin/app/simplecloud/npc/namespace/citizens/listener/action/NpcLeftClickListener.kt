@@ -22,7 +22,7 @@ class NpcLeftClickListener(
 
         val interactionExecutor = this.namespace.interactionExecutor
         val optionProvider = CitizensOptionProviders.createInteractOptionProviders(npc)
-        interactionExecutor.execute(npc, player, PlayerInteraction.LEFT_CLICK, optionProvider)
+        interactionExecutor.execute(npc.id.toString(), player, PlayerInteraction.LEFT_CLICK, optionProvider)
     }
 
 }

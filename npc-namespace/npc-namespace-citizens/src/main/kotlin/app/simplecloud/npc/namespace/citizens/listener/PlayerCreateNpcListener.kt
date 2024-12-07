@@ -16,7 +16,7 @@ class PlayerCreateNpcListener(
     @EventHandler
     fun handleNpcCreate(event: PlayerCreateNPCEvent) {
         val npc = event.npc
-        this.namespace.npcManager.create(npc)
+        this.namespace.npcManager.create(npc.id.toString())
     }
 
 }

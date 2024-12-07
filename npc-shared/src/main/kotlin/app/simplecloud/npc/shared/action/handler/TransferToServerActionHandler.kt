@@ -14,7 +14,7 @@ import org.bukkit.entity.Player
 
 class TransferToServerActionHandler : ActionHandler {
 
-    override fun handle(player: Player, namespace: NpcNamespace<out Any>, optionProvider: OptionProvider) {
+    override fun handle(player: Player, namespace: NpcNamespace, optionProvider: OptionProvider) {
         val serverIpAction = ActionOptions.TRANSFER_SERVER_IP
         val serverPortAction = ActionOptions.TRANSFER_SERVER_PORT
         val serverIp = optionProvider.getOption(serverIpAction)

@@ -9,9 +9,8 @@ import org.bukkit.plugin.PluginManager
  * @author Niklas Nieberler
  */
 
-class PlayerNPCNamespace : NpcNamespace<NPC>(
-    "PlayerNPC",
-    { it.simpleID }
+class PlayerNPCNamespace : NpcNamespace(
+    "PlayerNPC"
 ) {
 
     override fun onEnable() {

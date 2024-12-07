@@ -8,8 +8,8 @@ import org.bukkit.Bukkit
  * @author Niklas Nieberler
  */
 
-class NpcManager<N : Any>(
-    private val namespace: NpcNamespace<N>
+class NpcManager(
+    private val namespace: NpcNamespace
 ) {
 
     private val repository = this.namespace.npcRepository
@@ -17,25 +17,23 @@ class NpcManager<N : Any>(
 
     /**
      * Creates a new config if this npc does not already have one
-     * @param npc the new npc
+     * @param id of the new npc
      */
-    fun create(npc: N) {
-        val npcId = this.namespace.invokeNpcId(npc)
-        if (this.repository.get(npcId) != null)
+    fun create(id: String) {
+        if (this.repository.get(id) != null)
             return
-        this.repository.save("$npcId.yml", NpcConfig(npcId))
-        this.logger.info("[SimpleCloud-NPC] New config was created for npc $npcId")
+        this.repository.save("$id.yml", NpcConfig(id))
+        this.logger.info("[SimpleCloud-NPC] New config was created for npc $id")
     }
 
     /**
      * Deletes the matching npc config
-     * @param npc the npc where the config should be deleted
+     * @param id the npc where the config should be deleted
      */
-    fun delete(npc: N) {
-        val npcId = this.namespace.invokeNpcId(npc)
-        val npcConfig = this.repository.get(npcId) ?: return
+    fun delete(id: String) {
+        val npcConfig = this.repository.get(id) ?: return
         this.repository.delete(npcConfig)
-        this.logger.info("[SimpleCloud-NPC] The config for npc $npcId has been deleted")
+        this.logger.info("[SimpleCloud-NPC] The config for npc $id has been deleted")
     }
 
 }

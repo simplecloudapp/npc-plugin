@@ -14,11 +14,9 @@ import org.bukkit.plugin.PluginManager
 /**
  * This is a separate space for the loaded npc plugin on the server
  * @param pluginName will be loaded if this plugin is installed
- * @param npcIdFunction find out the matching npc id
  */
-abstract class NpcNamespace<N : Any>(
-    val pluginName: String,
-    private val npcIdFunction: (N) -> String
+abstract class NpcNamespace(
+    val pluginName: String
 ) {
 
     val npcRepository = NpcRepository()
@@ -26,14 +24,6 @@ abstract class NpcNamespace<N : Any>(
 
     val npcManager = NpcManager(this)
     val interactionExecutor = InteractionExecutor(this)
-
-    /**
-     * Gets the matching id from the npc
-     * @return id of the npc
-     */
-    fun invokeNpcId(npc: N): String {
-        return this.npcIdFunction(npc)
-    }
 
     /**
      * Is executed when namespace must be loaded

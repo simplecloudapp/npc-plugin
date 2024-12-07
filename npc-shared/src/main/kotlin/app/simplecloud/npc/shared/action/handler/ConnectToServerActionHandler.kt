@@ -16,7 +16,7 @@ import org.bukkit.entity.Player
 
 class ConnectToServerActionHandler : ActionHandler {
 
-    override fun handle(player: Player, namespace: NpcNamespace<out Any>, optionProvider: OptionProvider) {
+    override fun handle(player: Player, namespace: NpcNamespace, optionProvider: OptionProvider) {
         val action = ActionOptions.CONNECT_TO_SERVER_NAME
         val serverName = optionProvider.getOption(action)
         if (serverName.isBlank()) {

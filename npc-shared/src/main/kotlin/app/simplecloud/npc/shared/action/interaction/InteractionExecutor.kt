@@ -9,20 +9,19 @@ import org.bukkit.entity.Player
  * @author Niklas Nieberler
  */
 
-class InteractionExecutor<N : Any>(
-    private val namespace: NpcNamespace<N>
+class InteractionExecutor(
+    private val namespace: NpcNamespace
 ) {
 
     /**
      * Executes the appropriate action from the [PlayerInteraction] for this npc
-     * @param npc this npc
+     * @param id of the npc
      * @param player the action executor
      * @param playerInteraction the action type
      * @param optionProvider the possible options
      */
-    fun execute(npc: N, player: Player, playerInteraction: PlayerInteraction, optionProvider: OptionProvider = OptionProvider()) {
-        val npcId = this.namespace.invokeNpcId(npc)
-        val config = this.namespace.npcRepository.get(npcId) ?: return
+    fun execute(id: String, player: Player, playerInteraction: PlayerInteraction, optionProvider: OptionProvider = OptionProvider()) {
+        val config = this.namespace.npcRepository.get(id) ?: return
         val interaction = config.getPlayerInteraction(playerInteraction) ?: return
         optionProvider.add(
             *interaction.options.map { Option.of(it) }.toTypedArray(),

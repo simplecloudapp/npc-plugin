@@ -10,6 +10,6 @@ import org.bukkit.entity.Player
 
 interface ActionHandler {
 
-    fun handle(player: Player, namespace: NpcNamespace<out Any>, optionProvider: OptionProvider)
+    fun handle(player: Player, namespace: NpcNamespace, optionProvider: OptionProvider)
 
 }

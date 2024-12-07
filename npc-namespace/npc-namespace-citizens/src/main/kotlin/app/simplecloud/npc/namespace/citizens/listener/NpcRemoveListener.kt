@@ -16,7 +16,7 @@ class NpcRemoveListener(
     @EventHandler
     fun handleNpcRemove(event: NPCRemoveEvent) {
         val npc = event.npc
-        this.namespace.npcManager.delete(npc)
+        this.namespace.npcManager.delete(npc.id.toString())
     }
 
 }

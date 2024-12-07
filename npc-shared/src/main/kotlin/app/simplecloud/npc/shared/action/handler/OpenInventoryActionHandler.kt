@@ -15,7 +15,7 @@ import org.bukkit.entity.Player
 
 class OpenInventoryActionHandler : ActionHandler {
 
-    override fun handle(player: Player, namespace: NpcNamespace<out Any>, optionProvider: OptionProvider) {
+    override fun handle(player: Player, namespace: NpcNamespace, optionProvider: OptionProvider) {
         val action = ActionOptions.OPEN_INVENTORY
         val inventoryName = optionProvider.getOption(action)
         if (inventoryName.isBlank()) {
