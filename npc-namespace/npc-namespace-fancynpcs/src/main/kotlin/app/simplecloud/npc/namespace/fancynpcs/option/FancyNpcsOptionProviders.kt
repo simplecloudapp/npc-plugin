@@ -16,7 +16,7 @@ object FancyNpcsOptionProviders {
      * @param npc the npc
      */
     fun createInteractOptionProviders(npc: Npc) = OptionProvider.with(
-        Option.of(DefaultOptions.NPC_ID, npc.data.id),
+        Option.of(DefaultOptions.NPC_ID, npc.data.name),
         Option.of(DefaultOptions.NPC_NAME, npc.data.name)
     )
 

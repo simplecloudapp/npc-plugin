@@ -23,7 +23,7 @@ class NpcInteractListener(
 
         val interactionExecutor = this.namespace.interactionExecutor
         val optionProvider = FancyNpcsOptionProviders.createInteractOptionProviders(npc)
-        interactionExecutor.execute(npc.data.id, player, getPlayerInteraction(event), optionProvider)
+        interactionExecutor.execute(npc.data.name, player, getPlayerInteraction(event), optionProvider)
     }
 
     private fun getPlayerInteraction(event: NpcInteractEvent): PlayerInteraction {
