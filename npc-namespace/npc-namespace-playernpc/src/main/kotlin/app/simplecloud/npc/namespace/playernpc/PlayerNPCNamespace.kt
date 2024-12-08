@@ -20,4 +20,8 @@ class PlayerNPCNamespace : NpcNamespace(
         TODO("Not yet implemented")
     }
 
+    override fun findAllNpcs(): List<String> {
+        TODO("Not yet implemented")
+    }
+
 }

@@ -29,4 +29,8 @@ class CitizensNamespace : NpcNamespace(
         eventManager.registerActionEvent<NPCRemoveEvent>(plugin, EventActionType.REMOVE, { it.npc.id.toString() })
     }
 
+    override fun findAllNpcs(): List<String> {
+        return listOf() // TODO: here
+    }
+
 }

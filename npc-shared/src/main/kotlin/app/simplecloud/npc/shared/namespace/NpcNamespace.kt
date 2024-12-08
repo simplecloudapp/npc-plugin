@@ -44,4 +44,9 @@ abstract class NpcNamespace(
      */
     abstract fun registerListeners(pluginManager: PluginManager, plugin: Plugin)
 
+    /**
+     * Gets all npcs
+     */
+    abstract fun findAllNpcs(): List<String>
+
 }
