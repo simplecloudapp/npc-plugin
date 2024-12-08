@@ -20,7 +20,7 @@ class NpcCommand(
 ) {
 
     @Command(commandName)
-    @Permission("")
+    @Permission("simplecloud.command.npc")
     fun execute(sender: CommandSourceStack) {
         val player = sender.sender as Player
         CommandMessages.sendHelpMessage(player)

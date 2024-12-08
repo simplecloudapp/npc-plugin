@@ -28,7 +28,7 @@ class NpcOptionCommand(
 ) {
 
     @Command("$commandName <id> setOption <key> <value>")
-    @Permission("")
+    @Permission("simplecloud.command.npc")
     fun executeSetOption(
         sender: CommandSourceStack,
         @Argument("id", suggestions = "npcIds") npcId: String,
@@ -45,7 +45,7 @@ class NpcOptionCommand(
     }
 
     @Command("$commandName <id> removeOption <key>")
-    @Permission("")
+    @Permission("simplecloud.command.npc")
     fun executeRemoveOption(
         sender: CommandSourceStack,
         @Argument("id", suggestions = "npcIds") npcId: String,
@@ -60,7 +60,7 @@ class NpcOptionCommand(
     }
 
     @Command("$commandName <id> getOption <key>")
-    @Permission("")
+    @Permission("simplecloud.command.npc")
     fun executeGetOption(
         sender: CommandSourceStack,
         @Argument("id", suggestions = "npcIds") npcId: String,

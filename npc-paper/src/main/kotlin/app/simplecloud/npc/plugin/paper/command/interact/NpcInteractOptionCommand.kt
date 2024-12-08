@@ -28,7 +28,7 @@ class NpcInteractOptionCommand(
 ) {
 
     @Command("$commandName <id> interact <playerInteraction> setOption <key> <value>")
-    @Permission("")
+    @Permission("simplecloud.command.npc")
     fun executeInteractionSetOption(
         sender: CommandSourceStack,
         @Argument("id", suggestions = "npcIds") npcId: String,
@@ -46,7 +46,7 @@ class NpcInteractOptionCommand(
     }
 
     @Command("$commandName <id> interact <playerInteraction> removeOption <key>")
-    @Permission("")
+    @Permission("simplecloud.command.npc")
     fun executeInteractionRemoveOption(
         sender: CommandSourceStack,
         @Argument("id", suggestions = "npcIds") npcId: String,
@@ -62,7 +62,7 @@ class NpcInteractOptionCommand(
     }
 
     @Command("$commandName <id> interact <playerInteraction> getOption <key>")
-    @Permission("")
+    @Permission("simplecloud.command.npc")
     fun executeInteractionGetOption(
         sender: CommandSourceStack,
         @Argument("id", suggestions = "npcIds") npcId: String,

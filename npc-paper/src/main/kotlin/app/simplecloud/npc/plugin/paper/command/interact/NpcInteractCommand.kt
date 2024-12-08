@@ -28,7 +28,7 @@ class NpcInteractCommand(
     private val repository = namespace.npcRepository
 
     @Command("$commandName <id> interact <playerInteraction>")
-    @Permission("")
+    @Permission("simplecloud.command.npc")
     fun executeInteraction(
         sender: CommandSourceStack,
         @Argument("id", suggestions = "npcIds") npcId: String,
@@ -53,7 +53,7 @@ class NpcInteractCommand(
     }
 
     @Command("$commandName <id> interact <playerInteraction> setAction <action>")
-    @Permission("")
+    @Permission("simplecloud.command.npc")
     fun executeInteractionSetAction(
         sender: CommandSourceStack,
         @Argument("id", suggestions = "npcIds") npcId: String,
