@@ -1,10 +1,12 @@
 package app.simplecloud.npc.plugin.paper
 
+import app.simplecloud.npc.plugin.paper.command.CommandHandler
 import app.simplecloud.npc.plugin.paper.namespace.NamespaceService
 import app.simplecloud.npc.shared.action.Action
 import app.simplecloud.npc.shared.inventory.configuration.InventoryConfig
 import app.simplecloud.npc.shared.config.NpcOption
 import app.simplecloud.npc.shared.inventory.configuration.InventoryRepository
+import app.simplecloud.npc.shared.namespace.NpcNamespace
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
@@ -51,10 +53,11 @@ class PaperPlugin : JavaPlugin() {
 
         InventoryRepository().save("test.yml", inventoryConfig)
 
-        loadNamespace()
+        val namespace = loadNamespace()
+        CommandHandler(namespace, this).parseCommands()
     }
 
-    private fun loadNamespace() {
+    private fun loadNamespace(): NpcNamespace {
         val namespace = NamespaceService.findPossibleNamespace()
             ?: throw NullPointerException("failed to find npc namespace")
         logger.info("Load matching npc namespace: ${namespace.javaClass.simpleName}")
@@ -64,6 +67,7 @@ class PaperPlugin : JavaPlugin() {
 
         namespace.onEnable()
         namespace.registerListeners(server.pluginManager, this)
+        return namespace
     }
 
 }
