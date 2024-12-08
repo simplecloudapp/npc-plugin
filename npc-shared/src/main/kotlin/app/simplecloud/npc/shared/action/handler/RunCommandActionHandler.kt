@@ -26,12 +26,10 @@ class RunCommandActionHandler : ActionHandler {
             MessageHelper.printOptionNotFoundMessage(Action.RUN_COMMAND, action, optionProvider)
             return
         }
-
         val resolvedCommand = this.placeholders.entries.fold(commandOption) { it, entry ->
             it.replace(entry.key, entry.value(player).toString())
         }
         player.performCommand(resolvedCommand)
-        MessageHelper.executeMessageFromOption(player, optionProvider)
     }
 
     override fun getOptions() = listOf(

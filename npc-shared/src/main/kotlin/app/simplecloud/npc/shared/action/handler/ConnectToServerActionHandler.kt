@@ -24,7 +24,6 @@ class ConnectToServerActionHandler : ActionHandler {
             return
         }
         sendPlayerToServer(player, serverName)
-        MessageHelper.executeMessageFromOption(player, optionProvider)
     }
 
     private fun sendPlayerToServer(player: Player, serverName: String) {

@@ -4,10 +4,11 @@ import app.simplecloud.npc.plugin.paper.command.AbstractNpcCommand
 import app.simplecloud.npc.plugin.paper.command.PREFIX
 import app.simplecloud.npc.plugin.paper.command.commandName
 import app.simplecloud.npc.plugin.paper.command.message.CommandMessages
-import app.simplecloud.npc.plugin.paper.command.text
+import app.simplecloud.npc.shared.text
 import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.config.NpcOption
 import app.simplecloud.npc.shared.namespace.NpcNamespace
+import app.simplecloud.npc.shared.player.PlayerActions
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.entity.Player
 import org.incendo.cloud.annotations.Argument
@@ -85,9 +86,11 @@ class NpcInteractOptionCommand(
 
     @Suggestions("actionOptionKeys")
     fun suggestActionOptionKey(context: CommandContext<CommandSourceStack>): List<String> {
+        val optionKeys = PlayerActions.getAllOptionKeys()
         val text = context.rawInput().input().split(" ")
-        val npcConfig = this.namespace.npcRepository.get(text[1]) ?: return emptyList()
-        return npcConfig.getPlayerInteraction(text[3])?.action?.actionHandler?.getOptions()?.map { it.first } ?: emptyList()
+        val npcConfig = this.namespace.npcRepository.get(text[1]) ?: return optionKeys
+        return listOf(*(npcConfig.getPlayerInteraction(text[3])?.action?.actionHandler?.getOptions()?.map { it.first }
+            ?: emptyList()).toTypedArray(), *optionKeys.toTypedArray())
     }
 
     @Suggestions("optionKeys")
@@ -97,7 +100,12 @@ class NpcInteractOptionCommand(
         return npcConfig.getPlayerInteraction(text[3])?.options?.map { it.key } ?: emptyList()
     }
 
-    private fun invokeConfig(player: Player, npcId: String, playerInteraction: String, function: (NpcConfig, NpcConfig.NpcInteraction) -> NpcConfig) {
+    private fun invokeConfig(
+        player: Player,
+        npcId: String,
+        playerInteraction: String,
+        function: (NpcConfig, NpcConfig.NpcInteraction) -> NpcConfig
+    ) {
         val npcConfig = findNpcConfigById(player, npcId) ?: return
         findPlayerInteraction(player, playerInteraction) ?: return
         val newInteraction = npcConfig.getPlayerInteraction(playerInteraction)

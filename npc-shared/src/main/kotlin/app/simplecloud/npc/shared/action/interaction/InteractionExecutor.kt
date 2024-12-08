@@ -3,6 +3,7 @@ package app.simplecloud.npc.shared.action.interaction
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.npc.shared.option.Option
 import app.simplecloud.npc.shared.option.OptionProvider
+import app.simplecloud.npc.shared.player.PlayerActions
 import org.bukkit.entity.Player
 
 /**
@@ -28,6 +29,9 @@ class InteractionExecutor(
             *config.options.map { Option.of(it) }.toTypedArray()
         )
         interaction.action.actionHandler.handle(player, this.namespace, optionProvider)
+        PlayerActions.findPossibleActions(interaction).forEach {
+            it.handle(player, optionProvider)
+        }
     }
 
 }

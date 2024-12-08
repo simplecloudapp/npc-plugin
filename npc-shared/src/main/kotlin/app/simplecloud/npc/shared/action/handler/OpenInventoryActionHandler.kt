@@ -30,7 +30,6 @@ class OpenInventoryActionHandler : ActionHandler {
         }
 
         // TODO: open inventory
-        MessageHelper.executeMessageFromOption(player, optionProvider)
     }
 
     override fun getOptions() = listOf(

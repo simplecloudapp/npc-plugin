@@ -4,10 +4,11 @@ import app.simplecloud.npc.plugin.paper.command.AbstractNpcCommand
 import app.simplecloud.npc.plugin.paper.command.PREFIX
 import app.simplecloud.npc.plugin.paper.command.commandName
 import app.simplecloud.npc.plugin.paper.command.message.CommandMessages
-import app.simplecloud.npc.plugin.paper.command.text
+import app.simplecloud.npc.shared.text
 import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.config.NpcOption
 import app.simplecloud.npc.shared.namespace.NpcNamespace
+import app.simplecloud.npc.shared.player.PlayerActions
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.entity.Player
 import org.incendo.cloud.annotations.Argument
@@ -31,7 +32,7 @@ class NpcOptionCommand(
     fun executeSetOption(
         sender: CommandSourceStack,
         @Argument("id", suggestions = "npcIds") npcId: String,
-        @Argument("key") key: String,
+        @Argument("key", suggestions = "playerActionOptionKeys") key: String,
         @Argument("value") value: String,
     ) {
         val player = sender.sender as Player
@@ -70,6 +71,11 @@ class NpcOptionCommand(
         val npcConfig = findNpcConfigById(player, npcId) ?: return
         val option = npcConfig.getOption(key)
         CommandMessages.sendOptionMessage(player, npcConfig, key, option)
+    }
+
+    @Suggestions("playerActionOptionKeys")
+    fun suggestPlayerActionOptionKey(): List<String> {
+        return PlayerActions.getAllOptionKeys()
     }
 
     @Suggestions("globalOptionKeys")
