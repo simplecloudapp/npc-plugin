@@ -20,4 +20,10 @@ enum class Action(
 
     QUICK_JOIN(OpenInventoryActionHandler());
 
+    companion object {
+        fun getOrNull(name: String): Action? {
+            return entries.firstOrNull { it.name.equals(name, true) }
+        }
+    }
+
 }
