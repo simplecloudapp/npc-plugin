@@ -34,4 +34,8 @@ class RunCommandActionHandler : ActionHandler {
         MessageHelper.executeMessageFromOption(player, optionProvider)
     }
 
+    override fun getOptions() = listOf(
+        ActionOptions.EXECUTE_COMMAND_NAME
+    )
+
 }

@@ -33,4 +33,8 @@ class OpenInventoryActionHandler : ActionHandler {
         MessageHelper.executeMessageFromOption(player, optionProvider)
     }
 
+    override fun getOptions() = listOf(
+        ActionOptions.OPEN_INVENTORY
+    )
+
 }

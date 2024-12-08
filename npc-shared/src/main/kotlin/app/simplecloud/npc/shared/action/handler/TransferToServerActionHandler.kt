@@ -27,4 +27,9 @@ class TransferToServerActionHandler : ActionHandler {
         MessageHelper.executeMessageFromOption(player, optionProvider)
     }
 
+    override fun getOptions() = listOf(
+        ActionOptions.TRANSFER_SERVER_IP,
+        ActionOptions.TRANSFER_SERVER_PORT
+    )
+
 }

@@ -12,4 +12,6 @@ interface ActionHandler {
 
     fun handle(player: Player, namespace: NpcNamespace, optionProvider: OptionProvider)
 
+    fun getOptions(): List<Pair<String, Any>>
+
 }

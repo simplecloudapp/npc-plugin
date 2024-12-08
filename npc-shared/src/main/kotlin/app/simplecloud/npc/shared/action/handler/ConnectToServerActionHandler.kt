@@ -36,4 +36,8 @@ class ConnectToServerActionHandler : ActionHandler {
         player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray())
     }
 
+    override fun getOptions() = listOf(
+        ActionOptions.CONNECT_TO_SERVER_NAME
+    )
+
 }
