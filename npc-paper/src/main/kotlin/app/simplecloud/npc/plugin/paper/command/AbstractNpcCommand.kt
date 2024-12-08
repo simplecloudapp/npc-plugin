@@ -3,6 +3,7 @@ package app.simplecloud.npc.plugin.paper.command
 import app.simplecloud.npc.shared.action.interaction.PlayerInteraction
 import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.namespace.NpcNamespace
+import app.simplecloud.npc.shared.text
 import org.bukkit.entity.Player
 
 /**

@@ -1,7 +1,7 @@
 package app.simplecloud.npc.plugin.paper.command.message
 
 import app.simplecloud.npc.plugin.paper.command.PREFIX
-import app.simplecloud.npc.plugin.paper.command.text
+import app.simplecloud.npc.shared.text
 import app.simplecloud.npc.shared.action.interaction.PlayerInteraction
 import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.config.NpcOption

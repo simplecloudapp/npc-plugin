@@ -5,7 +5,6 @@ import net.kyori.adventure.text.Component
 import org.bukkit.command.CommandSender
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.exception.ArgumentParseException
-import org.incendo.cloud.exception.InvalidSyntaxException
 import org.incendo.cloud.exception.NoPermissionException
 import org.incendo.cloud.minecraft.extras.MinecraftExceptionHandler
 import org.incendo.cloud.paper.PaperCommandManager
@@ -15,8 +14,6 @@ import org.incendo.cloud.paper.PaperCommandManager
  */
 
 class MinecraftExceptionCreator {
-
-    private val prefix = "<#049dd1>TryHub<dark_gray> ┃<gray>"
 
     fun create(commandManager: PaperCommandManager<CommandSourceStack>) {
         MinecraftExceptionHandler.createNative<CommandSender>()

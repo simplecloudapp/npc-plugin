@@ -1,15 +1,13 @@
 package app.simplecloud.npc.plugin.paper.command.interact
 
 import app.simplecloud.npc.plugin.paper.command.AbstractNpcCommand
-import app.simplecloud.npc.plugin.paper.command.CommandSuggestions
 import app.simplecloud.npc.plugin.paper.command.PREFIX
 import app.simplecloud.npc.plugin.paper.command.commandName
 import app.simplecloud.npc.plugin.paper.command.message.CommandMessages
-import app.simplecloud.npc.plugin.paper.command.text
 import app.simplecloud.npc.shared.action.Action
-import app.simplecloud.npc.shared.action.interaction.PlayerInteraction
 import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.namespace.NpcNamespace
+import app.simplecloud.npc.shared.text
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.entity.Player
 import org.incendo.cloud.annotations.Argument
