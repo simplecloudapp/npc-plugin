@@ -48,10 +48,14 @@ abstract class YamlDirectoryRepository<E>(
             entities[file] = entity
             return entity
         } catch (ex: ParsingException) {
-            ex.printStackTrace()
+            val existedBefore = entities.containsKey(file)
+            if (existedBefore) {
+                return null
+            }
             return null
         }
     }
+
 
     private fun deleteFile(file: File): Boolean {
         val deletedSuccessfully = file.delete()
