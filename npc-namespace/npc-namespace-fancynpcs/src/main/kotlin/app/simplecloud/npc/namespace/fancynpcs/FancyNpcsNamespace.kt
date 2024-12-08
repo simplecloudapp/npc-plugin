@@ -5,6 +5,7 @@ import app.simplecloud.npc.shared.event.EventActionType
 import app.simplecloud.npc.shared.event.registerActionEvent
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import de.oliver.fancynpcs.api.FancyNpcsPlugin
+import de.oliver.fancynpcs.api.events.NpcCreateEvent
 import de.oliver.fancynpcs.api.events.NpcRemoveEvent
 import de.oliver.fancynpcs.api.events.NpcSpawnEvent
 import org.bukkit.plugin.Plugin
@@ -23,7 +24,7 @@ class FancyNpcsNamespace : NpcNamespace(
     override fun registerListeners(pluginManager: PluginManager, plugin: Plugin) {
         pluginManager.registerEvents(NpcInteractListener(this), plugin)
 
-        eventManager.registerActionEvent<NpcSpawnEvent>(plugin, EventActionType.SPAWN, { it.npc.data.name })
+        eventManager.registerActionEvent<NpcCreateEvent>(plugin, EventActionType.SPAWN, { it.npc.data.name })
         eventManager.registerActionEvent<NpcRemoveEvent>(plugin, EventActionType.REMOVE, { it.npc.data.name })
     }
 
