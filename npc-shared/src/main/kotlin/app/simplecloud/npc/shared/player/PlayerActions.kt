@@ -1,7 +1,7 @@
 package app.simplecloud.npc.shared.player
 
 import app.simplecloud.npc.shared.config.NpcConfig
-import app.simplecloud.npc.shared.player.handler.SendMessagePlayerActionHandler
+import app.simplecloud.npc.shared.player.handler.*
 
 /**
  * @author Niklas Nieberler
@@ -10,7 +10,8 @@ import app.simplecloud.npc.shared.player.handler.SendMessagePlayerActionHandler
 object PlayerActions {
 
     private val actions = listOf(
-        SendMessagePlayerActionHandler()
+        SendMessagePlayerActionHandler(),
+        SendActionbarPlayerActionHandler()
     )
 
     /**
