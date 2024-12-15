@@ -14,6 +14,8 @@ enum class Action(
 
     RUN_COMMAND(RunCommandActionHandler()),
 
+    RUN_CONSOLE_COMMAND(RunConsoleCommandActionHandler()),
+
     CONNECT_TO_SERVER(ConnectToServerActionHandler()),
 
     TRANSFER_TO_SERVER(TransferToServerActionHandler()),
