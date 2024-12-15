@@ -18,7 +18,7 @@ class PlaySoundPlayerActionHandler : PlayerActionHandler {
         val soundVolume = optionProvider.getOption(PlayerActionOptions.SOUND_VOLUME)
         val soundPitch = optionProvider.getOption(PlayerActionOptions.SOUND_PITCH)
         val soundSource = optionProvider.getOption(PlayerActionOptions.SOUND_SOURCE)
-        val sound = Sound.sound(Key.key(soundName), Sound.Source.valueOf(soundSource), soundVolume, soundPitch)
+        val sound = Sound.sound(Key.key(soundName), Sound.Source.valueOf(soundSource.uppercase()), soundVolume, soundPitch)
         player.playSound(sound)
     }
 
