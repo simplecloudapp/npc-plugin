@@ -30,7 +30,7 @@ abstract class NpcNamespace(
     /**
      * Is executed when namespace must be loaded
      */
-    abstract fun onEnable()
+    open fun onEnable() {}
 
     /**
      * Is only executed if this namespace was loaded at startup

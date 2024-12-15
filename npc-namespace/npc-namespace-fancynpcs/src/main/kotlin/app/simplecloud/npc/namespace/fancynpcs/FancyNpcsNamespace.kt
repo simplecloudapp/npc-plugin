@@ -19,8 +19,6 @@ class FancyNpcsNamespace : NpcNamespace(
     "FancyNpcs"
 ) {
 
-    override fun onEnable() {}
-
     override fun registerListeners(pluginManager: PluginManager, plugin: Plugin) {
         pluginManager.registerEvents(NpcInteractListener(this), plugin)
 
