@@ -33,7 +33,7 @@ class NpcOptionCommand(
         sender: CommandSourceStack,
         @Argument("id", suggestions = "npcIds") npcId: String,
         @Argument("key", suggestions = "playerActionOptionKeys") key: String,
-        @Argument("value") value: String,
+        @Argument("value", suggestions = "globalActionOptionValues") value: String,
     ) {
         val player = sender.sender as Player
         invokeConfig(player, npcId) { config ->
@@ -76,6 +76,12 @@ class NpcOptionCommand(
     @Suggestions("playerActionOptionKeys")
     fun suggestPlayerActionOptionKey(): List<String> {
         return PlayerActions.getAllOptionKeys()
+    }
+
+    @Suggestions("globalActionOptionValues")
+    fun suggestGlobalActionOptionValue(context: CommandContext<CommandSourceStack>): List<String> {
+        val text = context.rawInput().input().split(" ")
+        return PlayerActions.getSuggestionActionByKey(text[3])
     }
 
     @Suggestions("globalOptionKeys")

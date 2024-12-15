@@ -34,7 +34,7 @@ class NpcInteractOptionCommand(
         @Argument("id", suggestions = "npcIds") npcId: String,
         @Argument("playerInteraction", suggestions = "playerInteractions") playerInteraction: String,
         @Argument("key", suggestions = "actionOptionKeys") key: String,
-        @Argument("value") value: String,
+        @Argument("value", suggestions = "actionOptionValues") value: String,
     ) {
         val player = sender.sender as Player
         invokeConfig(player, npcId, playerInteraction) { config, interaction ->
@@ -91,6 +91,13 @@ class NpcInteractOptionCommand(
         val npcConfig = this.namespace.npcRepository.get(text[1]) ?: return optionKeys
         return listOf(*(npcConfig.getPlayerInteraction(text[3])?.action?.actionHandler?.getOptions()?.map { it.first }
             ?: emptyList()).toTypedArray(), *optionKeys.toTypedArray())
+    }
+
+    @Suggestions("actionOptionValues")
+    fun suggestActionOptionValue(context: CommandContext<CommandSourceStack>): List<String> {
+        val text = context.rawInput().input().split(" ")
+        val strings = PlayerActions.getSuggestionActionByKey(text[5])
+        return strings
     }
 
     @Suggestions("optionKeys")
