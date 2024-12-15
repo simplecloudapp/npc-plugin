@@ -16,9 +16,9 @@ object PlayerActionOptions {
 
     val PLAY_SOUND = Pair("play.sound", "")
 
-    val SOUND_VOLUME = Pair("sound.volume", 3F)
+    val SOUND_VOLUME = Pair("sound.volume", "3F")
 
-    val SOUND_PITCH = Pair("sound.pitch", 2F)
+    val SOUND_PITCH = Pair("sound.pitch", "2F")
 
     val SOUND_SOURCE = Pair("sound.source", "master")
 
