@@ -11,7 +11,9 @@ object PlayerActions {
 
     private val actions = listOf(
         SendMessagePlayerActionHandler(),
-        SendActionbarPlayerActionHandler()
+        SendActionbarPlayerActionHandler(),
+        SendTitlePlayerActionHandler(),
+        PlaySoundPlayerActionHandler()
     )
 
     /**
@@ -19,9 +21,19 @@ object PlayerActions {
      * @param npcInteraction of the npc action
      */
     fun findPossibleActions(npcInteraction: NpcConfig.NpcInteraction): List<PlayerActionHandler> {
-        return actions.filter {
+        return this.actions.filter {
             it.getOptions().any { (key, _) -> npcInteraction.getOption(key) != null }
         }
+    }
+
+    /**
+     * Gets you the suggestion value for a key
+     * @param key of the suggestion key
+     */
+    fun getSuggestionActionByKey(key: String): List<String> {
+        return this.actions.map { it.getSuggestions() }
+            .map { it[key] ?: listOf() }
+            .flatten()
     }
 
     /**

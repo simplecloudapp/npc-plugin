@@ -13,4 +13,6 @@ interface PlayerActionHandler {
 
     fun getOptions(): List<Pair<String, Any>>
 
+    fun getSuggestions(): Map<String, List<String>> = emptyMap()
+
 }
