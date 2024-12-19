@@ -5,8 +5,10 @@ import app.simplecloud.npc.namespace.fancynpcs.option.FancyNpcsOptionProviders
 import app.simplecloud.npc.shared.action.interaction.PlayerInteraction
 import de.oliver.fancynpcs.api.actions.ActionTrigger
 import de.oliver.fancynpcs.api.events.NpcInteractEvent
+import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import java.util.UUID
 
 /**
  * @author Niklas Nieberler

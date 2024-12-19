@@ -29,6 +29,10 @@ allprojects {
             name = "ranullRepoExternal"
             url = uri("https://repo.ranull.com/maven/external")
         }
+        maven {
+            name = "labymod"
+            url = uri("https://dist.labymod.net/api/v1/maven/release/")
+        }
     }
 }
 

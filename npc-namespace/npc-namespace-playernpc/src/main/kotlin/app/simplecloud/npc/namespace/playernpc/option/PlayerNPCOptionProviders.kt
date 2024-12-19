@@ -17,7 +17,9 @@ object PlayerNPCOptionProviders {
      */
     fun createInteractOptionProviders(npc: NPC) = OptionProvider.with(
         Option.of(DefaultOptions.NPC_ID, npc.simpleID),
-        Option.of(DefaultOptions.NPC_NAME, npc.nameTag.name)
+        Option.of(DefaultOptions.NPC_NAME, npc.nameTag.name),
+        Option.of(DefaultOptions.NPC_UUID, npc.fullID),
+        Option.of(DefaultOptions.NPC_ENTITY_ID, npc.id),
     )
 
 }

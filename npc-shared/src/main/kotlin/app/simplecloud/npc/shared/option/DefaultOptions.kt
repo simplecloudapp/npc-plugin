@@ -1,5 +1,7 @@
 package app.simplecloud.npc.shared.option
 
+import java.util.UUID
+
 /**
  * @author Niklas Nieberler
  */
@@ -7,6 +9,10 @@ package app.simplecloud.npc.shared.option
 object DefaultOptions {
 
     val NPC_ID = Pair("npc.id", "")
+
+    val NPC_UUID = Pair("npc.uuid", "")
+
+    val NPC_ENTITY_ID = Pair("npc.entity.id", 0)
 
     val NPC_NAME = Pair("npc.name", "")
 
