@@ -14,6 +14,6 @@ object ActionOptions {
 
     val TRANSFER_SERVER_IP = Pair("server.ip", "")
 
-    val TRANSFER_SERVER_PORT = Pair("server.port", 25565)
+    val TRANSFER_SERVER_PORT = Pair("server.port", "25565")
 
 }
