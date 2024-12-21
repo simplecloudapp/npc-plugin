@@ -8,6 +8,7 @@ import de.oliver.fancynpcs.api.FancyNpcsPlugin
 import de.oliver.fancynpcs.api.events.NpcCreateEvent
 import de.oliver.fancynpcs.api.events.NpcRemoveEvent
 import de.oliver.fancynpcs.api.events.NpcSpawnEvent
+import org.bukkit.Location
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.PluginManager
 
@@ -28,6 +29,12 @@ class FancyNpcsNamespace : NpcNamespace(
 
     override fun findAllNpcs(): List<String> {
         return FancyNpcsPlugin.get().npcManager.allNpcs.map { it.data.name }
+    }
+
+    override fun findLocationByNpc(id: String): Location? {
+        return FancyNpcsPlugin.get().npcManager.allNpcs
+            .map { it.data }
+            .firstOrNull { it.name == id }?.location
     }
 
 }

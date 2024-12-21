@@ -1,5 +1,6 @@
 package app.simplecloud.npc.shared.repository
 
+import app.simplecloud.npc.shared.utils.FileUpdater
 import kotlinx.coroutines.*
 import org.spongepowered.configurate.ConfigurationOptions
 import org.spongepowered.configurate.kotlin.objectMapperFactory
@@ -108,6 +109,8 @@ abstract class YamlDirectoryRepository<E>(
                         StandardWatchEventKinds.ENTRY_MODIFY
                             -> {
                             load(resolvedPath.toFile())
+                            println("hallo")
+                            FileUpdater.invokeFile(resolvedPath.toFile())
                         }
 
                         StandardWatchEventKinds.ENTRY_DELETE -> {

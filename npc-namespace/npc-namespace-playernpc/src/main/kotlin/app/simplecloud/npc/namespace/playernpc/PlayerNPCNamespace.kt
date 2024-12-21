@@ -6,6 +6,7 @@ import app.simplecloud.npc.shared.event.registerActionEvent
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import dev.sergiferry.playernpc.api.NPC
 import dev.sergiferry.playernpc.api.NPCLib
+import org.bukkit.Location
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.PluginManager
 
@@ -26,6 +27,10 @@ class PlayerNPCNamespace : NpcNamespace(
 
     override fun findAllNpcs(): List<String> {
         return NPCLib.getInstance().allGlobalNPCs.map { it.simpleID }
+    }
+
+    override fun findLocationByNpc(id: String): Location? {
+        TODO("Not yet implemented")
     }
 
 }

@@ -7,6 +7,7 @@ import app.simplecloud.npc.shared.event.registerActionEvent
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.event.*
+import org.bukkit.Location
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.PluginManager
 
@@ -32,6 +33,10 @@ class CitizensNamespace : NpcNamespace(
 
     override fun findAllNpcs(): List<String> {
         return CitizensAPI.getNPCRegistry().map { it.id.toString() }
+    }
+
+    override fun findLocationByNpc(id: String): Location? {
+        TODO("Not yet implemented")
     }
 
 }
