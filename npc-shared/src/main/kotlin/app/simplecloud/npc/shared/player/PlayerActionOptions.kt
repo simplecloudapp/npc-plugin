@@ -22,6 +22,4 @@ object PlayerActionOptions {
 
     val SOUND_SOURCE = Pair("sound.source", "master")
 
-    val PLAY_LABY_EMOTE = Pair("play.emote", "-1")
-
 }
