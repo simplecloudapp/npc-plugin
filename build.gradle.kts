@@ -22,7 +22,8 @@ allprojects {
         maven {
             url = uri("https://repo.papermc.io/repository/maven-public/")
         }
-        maven("https://maven.citizensnpcs.co/repo/citizens-repo")
+        maven("https://maven.citizensnpcs.co/repo")
+        maven("https://repo.minebench.de")
         maven("https://buf.build/gen/maven")
         maven("https://repo.fancyplugins.de/releases")
         maven {
