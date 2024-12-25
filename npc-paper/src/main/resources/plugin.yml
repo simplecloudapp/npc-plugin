@@ -2,3 +2,4 @@ name: SimpleCloud-NPC
 version: 1.0
 author: MrManHD
 main: app.simplecloud.npc.plugin.paper.PaperPlugin
+api-version: 1.21

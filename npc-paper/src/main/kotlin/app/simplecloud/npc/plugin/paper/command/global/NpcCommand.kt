@@ -3,7 +3,6 @@ package app.simplecloud.npc.plugin.paper.command.global
 import app.simplecloud.npc.plugin.paper.command.AbstractNpcCommand
 import app.simplecloud.npc.plugin.paper.command.commandName
 import app.simplecloud.npc.plugin.paper.command.message.CommandMessages
-import app.simplecloud.npc.shared.inventory.ActionInventory
 import app.simplecloud.npc.shared.inventory.NpcInventory
 import app.simplecloud.npc.shared.inventory.configuration.InventoryRepository
 import app.simplecloud.npc.shared.namespace.NpcNamespace
@@ -11,7 +10,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.bukkit.entity.Player
 import org.incendo.cloud.annotations.Command
 import org.incendo.cloud.annotations.Permission
@@ -26,6 +24,11 @@ class NpcCommand(
     namespace
 ) {
 
+    val inventoryRepository = InventoryRepository()
+    init {
+        inventoryRepository.load()
+    }
+
     @Command(commandName)
     @Permission("simplecloud.command.npc")
     fun execute(sender: CommandSourceStack) {
@@ -33,8 +36,6 @@ class NpcCommand(
         CommandMessages.sendHelpMessage(player)
 
         CoroutineScope(Dispatchers.IO).launch {
-            val inventoryRepository = InventoryRepository()
-            inventoryRepository.load()
             inventoryRepository.getAll().forEach {
                 NpcInventory(it).open(player)
             }

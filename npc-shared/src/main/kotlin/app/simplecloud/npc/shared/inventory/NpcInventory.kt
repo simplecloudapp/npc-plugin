@@ -1,14 +1,12 @@
 package app.simplecloud.npc.shared.inventory
 
 import app.simplecloud.npc.shared.inventory.configuration.InventoryConfig
-import app.simplecloud.npc.shared.inventory.configuration.InventoryConfig.ItemSlot
 import app.simplecloud.npc.shared.inventory.item.ItemCreator
+import app.simplecloud.npc.shared.text
 import com.noxcrew.interfaces.drawable.Drawable
 import com.noxcrew.interfaces.element.StaticElement
-import com.noxcrew.interfaces.grid.GridPoint
-import com.noxcrew.interfaces.grid.GridPoint.Companion.at
 import com.noxcrew.interfaces.interfaces.CombinedInterfaceBuilder
-import com.noxcrew.interfaces.interfaces.buildCombinedInterface
+import com.noxcrew.interfaces.interfaces.buildChestInterface
 import com.noxcrew.interfaces.pane.Pane
 import org.bukkit.entity.Player
 
@@ -25,17 +23,15 @@ class NpcInventory(
     private val inventory = createCombinedInterface()
 
     suspend fun open(player: Player) {
-        println("open for $player")
-        try {
-            this.inventory.open(player)
-        } catch (exception: Exception) {
-            exception.printStackTrace()
-        }
+        val inventory = createCombinedInterface()
+            inventory.open(player)
+
     }
 
-    private fun createCombinedInterface() = buildCombinedInterface {
+    private fun createCombinedInterface() = buildChestInterface {
         println("createCombinedInterface")
         rows = 6
+        initialTitle = text("YEEPEEE")
         try {
            // buildStaticItems(this)
         } catch (exception: Exception) {
