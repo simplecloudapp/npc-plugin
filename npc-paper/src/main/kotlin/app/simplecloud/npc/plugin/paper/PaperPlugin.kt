@@ -7,6 +7,7 @@ import app.simplecloud.npc.shared.inventory.configuration.InventoryConfig
 import app.simplecloud.npc.shared.config.NpcOption
 import app.simplecloud.npc.shared.inventory.configuration.InventoryRepository
 import app.simplecloud.npc.shared.namespace.NpcNamespace
+import com.noxcrew.interfaces.InterfacesListeners
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
@@ -18,43 +19,33 @@ class PaperPlugin : JavaPlugin() {
     override fun onEnable() {
         server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
 
+        InterfacesListeners.install(this)
+
         val inventoryConfig = InventoryConfig(
             "test",
-            InventoryConfig.PaginationInventory(
-                InventoryConfig.ItemSlot(0, 0),
-                InventoryConfig.ItemSlot(3, 8),
-                "test1",
-                "test2"
-            ),
+            null,
             listOf(
                 InventoryConfig.StaticItem(
-                    "asd",
-                    InventoryConfig.ItemSlot(0,1)
-                ),
-                InventoryConfig.StaticItem(
-                    "moin",
-                    null,
+                    "test1",
                     InventoryConfig.ItemSlot(0,1),
-                    InventoryConfig.ItemSlot(0,8)
+                    InventoryConfig.ItemSlot(0,1),
+                    InventoryConfig.ItemSlot(0,5)
                 )
             ),
             listOf(
                 InventoryConfig.InventoryItem(
                     "test1",
                     "STONE",
-                    "testhallo",
-                    Action.RUN_COMMAND,
-                    listOf(
-                        NpcOption("2", "1")
-                    )
+                    "testhallo"
                 )
             )
         )
 
-        InventoryRepository().save("test.yml", inventoryConfig)
 
         val namespace = loadNamespace()
         CommandHandler(namespace, this).parseCommands()
+
+        InventoryRepository().save("test.yml", inventoryConfig)
     }
 
     private fun loadNamespace(): NpcNamespace {
@@ -64,6 +55,11 @@ class PaperPlugin : JavaPlugin() {
 
         val npcRepository = namespace.npcRepository
         npcRepository.load()
+        namespace.inventoryRepository.load()
+
+        val hologramManager = namespace.hologramManager
+        hologramManager.clearLegacyHolograms()
+        hologramManager.registerFileRequest()
 
         namespace.onEnable()
         namespace.registerListeners(server.pluginManager, this)

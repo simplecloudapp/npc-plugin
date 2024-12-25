@@ -33,6 +33,11 @@ allprojects {
             name = "labymod"
             url = uri("https://dist.labymod.net/api/v1/maven/release/")
         }
+        maven {
+            name = "noxcrew-maven"
+            url = uri("https://maven.noxcrew.com/public")
+        }
+        maven("https://repo.simplecloud.app/snapshots")
     }
 }
 
