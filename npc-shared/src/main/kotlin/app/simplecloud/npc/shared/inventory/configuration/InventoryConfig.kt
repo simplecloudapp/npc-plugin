@@ -19,9 +19,9 @@ data class InventoryConfig(
     @ConfigSerializable
     data class StaticItem(
         val item: String = "",
-        val slot: ItemSlot? = ItemSlot(),
-        val fromSlot: ItemSlot? = null,
-        val toSlot: ItemSlot? = null
+        val slot: ItemSlot = ItemSlot(),
+        val fromSlot: ItemSlot = ItemSlot(),
+        val toSlot: ItemSlot = ItemSlot()
     )
 
     @ConfigSerializable
@@ -37,14 +37,18 @@ data class InventoryConfig(
         val id: String = "",
         val material: String = "STONE",
         val displayName: String = "",
-        val clickAction: Action = Action.RUN_COMMAND,
+        val clickAction: Action? = null, // TODO: extra Click action (für next page usw)
         val options: List<NpcOption> = emptyList()
     )
 
     @ConfigSerializable
     data class ItemSlot(
-        val row: Int = 0,
-        val column: Int = 0
-    )
+        val row: Int = -1,
+        val column: Int = -1
+    ) {
+        fun isBlank(): Boolean {
+            return this.row == -1 && this.column == -1
+        }
+    }
 
 }

@@ -13,8 +13,7 @@ object PlayerActions {
         SendMessagePlayerActionHandler(),
         SendActionbarPlayerActionHandler(),
         SendTitlePlayerActionHandler(),
-        PlaySoundPlayerActionHandler(),
-        PlayLabyEmotePlayerActionHandler()
+        PlaySoundPlayerActionHandler()
     )
 
     /**

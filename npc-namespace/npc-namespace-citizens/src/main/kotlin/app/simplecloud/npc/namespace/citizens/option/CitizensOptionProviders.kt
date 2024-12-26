@@ -18,7 +18,7 @@ object CitizensOptionProviders {
     fun createInteractOptionProviders(npc: NPC) = OptionProvider.with(
         Option.of(DefaultOptions.NPC_ID, npc.id.toString()),
         Option.of(DefaultOptions.NPC_NAME, npc.name),
-        Option.of(DefaultOptions.NPC_UUID, npc.uniqueId),
+        Option.of(DefaultOptions.NPC_UUID, npc.uniqueId.toString()),
         Option.of(DefaultOptions.NPC_ENTITY_ID, npc.entity.entityId)
     )
 

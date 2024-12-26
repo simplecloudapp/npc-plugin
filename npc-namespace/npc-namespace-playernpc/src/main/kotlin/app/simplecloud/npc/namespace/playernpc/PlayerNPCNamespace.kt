@@ -21,7 +21,7 @@ class PlayerNPCNamespace : NpcNamespace(
     override fun registerListeners(pluginManager: PluginManager, plugin: Plugin) {
         pluginManager.registerEvents(NpcInteractListener(this), plugin)
 
-        eventManager.registerActionEvent<NPC.Events.Show>(plugin, EventActionType.SPAWN, { it.npc.simpleID })
+        eventManager.registerActionEvent<NPC.Events.Show>(plugin, EventActionType.CREATE, { it.npc.simpleID })
         eventManager.registerActionEvent<NPC.Events.Hide>(plugin, EventActionType.REMOVE, { it.npc.simpleID })
     }
 
@@ -30,7 +30,7 @@ class PlayerNPCNamespace : NpcNamespace(
     }
 
     override fun findLocationByNpc(id: String): Location? {
-        TODO("Not yet implemented")
+        return null
     }
 
 }

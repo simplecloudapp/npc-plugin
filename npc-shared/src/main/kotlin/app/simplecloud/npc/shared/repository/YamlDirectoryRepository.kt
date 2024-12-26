@@ -1,6 +1,5 @@
 package app.simplecloud.npc.shared.repository
 
-import app.simplecloud.npc.shared.utils.FileUpdater
 import kotlinx.coroutines.*
 import org.spongepowered.configurate.ConfigurationOptions
 import org.spongepowered.configurate.kotlin.objectMapperFactory
@@ -8,7 +7,9 @@ import org.spongepowered.configurate.loader.ParsingException
 import org.spongepowered.configurate.yaml.NodeStyle
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.io.File
+import java.lang.reflect.Type
 import java.nio.file.*
+import java.util.function.Predicate
 
 abstract class YamlDirectoryRepository<E>(
     private val directory: Path,
@@ -40,6 +41,8 @@ abstract class YamlDirectoryRepository<E>(
             .filter { !it.toFile().isDirectory && it.toString().endsWith(".yml") }
             .mapNotNull { load(it.toFile()) }
     }
+
+    open fun watchUpdateEvent(file: File) {}
 
     private fun load(file: File): E? {
         try {
@@ -78,6 +81,7 @@ abstract class YamlDirectoryRepository<E>(
             YamlConfigurationLoader.builder()
                 .path(file.toPath())
                 .nodeStyle(NodeStyle.BLOCK)
+                .nodeStyle(NodeStyle.BLOCK)
                 .defaultOptions { options ->
                     options.serializers { builder ->
                         builder.registerAnnotatedObjects(objectMapperFactory())
@@ -105,12 +109,13 @@ abstract class YamlDirectoryRepository<E>(
                     }
                     val kind = event.kind()
                     when (kind) {
-                        StandardWatchEventKinds.ENTRY_CREATE,
-                        StandardWatchEventKinds.ENTRY_MODIFY
-                            -> {
+                        StandardWatchEventKinds.ENTRY_CREATE -> {
                             load(resolvedPath.toFile())
-                            println("hallo")
-                            FileUpdater.invokeFile(resolvedPath.toFile())
+                        }
+
+                        StandardWatchEventKinds.ENTRY_MODIFY -> {
+                            load(resolvedPath.toFile())
+                            watchUpdateEvent(resolvedPath.toFile())
                         }
 
                         StandardWatchEventKinds.ENTRY_DELETE -> {
