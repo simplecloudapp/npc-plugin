@@ -8,6 +8,8 @@ import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.config.NpcOption
 import app.simplecloud.npc.shared.controller.ControllerService
 import app.simplecloud.npc.shared.hologram.HologramOptions
+import app.simplecloud.npc.shared.inventory.NpcInventory
+import app.simplecloud.npc.shared.inventory.configuration.InventoryRepository
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.npc.shared.text
 import io.papermc.paper.command.brigadier.CommandSourceStack
@@ -31,11 +33,22 @@ class NpcCommand(
     namespace
 ) {
 
+    val inventoryRepository = InventoryRepository()
+    init {
+        inventoryRepository.load()
+    }
+
     @Command(commandName)
     @Permission("simplecloud.command.npc")
     fun execute(sender: CommandSourceStack) {
         val player = sender.sender as Player
         CommandMessages.sendHelpMessage(player)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            inventoryRepository.getAll().forEach {
+                NpcInventory(it).open(player)
+            }
+        }
     }
 
     @Command("$commandName <id> setHologramGroup <name>")

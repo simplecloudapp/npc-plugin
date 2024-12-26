@@ -2,6 +2,7 @@ dependencies {
     compileOnly(rootProject.libs.paperApi)
     implementation(rootProject.libs.bundles.simpleCloudController)
     implementation(rootProject.libs.bundles.cloudPaper)
+    implementation(rootProject.libs.interfacesApi)
 
     implementation(project(":npc-shared"))
     implementation(project(":npc-namespace:npc-namespace-citizens"))

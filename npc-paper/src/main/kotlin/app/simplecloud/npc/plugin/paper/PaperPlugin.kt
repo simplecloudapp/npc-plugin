@@ -8,6 +8,7 @@ import app.simplecloud.npc.shared.config.NpcOption
 import app.simplecloud.npc.shared.controller.ControllerService
 import app.simplecloud.npc.shared.inventory.configuration.InventoryRepository
 import app.simplecloud.npc.shared.namespace.NpcNamespace
+import com.noxcrew.interfaces.InterfacesListeners
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
@@ -19,34 +20,24 @@ class PaperPlugin : JavaPlugin() {
     override fun onEnable() {
         server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
 
+        InterfacesListeners.install(this)
+
         val inventoryConfig = InventoryConfig(
             "test",
-            InventoryConfig.PaginationInventory(
-                InventoryConfig.ItemSlot(0, 0),
-                InventoryConfig.ItemSlot(3, 8),
-                "test1",
-                "test2"
-            ),
+            null,
             listOf(
                 InventoryConfig.StaticItem(
-                    "asd",
-                    InventoryConfig.ItemSlot(0,1)
-                ),
-                InventoryConfig.StaticItem(
-                    "moin",
+                    "test1",
                     InventoryConfig.ItemSlot(0,1),
-                    InventoryConfig.ItemSlot(0,8)
+                    InventoryConfig.ItemSlot(0,1),
+                    InventoryConfig.ItemSlot(0,5)
                 )
             ),
             listOf(
                 InventoryConfig.InventoryItem(
                     "test1",
                     "STONE",
-                    "testhallo",
-                    Action.RUN_COMMAND,
-                    listOf(
-                        NpcOption("2", "1")
-                    )
+                    "testhallo"
                 )
             )
         )
