@@ -1,7 +1,6 @@
 package app.simplecloud.npc.shared.repository
 
 import kotlinx.coroutines.*
-import org.apache.logging.log4j.LogManager
 import org.spongepowered.configurate.ConfigurationNode
 import org.spongepowered.configurate.ConfigurationOptions
 import org.spongepowered.configurate.kotlin.objectMapperFactory
@@ -13,10 +12,9 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.io.File
 import java.lang.reflect.Type
 import java.nio.file.*
-import java.util.function.Predicate
 
 
-abstract class YamlDirectoryRepository<E, I>(
+abstract class YamlDirectoryRepository<E>(
     private val directory: Path,
     private val clazz: Class<E>,
 ) {

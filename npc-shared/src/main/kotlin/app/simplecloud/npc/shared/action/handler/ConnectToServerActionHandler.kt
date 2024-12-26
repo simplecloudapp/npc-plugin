@@ -6,6 +6,7 @@ import app.simplecloud.npc.shared.action.ActionOptions
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.npc.shared.option.OptionProvider
 import app.simplecloud.npc.shared.utils.MessageHelper
+import app.simplecloud.npc.shared.utils.PlayerConnectionHelper
 import com.google.common.io.ByteStreams
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -23,16 +24,7 @@ class ConnectToServerActionHandler : ActionHandler {
             MessageHelper.printOptionNotFoundMessage(Action.CONNECT_TO_SERVER, action, optionProvider)
             return
         }
-        sendPlayerToServer(player, serverName)
-    }
-
-    private fun sendPlayerToServer(player: Player, serverName: String) {
-        val out = ByteStreams.newDataOutput()
-        out.writeUTF("Connect")
-        out.writeUTF(serverName)
-        val plugin = Bukkit.getPluginManager().getPlugin("SimpleCloud-NPC")
-            ?: throw NullPointerException("failed to find SimpleCloud-NPC plugin")
-        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray())
+        PlayerConnectionHelper.sendPlayerToServer(player, serverName)
     }
 
     override fun getOptions() = listOf(

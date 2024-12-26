@@ -23,13 +23,12 @@ class OpenInventoryActionHandler : ActionHandler {
             return
         }
 
-        val inventoryConfig = namespace.inventoryRepository.get(inventoryName)
-        if (inventoryConfig == null) {
+        if (namespace.inventoryRepository.get(inventoryName) == null) {
             Bukkit.getLogger().info("[SimpleCloud-NPC] No inventory was found with the name $inventoryName")
             return
         }
 
-        // TODO: open inventory
+        namespace.inventoryManager.openInventory(player, inventoryName)
     }
 
     override fun getOptions() = listOf(
