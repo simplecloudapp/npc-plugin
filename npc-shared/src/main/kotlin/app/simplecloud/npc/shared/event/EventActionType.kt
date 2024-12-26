@@ -1,7 +1,6 @@
 package app.simplecloud.npc.shared.event
 
-import app.simplecloud.npc.shared.event.action.RemoveNpcActionHandler
-import app.simplecloud.npc.shared.event.action.SpawnNpcActionHandler
+import app.simplecloud.npc.shared.event.action.*
 
 /**
  * @author Niklas Nieberler
@@ -10,6 +9,8 @@ import app.simplecloud.npc.shared.event.action.SpawnNpcActionHandler
 enum class EventActionType(
     val eventActionHandler: EventActionHandler
 ) {
+
+    CREATE(CreateNpcActionHandler()),
 
     SPAWN(SpawnNpcActionHandler()),
 

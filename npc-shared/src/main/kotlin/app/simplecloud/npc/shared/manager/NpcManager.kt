@@ -1,6 +1,9 @@
 package app.simplecloud.npc.shared.manager
 
 import app.simplecloud.npc.shared.config.NpcConfig
+import app.simplecloud.npc.shared.config.NpcOption
+import app.simplecloud.npc.shared.hologram.HologramOptions
+import app.simplecloud.npc.shared.hologram.config.HologramConfiguration
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import org.bukkit.Bukkit
 
@@ -22,7 +25,7 @@ class NpcManager(
     fun create(id: String) {
         if (this.repository.get(id) != null)
             return
-        this.repository.save("$id.yml", NpcConfig(id))
+        this.repository.save("$id.yml", createConfig(id))
         this.logger.info("[SimpleCloud-NPC] New config was created for npc $id")
     }
 
@@ -32,8 +35,27 @@ class NpcManager(
      */
     fun delete(id: String) {
         val npcConfig = this.repository.get(id) ?: return
+        this.namespace.hologramManager.destroyHolograms(id)
         this.repository.delete(npcConfig)
         this.logger.info("[SimpleCloud-NPC] The config for npc $id has been deleted")
+    }
+
+    private fun createConfig(id: String): NpcConfig {
+        val hologram = NpcConfig.NpcHologram(
+            lores = listOf(
+                HologramConfiguration("<group_name>"),
+                HologramConfiguration("waiting for <player_count:available> players")
+            )
+        )
+        return NpcConfig(
+            id,
+            mapOf(
+                "default" to hologram
+            ),
+            options = mutableListOf(
+                NpcOption(HologramOptions.PLACEHOLDER_GROUP_NAME.first, "lobby")
+            )
+        )
     }
 
 }

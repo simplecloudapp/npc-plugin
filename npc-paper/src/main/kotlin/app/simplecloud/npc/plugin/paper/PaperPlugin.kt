@@ -5,6 +5,7 @@ import app.simplecloud.npc.plugin.paper.namespace.NamespaceService
 import app.simplecloud.npc.shared.action.Action
 import app.simplecloud.npc.shared.inventory.configuration.InventoryConfig
 import app.simplecloud.npc.shared.config.NpcOption
+import app.simplecloud.npc.shared.controller.ControllerService
 import app.simplecloud.npc.shared.inventory.configuration.InventoryRepository
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import com.noxcrew.interfaces.InterfacesListeners
@@ -41,11 +42,10 @@ class PaperPlugin : JavaPlugin() {
             )
         )
 
+        InventoryRepository().save("test.yml", inventoryConfig)
 
         val namespace = loadNamespace()
         CommandHandler(namespace, this).parseCommands()
-
-        InventoryRepository().save("test.yml", inventoryConfig)
     }
 
     private fun loadNamespace(): NpcNamespace {
@@ -53,13 +53,15 @@ class PaperPlugin : JavaPlugin() {
             ?: throw NullPointerException("failed to find npc namespace")
         logger.info("Load matching npc namespace: ${namespace.javaClass.simpleName}")
 
+        ControllerService.eventHandler.registerEvents(namespace)
+
         val npcRepository = namespace.npcRepository
         npcRepository.load()
         namespace.inventoryRepository.load()
 
-//        val hologramManager = namespace.hologramManager
-//        hologramManager.clearLegacyHolograms()
-//        hologramManager.registerFileRequest()
+        val hologramManager = namespace.hologramManager
+        hologramManager.clearLegacyHolograms()
+        hologramManager.registerFileRequest()
 
         namespace.onEnable()
         namespace.registerListeners(server.pluginManager, this)

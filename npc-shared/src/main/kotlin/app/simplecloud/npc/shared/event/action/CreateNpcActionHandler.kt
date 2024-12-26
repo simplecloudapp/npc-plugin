@@ -7,14 +7,10 @@ import app.simplecloud.npc.shared.namespace.NpcNamespace
  * @author Niklas Nieberler
  */
 
-class RemoveNpcActionHandler : EventActionHandler {
+class CreateNpcActionHandler : EventActionHandler {
 
     override fun handle(namespace: NpcNamespace, id: String) {
-        namespace.npcManager.delete(id)
-
-        val hologramManager = namespace.hologramManager
-        hologramManager.destroyHolograms(id)
-        hologramManager.destroyLegacyHolograms(id)
+        namespace.npcManager.create(id)
     }
 
 }

@@ -1,6 +1,8 @@
 package app.simplecloud.npc.shared.repository
 
 import app.simplecloud.npc.shared.config.NpcConfig
+import app.simplecloud.npc.shared.utils.NpcFileUpdater
+import java.io.File
 import kotlin.io.path.Path
 
 /**
@@ -18,6 +20,13 @@ class NpcRepository : YamlDirectoryRepository<NpcConfig>(
      */
     fun get(id: String): NpcConfig? {
         return getAll().firstOrNull { it.id == id }
+    }
+
+    override fun watchUpdateEvent(file: File) {
+        val npcConfig = get(file.nameWithoutExtension)
+        if (npcConfig == null)
+            return
+        NpcFileUpdater.invokeFile(npcConfig)
     }
 
 }
