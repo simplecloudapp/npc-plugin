@@ -30,7 +30,7 @@ class PlayerNPCNamespace : NpcNamespace(
     }
 
     override fun findLocationByNpc(id: String): Location? {
-        return null
+        return NPCLib.getInstance().allGlobalNPCs.firstOrNull { it.simpleID == id }?.location
     }
 
 }
