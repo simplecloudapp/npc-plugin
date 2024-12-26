@@ -6,6 +6,7 @@ import app.simplecloud.npc.shared.event.registerActionEvent
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import dev.sergiferry.playernpc.api.NPC
 import dev.sergiferry.playernpc.api.NPCLib
+import org.bukkit.Location
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.PluginManager
 
@@ -20,12 +21,16 @@ class PlayerNPCNamespace : NpcNamespace(
     override fun registerListeners(pluginManager: PluginManager, plugin: Plugin) {
         pluginManager.registerEvents(NpcInteractListener(this), plugin)
 
-        eventManager.registerActionEvent<NPC.Events.Show>(plugin, EventActionType.SPAWN, { it.npc.simpleID })
+        eventManager.registerActionEvent<NPC.Events.Show>(plugin, EventActionType.CREATE, { it.npc.simpleID })
         eventManager.registerActionEvent<NPC.Events.Hide>(plugin, EventActionType.REMOVE, { it.npc.simpleID })
     }
 
     override fun findAllNpcs(): List<String> {
         return NPCLib.getInstance().allGlobalNPCs.map { it.simpleID }
+    }
+
+    override fun findLocationByNpc(id: String): Location? {
+        return null
     }
 
 }

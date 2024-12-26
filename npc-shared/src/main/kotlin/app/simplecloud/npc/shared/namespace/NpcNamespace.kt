@@ -2,9 +2,11 @@ package app.simplecloud.npc.shared.namespace
 
 import app.simplecloud.npc.shared.action.interaction.InteractionExecutor
 import app.simplecloud.npc.shared.event.EventManager
+import app.simplecloud.npc.shared.hologram.HologramManager
 import app.simplecloud.npc.shared.manager.NpcManager
 import app.simplecloud.npc.shared.inventory.configuration.InventoryRepository
 import app.simplecloud.npc.shared.repository.NpcRepository
+import org.bukkit.Location
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.PluginManager
 
@@ -26,6 +28,7 @@ abstract class NpcNamespace(
     val eventManager = EventManager(this)
     val npcManager = NpcManager(this)
     val interactionExecutor = InteractionExecutor(this)
+    val hologramManager = HologramManager(this)
 
     /**
      * Is executed when namespace must be loaded
@@ -48,5 +51,11 @@ abstract class NpcNamespace(
      * Gets all npcs
      */
     abstract fun findAllNpcs(): List<String>
+
+    /**
+     * Gets the location by a npc
+     * @param id of the npc
+     */
+    abstract fun findLocationByNpc(id: String): Location?
 
 }

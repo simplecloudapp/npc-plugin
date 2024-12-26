@@ -5,6 +5,7 @@ import app.simplecloud.npc.plugin.paper.namespace.NamespaceService
 import app.simplecloud.npc.shared.action.Action
 import app.simplecloud.npc.shared.inventory.configuration.InventoryConfig
 import app.simplecloud.npc.shared.config.NpcOption
+import app.simplecloud.npc.shared.controller.ControllerService
 import app.simplecloud.npc.shared.inventory.configuration.InventoryRepository
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import org.bukkit.plugin.java.JavaPlugin
@@ -33,7 +34,6 @@ class PaperPlugin : JavaPlugin() {
                 ),
                 InventoryConfig.StaticItem(
                     "moin",
-                    null,
                     InventoryConfig.ItemSlot(0,1),
                     InventoryConfig.ItemSlot(0,8)
                 )
@@ -62,8 +62,15 @@ class PaperPlugin : JavaPlugin() {
             ?: throw NullPointerException("failed to find npc namespace")
         logger.info("Load matching npc namespace: ${namespace.javaClass.simpleName}")
 
+        ControllerService.eventHandler.registerEvents(namespace)
+
         val npcRepository = namespace.npcRepository
         npcRepository.load()
+        namespace.inventoryRepository.load()
+
+        val hologramManager = namespace.hologramManager
+        hologramManager.clearLegacyHolograms()
+        hologramManager.registerFileRequest()
 
         namespace.onEnable()
         namespace.registerListeners(server.pluginManager, this)

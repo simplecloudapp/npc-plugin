@@ -2,6 +2,9 @@ package app.simplecloud.npc.shared.config
 
 import app.simplecloud.npc.shared.action.Action
 import app.simplecloud.npc.shared.action.interaction.PlayerInteraction
+import app.simplecloud.npc.shared.hologram.config.HologramConfiguration
+import app.simplecloud.npc.shared.option.Option
+import app.simplecloud.npc.shared.option.OptionProvider
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
 /**
@@ -11,6 +14,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 @ConfigSerializable
 data class NpcConfig(
     val id: String = "",
+    val holograms: Map<String, NpcHologram> = hashMapOf(),
     val actions: MutableList<NpcInteraction> = mutableListOf(),
     val options: MutableList<NpcOption> = mutableListOf()
 ) {
@@ -26,8 +30,18 @@ data class NpcConfig(
         }
     }
 
+    @ConfigSerializable
+    data class NpcHologram(
+        val startHeight: Double = 2.073,
+        val lores: List<HologramConfiguration> = emptyList()
+    )
+
     fun getOption(key: String): NpcOption? {
         return this.options.firstOrNull { it.key == key }
+    }
+
+    fun getOptionProvider(): OptionProvider {
+        return OptionProvider.with(*this.options.map { Option(it.key, it.value) }.toTypedArray())
     }
 
     fun updateAction(npcInteraction: NpcInteraction): NpcConfig {

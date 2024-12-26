@@ -39,7 +39,8 @@ object CommandMessages {
             .append(text("   <#a3a3a3>/scnpc <npcId> interact <type> removeOption <key>")).appendNewline()
             .append(text("   <#a3a3a3>/scnpc <npcId> setOption <key> <value>")).appendNewline()
             .append(text("   <#a3a3a3>/scnpc <npcId> getOption <key>")).appendNewline()
-            .append(text("   <#a3a3a3>/scnpc <npcId> removeOption <key>"))
+            .append(text("   <#a3a3a3>/scnpc <npcId> removeOption <key>")).appendNewline()
+            .append(text("   <#a3a3a3>/scnpc <npcId> setHologramGroup <groupName>"))
         player.sendMessage(component)
     }
 

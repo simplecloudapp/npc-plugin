@@ -34,12 +34,18 @@ allprojects {
             name = "labymod"
             url = uri("https://dist.labymod.net/api/v1/maven/release/")
         }
+        maven {
+            name = "noxcrew-maven"
+            url = uri("https://maven.noxcrew.com/public")
+        }
+        maven("https://repo.simplecloud.app/snapshots")
+        maven("https://buf.build/gen/maven")
     }
 }
 
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
-    apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "com.gradleup.shadow")
 
     dependencies {
         testImplementation(rootProject.libs.kotlinTest)
@@ -67,6 +73,15 @@ subprojects {
         expand("version" to project.version,
             "name" to project.name)
     }
+
+    tasks.shadowJar {
+        relocate("io.grpc", "app.simplecloud.relocate.grpc")
+        relocate("app.simplecloud.controller", "app.simplecloud.relocate.controller")
+        relocate("app.simplecloud.pubsub", "app.simplecloud.relocate.pubsub")
+        relocate("app.simplecloud.droplet", "app.simplecloud.relocate.droplet")
+        relocate("build.buf.gen", "app.simplecloud.relocate.buf")
+        relocate("com.google.protobuf", "app.simplecloud.relocate.protobuf")
+    }
 }
 
 tasks.processResources {
@@ -76,8 +91,4 @@ tasks.processResources {
 
 tasks.test {
     useJUnitPlatform()
-}
-
-kotlin {
-    jvmToolchain(21)
 }
