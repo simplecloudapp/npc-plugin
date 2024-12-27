@@ -7,6 +7,7 @@ import app.simplecloud.npc.shared.controller.ControllerService
 import app.simplecloud.npc.shared.enums.QuantityType
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.npc.shared.option.OptionProvider
+import app.simplecloud.npc.shared.utils.PlayerConnectionHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,7 +22,8 @@ class QuickJoinActionHandler : ActionHandler {
 
     override fun handle(player: Player, namespace: NpcNamespace, optionProvider: OptionProvider) {
         CoroutineScope(Dispatchers.IO).launch {
-            val server = getQuickJoinServer(optionProvider)
+            val server = getQuickJoinServer(optionProvider) ?: return@launch
+            PlayerConnectionHelper.sendPlayerToServer(player, server)
             player.sendMessage("quickjoin server: $server")
         }
     }
@@ -32,17 +34,19 @@ class QuickJoinActionHandler : ActionHandler {
         val quantityType = optionProvider.getOption(ActionOptions.QUICK_JOIN_FILTER_PLAYERS)
 
         if (!QuantityType.exist(quantityType)) {
-            Bukkit.getLogger().warning("[SimpleCloud-NPC] No possible quantity type was found in filter.server.state! Please use ${QuantityType.entries.joinToString(", ")}")
+            Bukkit.getLogger().warning("[SimpleCloud-NPC] No possible quantity type was found in filter.server.state! Please use ${QuantityType.entries.joinToString(", ") { it.name.lowercase() }}")
             return null
         }
 
-        // TODO: checken bei player count filter
-
-        return ControllerService.controllerApi.getServers().getServersByGroup(groupName)
-            .filter { serverState.lowercase() == it.state.name.lowercase() }
-            .sortedWith(compareBy({ it.playerCount }, { quantityType.uppercase() == QuantityType.MOST.name }))
-            .firstOrNull()
+        val servers = ControllerService.controllerApi.getServers().getServersByGroup(groupName)
+            .filter { serverState.equals(it.state.name, ignoreCase = true) }
+        return when (QuantityType.valueOf(quantityType.uppercase())) {
+            QuantityType.MOST -> servers.maxByOrNull { it.playerCount }
+            QuantityType.LEAST -> servers.minByOrNull { it.playerCount }
+            else -> servers.firstOrNull()
+        }
     }
+
 
     override fun getOptions() = listOf(
         ActionOptions.GROUP_NAME,
