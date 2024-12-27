@@ -33,11 +33,12 @@ class NpcInventoryCommand(
         this.namespace.inventoryManager.openInventory(player, id)
     }
 
-    @Command("$commandName createInventory <name>")
+    @Command("$commandName createInventory <name> <groupName>")
     @Permission("simplecloud.command.npc")
     fun executeCreateInventory(
         sender: CommandSourceStack,
         @Argument("name") id: String,
+        @Argument("groupName", suggestions = "groupNames") groupName: String,
     ) {
         val player = sender.sender as Player
         val inventoryConfig = DefaultInventoryConfiguration.defaultInventoryConfig
@@ -47,6 +48,7 @@ class NpcInventoryCommand(
             return
         }
         inventoryConfig.id = id
+        inventoryConfig.pagination?.listedGroupName = groupName
         repository.save("${id}.yml", inventoryConfig)
         player.sendMessage(text("$PREFIX <#ffffff>Inventory $id has been <#a3e635>created."))
     }
