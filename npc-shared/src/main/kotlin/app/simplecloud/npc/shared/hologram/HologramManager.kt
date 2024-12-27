@@ -56,12 +56,8 @@ class HologramManager(
         sync { updateHologram(npcConfig.id, hologram) }
     }
 
-    /**
-     * Updates a single hologram state
-     * @param id of the npc
-     * @param hologram state to update
-     */
-    fun updateHologram(id: String, hologram: NpcConfig.NpcHologram) {
+    private fun updateHologram(id: String, hologram: NpcConfig.NpcHologram) {
+        println("spawn holograms for $id")
         val location = this.namespace.findLocationByNpc(id)
             ?: throw NullPointerException("failed to find location")
         var hologramEditor = HologramEditor(id, location.clone().add(0.0, hologram.startHeight, 0.0))
@@ -116,6 +112,7 @@ class HologramManager(
      * @param id of the npc
      */
     fun destroyHolograms(id: String) {
+        println("destroy hologram for $id")
         sync { getTextDisplays(id).forEach { it.remove() } }
     }
 
@@ -131,14 +128,18 @@ class HologramManager(
             .forEach { it.remove() }
     }
 
-    private fun modifyHologram(id: String, configuration: HologramConfiguration, hologramEditor: HologramEditor) {
-        this.textDisplays[hologramEditor.id] = id
-        HologramModifier.modify(configuration, hologramEditor.textDisplay)
-    }
-
-    private fun getTextDisplays(id: String): List<TextDisplay> {
+    /**
+     * Gets the list of all hologram [TextDisplay]
+     * @param id of the npc
+     */
+    fun getTextDisplays(id: String): List<TextDisplay> {
         return this.textDisplays.filterValues { it == id }
             .mapNotNull { Bukkit.getEntity(it.key) }
             .filterIsInstance<TextDisplay>()
+    }
+
+    private fun modifyHologram(id: String, configuration: HologramConfiguration, hologramEditor: HologramEditor) {
+        this.textDisplays[hologramEditor.id] = id
+        HologramModifier.modify(configuration, hologramEditor.textDisplay)
     }
 }
