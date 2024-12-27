@@ -9,14 +9,14 @@ import app.simplecloud.npc.shared.controller.ControllerService
 
 object JoinStateHelper {
 
-    suspend fun getJoinState(config: NpcConfig): String {
+    suspend fun getJoinState(config: NpcConfig): String? {
         val groupName = config.getOptionProvider().getOption(HologramOptions.PLACEHOLDER_GROUP_NAME)
         return getJoinState(groupName)
     }
 
-    suspend fun getJoinState(groupName: String): String {
+    suspend fun getJoinState(groupName: String): String? {
         val group = ControllerService.controllerApi.getGroups().getGroupByName(groupName)
-        return group.properties["joinstate"] ?: "default"
+        return group.properties["joinstate"]
     }
 
 }

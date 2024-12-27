@@ -43,14 +43,14 @@ class NpcManager(
     private fun createConfig(id: String): NpcConfig {
         val hologram = NpcConfig.NpcHologram(
             lores = listOf(
-                HologramConfiguration("<group_name>"),
-                HologramConfiguration("waiting for <player_count:available> players")
+                HologramConfiguration("<#38bdf8><bold><group_name>"),
+                HologramConfiguration("waiting for <#a3a3a3><player_count:available> players")
             )
         )
         return NpcConfig(
-            id,
-            mapOf(
-                "default" to hologram
+            id = id,
+            holograms = listOf(
+                hologram
             ),
             options = mutableListOf(
                 NpcOption(HologramOptions.PLACEHOLDER_GROUP_NAME.first, "lobby")

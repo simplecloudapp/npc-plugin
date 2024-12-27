@@ -52,8 +52,7 @@ class HologramManager(
     suspend fun updateHolograms(npcConfig: NpcConfig) {
         destroyHolograms(npcConfig.id)
         val joinState = JoinStateHelper.getJoinState(npcConfig)
-        val hologram = npcConfig.holograms[joinState]
-            ?: throw NullPointerException("failed to find hologram for joinstate $joinState")
+        val hologram = npcConfig.getHologram(joinState)
         sync { updateHologram(npcConfig.id, hologram) }
     }
 
@@ -107,8 +106,8 @@ class HologramManager(
      * @param config of the npc
      * @param state of the join state
      */
-    suspend fun updateTextHologram(config: NpcConfig, state: String) {
-        val hologram = config.holograms[state] ?: throw NullPointerException("failed to find hologram for joinstate $state")
+    suspend fun updateTextHologram(config: NpcConfig, state: String?) {
+        val hologram = config.getHologram(state)
         updateTextHologram(config.id, hologram.lores.reversed().map { it.text })
     }
 
