@@ -1,7 +1,7 @@
 package app.simplecloud.npc.plugin.paper.command
 
-import app.simplecloud.npc.plugin.paper.command.exception.MinecraftExceptionCreator
 import app.simplecloud.npc.plugin.paper.command.global.NpcCommand
+import app.simplecloud.npc.plugin.paper.command.global.NpcInventoryCommand
 import app.simplecloud.npc.plugin.paper.command.global.NpcOptionCommand
 import app.simplecloud.npc.plugin.paper.command.interact.*
 import app.simplecloud.npc.shared.namespace.NpcNamespace
@@ -25,6 +25,7 @@ class CommandHandler(
     fun parseCommands() {
         this.annotationParser.parse(listOf(
             NpcCommand(this.namespace),
+            NpcInventoryCommand(this.namespace),
             NpcOptionCommand(this.namespace),
             NpcInteractCommand(this.namespace),
             NpcInteractOptionCommand(this.namespace)
@@ -35,8 +36,6 @@ class CommandHandler(
         val commandManager = PaperCommandManager.builder()
             .executionCoordinator(ExecutionCoordinator.simpleCoordinator())
             .buildOnEnable(this.javaPlugin)
-        MinecraftExceptionCreator().create(commandManager)
-        // commandManager.brigadierManager().setNativeNumberSuggestions(true)
         return commandManager
     }
 
