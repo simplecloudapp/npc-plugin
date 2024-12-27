@@ -12,7 +12,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
 @ConfigSerializable
 data class InventoryConfig(
-    val id: String = "",
+    var id: String = "",
     val title: String = "",
     val rows: Int = 6,
     val pagination: PaginationInventory? = null,
@@ -24,8 +24,8 @@ data class InventoryConfig(
     data class StaticItem(
         val item: String = "",
         val slots: List<ItemSlot> = listOf(),
-        val fromSlot: ItemSlot = ItemSlot(),
-        val toSlot: ItemSlot = ItemSlot()
+        val fromSlot: ItemSlot? = ItemSlot(),
+        val toSlot: ItemSlot? = ItemSlot()
     )
 
     @ConfigSerializable

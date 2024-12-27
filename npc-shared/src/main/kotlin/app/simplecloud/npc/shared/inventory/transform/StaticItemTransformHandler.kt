@@ -38,8 +38,8 @@ class StaticItemTransformHandler(
     }
 
     private fun setFromAndToElements(pane: Pane, item: InventoryConfig.StaticItem) {
-        val fromSlot = item.fromSlot
-        val toSlot = item.toSlot
+        val fromSlot = item.fromSlot ?: return
+        val toSlot = item.toSlot ?: return
         if (fromSlot.isBlank() && toSlot.isBlank())
             return
 
