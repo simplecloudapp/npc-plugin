@@ -25,8 +25,8 @@ class InteractionExecutor(
         val config = this.namespace.npcRepository.get(id) ?: return
         val interaction = config.getPlayerInteraction(playerInteraction) ?: return
         optionProvider.add(
-            *interaction.options.map { Option.of(it) }.toTypedArray(),
-            *config.options.map { Option.of(it) }.toTypedArray()
+            *interaction.getOptions().toTypedArray(),
+            *config.options.map { Option(it.key, it.value) }.toTypedArray()
         )
         interaction.action.actionHandler.handle(player, this.namespace, optionProvider)
         PlayerActions.findPossibleActions(interaction).forEach {

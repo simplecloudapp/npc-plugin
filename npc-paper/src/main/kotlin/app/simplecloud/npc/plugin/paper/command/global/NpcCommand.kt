@@ -5,7 +5,6 @@ import app.simplecloud.npc.plugin.paper.command.PREFIX
 import app.simplecloud.npc.plugin.paper.command.commandName
 import app.simplecloud.npc.plugin.paper.command.message.CommandMessages
 import app.simplecloud.npc.shared.config.NpcConfig
-import app.simplecloud.npc.shared.config.NpcOption
 import app.simplecloud.npc.shared.controller.ControllerService
 import app.simplecloud.npc.shared.hologram.HologramOptions
 import app.simplecloud.npc.shared.inventory.NpcInventory
@@ -50,8 +49,7 @@ class NpcCommand(
         val player = sender.sender as Player
         val optionName = HologramOptions.PLACEHOLDER_GROUP_NAME.first
         invokeConfig(player, npcId) { config ->
-            config.options.removeIf { it.key == optionName }
-            config.options.add(NpcOption(optionName, name))
+            config.options[optionName] = name
             player.sendMessage(text("$PREFIX <#ffffff>HologramGroup $name has been <#a3e635>created."))
             CoroutineScope(Dispatchers.IO).launch { namespace.hologramManager.updateTextHologramByGroup(config, name) }
             config

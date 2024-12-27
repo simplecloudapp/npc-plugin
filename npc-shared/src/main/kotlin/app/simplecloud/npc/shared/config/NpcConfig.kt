@@ -18,17 +18,21 @@ data class NpcConfig(
     val id: String = "",
     val holograms: List<NpcHologram> = mutableListOf(),
     val actions: MutableList<NpcInteraction> = mutableListOf(),
-    val options: MutableList<NpcOption> = mutableListOf()
+    val options: HashMap<String, String> = hashMapOf()
 ) {
 
     @ConfigSerializable
     data class NpcInteraction(
         val playerInteraction: PlayerInteraction = PlayerInteraction.LEFT_CLICK,
         var action: Action = Action.OPEN_INVENTORY,
-        val options: MutableList<NpcOption> = mutableListOf()
+        val options: HashMap<String, String> = hashMapOf()
     ) {
-        fun getOption(key: String): NpcOption? {
-            return this.options.firstOrNull { it.key == key }
+        fun getOption(key: String): Option? {
+            return this.options[key]?.let { Option(key, it) }
+        }
+
+        fun getOptions(): List<Option> {
+            return this.options.map { Option(it.key, it.value) }
         }
     }
 
@@ -48,8 +52,8 @@ data class NpcConfig(
                 ?: throw NullPointerException("failed to find fallback hologram")
     }
 
-    fun getOption(key: String): NpcOption? {
-        return this.options.firstOrNull { it.key == key }
+    fun getOption(key: String): Option? {
+        return this.options[key]?.let { Option(key, it) }
     }
 
     fun getOptionProvider(): OptionProvider {

@@ -48,7 +48,7 @@ class NpcInteractCommand(
         player.sendMessage(
             text("$PREFIX <#ffffff>Information of npc ${npcConfig.id} <#737373>(${npcInteraction.playerInteraction.name.lowercase()})").appendNewline()
                 .append(text("   <#a3a3a3>Action: <#38bdf8>${npcInteraction.action.name.lowercase()}")).appendNewline()
-                .append(text("   <#a3a3a3>Options: <#38bdf8>${npcInteraction.options.joinToString(", ") { "${it.key}=${it.value}" }}"))
+                .append(text("   <#a3a3a3>Options: <#38bdf8>${npcInteraction.getOptions().joinToString(", ") { "${it.key}=${it.value}" }}"))
         )
     }
 

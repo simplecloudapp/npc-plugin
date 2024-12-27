@@ -4,7 +4,7 @@ import app.simplecloud.npc.plugin.paper.command.PREFIX
 import app.simplecloud.npc.shared.text
 import app.simplecloud.npc.shared.action.interaction.PlayerInteraction
 import app.simplecloud.npc.shared.config.NpcConfig
-import app.simplecloud.npc.shared.config.NpcOption
+import app.simplecloud.npc.shared.option.Option
 import org.bukkit.entity.Player
 
 /**
@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 
 object CommandMessages {
 
-    fun sendOptionMessage(player: Player, npcConfig: NpcConfig, key: String, option: NpcOption?) {
+    fun sendOptionMessage(player: Player, npcConfig: NpcConfig, key: String, option: Option?) {
         if (option == null) {
             player.sendMessage(text("$PREFIX <#dc2626>Option $key does not exist!"))
             return

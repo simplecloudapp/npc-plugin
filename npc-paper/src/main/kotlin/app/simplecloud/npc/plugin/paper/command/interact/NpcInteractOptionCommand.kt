@@ -6,7 +6,6 @@ import app.simplecloud.npc.plugin.paper.command.commandName
 import app.simplecloud.npc.plugin.paper.command.message.CommandMessages
 import app.simplecloud.npc.shared.text
 import app.simplecloud.npc.shared.config.NpcConfig
-import app.simplecloud.npc.shared.config.NpcOption
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.npc.shared.player.PlayerActions
 import io.papermc.paper.command.brigadier.CommandSourceStack
@@ -38,8 +37,7 @@ class NpcInteractOptionCommand(
     ) {
         val player = sender.sender as Player
         invokeConfig(player, npcId, playerInteraction) { config, interaction ->
-            interaction.options.removeIf { it.key == key }
-            interaction.options.add(NpcOption(key, value))
+            interaction.options[key] = value
             player.sendMessage(text("$PREFIX <#ffffff>A new option $key with value $value has been <#a3e635>created."))
             config.updateAction(interaction)
         }
@@ -55,7 +53,7 @@ class NpcInteractOptionCommand(
     ) {
         val player = sender.sender as Player
         invokeConfig(player, npcId, playerInteraction) { config, interaction ->
-            interaction.options.removeIf { it.key == key }
+            interaction.options.remove(key)
             player.sendMessage(text("$PREFIX <#ffffff>Option $key has been <#dc2626>removed!"))
             config.updateAction(interaction)
         }

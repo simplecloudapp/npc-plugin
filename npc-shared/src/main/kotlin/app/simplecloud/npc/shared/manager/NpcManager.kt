@@ -1,7 +1,6 @@
 package app.simplecloud.npc.shared.manager
 
 import app.simplecloud.npc.shared.config.NpcConfig
-import app.simplecloud.npc.shared.config.NpcOption
 import app.simplecloud.npc.shared.hologram.HologramOptions
 import app.simplecloud.npc.shared.hologram.config.HologramConfiguration
 import app.simplecloud.npc.shared.namespace.NpcNamespace
@@ -52,8 +51,8 @@ class NpcManager(
             holograms = listOf(
                 hologram
             ),
-            options = mutableListOf(
-                NpcOption(HologramOptions.PLACEHOLDER_GROUP_NAME.first, "lobby")
+            options = hashMapOf(
+                HologramOptions.PLACEHOLDER_GROUP_NAME.first to "lobby"
             )
         )
     }
