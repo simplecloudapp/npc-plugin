@@ -21,10 +21,6 @@ open class OptionProvider(
         return (getOptions().firstOrNull { it.key.equals(pair.first, true) }?.value ?: pair.second) as T
     }
 
-    fun <T : Any> getOptions(pair: Pair<String, T>): List<T> {
-        return getOptions().filter { it.key.equals(pair.first, true) } as List<T>
-    }
-
     fun add(vararg option: Option) {
         this.options.addAll(option)
     }

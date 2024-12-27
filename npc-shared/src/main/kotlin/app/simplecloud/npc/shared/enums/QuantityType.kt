@@ -4,16 +4,16 @@ package app.simplecloud.npc.shared.enums
  * @author Niklas Nieberler
  */
 
-enum class QuantityType(
-    private val function: (Int) -> Boolean
-) {
+enum class QuantityType {
 
-    MOST({ it >= 0 }),
+    MOST,
 
-    LEAST({ it <= 0 });
+    LEAST;
 
-    fun invoke(quantity: Int): Boolean {
-        return this.function(quantity)
+    companion object {
+        fun exist(name: String): Boolean {
+            return entries.firstOrNull { it.name == name.uppercase() } != null
+        }
     }
 
 }

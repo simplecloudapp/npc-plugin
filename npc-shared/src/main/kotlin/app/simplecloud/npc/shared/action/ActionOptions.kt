@@ -1,8 +1,5 @@
 package app.simplecloud.npc.shared.action
 
-import app.simplecloud.npc.shared.enums.QuantityType
-import build.buf.gen.simplecloud.controller.v1.ServerState
-
 /**
  * @author Niklas Nieberler
  */
@@ -21,10 +18,8 @@ object ActionOptions {
 
     val GROUP_NAME = Pair("group.name", "")
 
-    val QUICK_JOIN_FILTER_PLAYERS = Pair("filter.player.count", QuantityType.LEAST)
+    val QUICK_JOIN_FILTER_PLAYERS = Pair("filter.player.count", "LEAST")
 
-    val QUICK_JOIN_FILTER_STATE = Pair("filter.server.state", ServerState.AVAILABLE)
-
-    val QUICK_JOIN_FILTER_PROPERTY = Pair("filter.server.property", "")
+    val QUICK_JOIN_FILTER_STATE = Pair("filter.server.state", "AVAILABLE")
 
 }
