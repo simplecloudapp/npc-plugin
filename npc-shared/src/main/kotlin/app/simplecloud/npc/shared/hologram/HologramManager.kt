@@ -57,7 +57,6 @@ class HologramManager(
     }
 
     private fun updateHologram(id: String, hologram: NpcConfig.NpcHologram) {
-        println("spawn holograms for $id")
         val location = this.namespace.findLocationByNpc(id)
             ?: throw NullPointerException("failed to find location")
         var hologramEditor = HologramEditor(id, location.clone().add(0.0, hologram.startHeight, 0.0))
@@ -112,7 +111,6 @@ class HologramManager(
      * @param id of the npc
      */
     fun destroyHolograms(id: String) {
-        println("destroy hologram for $id")
         sync { getTextDisplays(id).forEach { it.remove() } }
     }
 

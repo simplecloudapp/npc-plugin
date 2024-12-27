@@ -16,7 +16,6 @@ class SpawnNpcActionHandler : EventActionHandler {
     private val debouncer = Debouncer(500L)
 
     override fun handle(namespace: NpcNamespace, id: String) {
-        println("spawn npc $id")
         val npcConfig = namespace.npcRepository.get(id)
             ?: throw NullPointerException("failed to find npc $id")
         CoroutineScope(Dispatchers.IO).launch {
