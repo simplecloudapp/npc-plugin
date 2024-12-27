@@ -60,11 +60,6 @@ subprojects {
         kotlinOptions.jvmTarget = "21"
     }
 
-    tasks.named("shadowJar", ShadowJar::class) {
-        mergeServiceFiles()
-        archiveFileName.set("simplecloud-npc.jar")
-    }
-
     tasks.test {
         useJUnitPlatform()
     }

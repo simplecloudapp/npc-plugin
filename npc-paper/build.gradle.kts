@@ -1,3 +1,6 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.kotlin.dsl.named
+
 dependencies {
     compileOnly(rootProject.libs.paperApi)
     implementation(rootProject.libs.bundles.simpleCloudController)
@@ -9,4 +12,9 @@ dependencies {
     implementation(project(":npc-namespace:npc-namespace-standalone"))
     implementation(project(":npc-namespace:npc-namespace-playernpc"))
     implementation(project(":npc-namespace:npc-namespace-fancynpcs"))
+}
+
+tasks.named("shadowJar", ShadowJar::class) {
+    mergeServiceFiles()
+    archiveFileName.set("simplecloud-npc.jar")
 }
