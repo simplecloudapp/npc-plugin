@@ -1,7 +1,5 @@
 package app.simplecloud.npc.shared.inventory.configuration
 
-import app.simplecloud.npc.shared.action.Action
-import app.simplecloud.npc.shared.config.NpcOption
 import build.buf.gen.simplecloud.controller.v1.ServerState
 import org.bukkit.event.inventory.ClickType
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
