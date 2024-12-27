@@ -58,7 +58,7 @@ subprojects {
 
     tasks.named("shadowJar", ShadowJar::class) {
         mergeServiceFiles()
-        archiveFileName.set("${project.name}.jar")
+        archiveFileName.set("simplecloud-npc.jar")
     }
 
     tasks.test {
@@ -72,6 +72,8 @@ subprojects {
 
     tasks.shadowJar {
         relocate("io.grpc", "app.simplecloud.relocate.grpc")
+        relocate("org", "app.simplecloud.relocate.org")
+        relocate("org.incendo", "app.simplecloud.relocate.org.incendo")
         relocate("app.simplecloud.controller", "app.simplecloud.relocate.controller")
         relocate("app.simplecloud.pubsub", "app.simplecloud.relocate.pubsub")
         relocate("app.simplecloud.droplet", "app.simplecloud.relocate.droplet")
