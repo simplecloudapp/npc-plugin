@@ -18,9 +18,9 @@ enum class Action(
 
     CONNECT_TO_SERVER(ConnectToServerActionHandler()),
 
-    TRANSFER_TO_SERVER(TransferToServerActionHandler());
+    TRANSFER_TO_SERVER(TransferToServerActionHandler()),
 
-    // QUICK_JOIN(OpenInventoryActionHandler());
+    QUICK_JOIN(QuickJoinActionHandler());
 
     companion object {
         fun getOrNull(name: String): Action? {
