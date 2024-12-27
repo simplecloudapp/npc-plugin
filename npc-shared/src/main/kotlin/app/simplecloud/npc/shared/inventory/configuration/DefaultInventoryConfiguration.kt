@@ -1,6 +1,7 @@
 package app.simplecloud.npc.shared.inventory.configuration
 
 import app.simplecloud.npc.shared.inventory.configuration.InventoryConfig.PaginationInventory.PaginationItem
+import app.simplecloud.npc.shared.utils.ConfigVersion
 import build.buf.gen.simplecloud.controller.v1.ServerState
 import org.bukkit.event.inventory.ClickType
 
@@ -40,6 +41,7 @@ object DefaultInventoryConfiguration {
     )
 
     val defaultInventoryConfig = InventoryConfig(
+        ConfigVersion.version,
         "default",
         "<#ffffff>Inventory",
         6,

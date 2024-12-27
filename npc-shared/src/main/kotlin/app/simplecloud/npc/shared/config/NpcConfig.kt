@@ -5,6 +5,7 @@ import app.simplecloud.npc.shared.action.interaction.PlayerInteraction
 import app.simplecloud.npc.shared.hologram.config.HologramConfiguration
 import app.simplecloud.npc.shared.option.Option
 import app.simplecloud.npc.shared.option.OptionProvider
+import app.simplecloud.npc.shared.utils.ConfigVersion
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
 /**
@@ -13,8 +14,9 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
 @ConfigSerializable
 data class NpcConfig(
+    val version: String = ConfigVersion.version,
     val id: String = "",
-    val holograms: Map<String, NpcHologram> = hashMapOf(),
+    val holograms: List<NpcHologram> = mutableListOf(),
     val actions: MutableList<NpcInteraction> = mutableListOf(),
     val options: MutableList<NpcOption> = mutableListOf()
 ) {
@@ -33,8 +35,18 @@ data class NpcConfig(
     @ConfigSerializable
     data class NpcHologram(
         val startHeight: Double = 2.073,
+        val joinState: String = "",
         val lores: List<HologramConfiguration> = emptyList()
     )
+
+    fun getHologram(joinState: String?): NpcHologram {
+        return this.holograms.firstOrNull { it.joinState == joinState } ?: getFallbackHologram()
+    }
+
+    fun getFallbackHologram(): NpcHologram {
+        return this.holograms.firstOrNull { it.joinState.isBlank() }
+                ?: throw NullPointerException("failed to find fallback hologram")
+    }
 
     fun getOption(key: String): NpcOption? {
         return this.options.firstOrNull { it.key == key }
