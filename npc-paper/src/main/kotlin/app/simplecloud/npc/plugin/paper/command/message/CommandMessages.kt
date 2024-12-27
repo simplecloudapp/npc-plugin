@@ -40,7 +40,8 @@ object CommandMessages {
             .append(text("   <#a3a3a3>/scnpc <npcId> setOption <key> <value>")).appendNewline()
             .append(text("   <#a3a3a3>/scnpc <npcId> getOption <key>")).appendNewline()
             .append(text("   <#a3a3a3>/scnpc <npcId> removeOption <key>")).appendNewline()
-            .append(text("   <#a3a3a3>/scnpc <npcId> setHologramGroup <groupName>"))
+            .append(text("   <#a3a3a3>/scnpc <npcId> setHologramGroup <groupName>")).appendNewline()
+            .append(text("   <#a3a3a3>/scnpc createInventory <name>")).appendNewline()
             .append(text("   <#a3a3a3>/scnpc openInventory <name>"))
         player.sendMessage(component)
     }

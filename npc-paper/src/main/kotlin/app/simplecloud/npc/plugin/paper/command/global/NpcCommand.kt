@@ -40,16 +40,6 @@ class NpcCommand(
         CommandMessages.sendHelpMessage(player)
     }
 
-    @Command("$commandName openInventory <name>")
-    @Permission("simplecloud.command.npc")
-    fun executeOpenInventory(
-        sender: CommandSourceStack,
-        @Argument("name", suggestions = "inventories") id: String,
-    ) {
-        val player = sender.sender as Player
-        namespace.inventoryManager.openInventory(player, id)
-    }
-
     @Command("$commandName <id> setHologramGroup <name>")
     @Permission("simplecloud.command.npc")
     fun executeHologramGroup(
@@ -75,10 +65,6 @@ class NpcCommand(
         }
     }
 
-    @Suggestions("inventories")
-    fun suggestInventories(): List<String> {
-        return this.namespace.inventoryRepository.getAll().map { it.id }
-    }
 
     private fun invokeConfig(player: Player, npcId: String, function: (NpcConfig) -> NpcConfig) {
         val npcConfig = findNpcConfigById(player, npcId) ?: return
