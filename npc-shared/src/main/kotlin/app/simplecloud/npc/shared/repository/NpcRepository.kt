@@ -10,7 +10,7 @@ import kotlin.io.path.Path
  */
 
 class NpcRepository : YamlDirectoryRepository<NpcConfig>(
-    Path("plugins/npcs"),
+    Path("plugins/simplecloud-npc"),
     NpcConfig::class.java
 ) {
 

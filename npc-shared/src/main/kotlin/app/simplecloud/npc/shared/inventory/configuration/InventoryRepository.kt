@@ -8,7 +8,7 @@ import kotlin.io.path.Path
  */
 
 class InventoryRepository : YamlDirectoryRepository<InventoryConfig>(
-    Path("plugins/npcs/inventories"),
+    Path("plugins/simplecloud-npc/inventories"),
     InventoryConfig::class.java
 ) {
 
