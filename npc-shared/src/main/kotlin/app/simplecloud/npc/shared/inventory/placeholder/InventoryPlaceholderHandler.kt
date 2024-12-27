@@ -23,6 +23,8 @@ class InventoryPlaceholderHandler {
         InventoryPlaceholder("type") { it.type.toString() },
         InventoryPlaceholder("numerical_id") { it.numericalId.toString() },
         InventoryPlaceholder("unique_id") { it.uniqueId.toString() },
+        InventoryPlaceholder("port") { it.port.toString() },
+        InventoryPlaceholder("ip") { it.ip },
     )
 
     private val miniMessage = MiniMessage.miniMessage()
