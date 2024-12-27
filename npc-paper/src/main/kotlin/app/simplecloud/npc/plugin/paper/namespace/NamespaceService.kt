@@ -27,7 +27,10 @@ object NamespaceService {
     }
 
     private fun getAvailablePluginNames(): List<String> {
-        return Bukkit.getPluginManager().plugins.map { it.name }
+        val pluginManager = Bukkit.getPluginManager()
+        return pluginManager.plugins
+            .map { it.name }
+            .filter { pluginManager.isPluginEnabled(it) }
     }
 
 }
