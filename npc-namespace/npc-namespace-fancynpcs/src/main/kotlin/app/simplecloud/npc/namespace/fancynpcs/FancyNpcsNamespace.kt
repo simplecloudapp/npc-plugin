@@ -2,8 +2,6 @@ package app.simplecloud.npc.namespace.fancynpcs
 
 import app.simplecloud.npc.namespace.fancynpcs.listener.NpcInteractListener
 import app.simplecloud.npc.shared.event.EventActionType
-import app.simplecloud.npc.shared.event.listener.listenEvent
-import app.simplecloud.npc.shared.event.listener.listener
 import app.simplecloud.npc.shared.event.registerActionEvent
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import de.oliver.fancynpcs.api.FancyNpcsPlugin

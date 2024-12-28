@@ -16,4 +16,14 @@ object ActionOptions {
 
     val TRANSFER_SERVER_PORT = Pair("server.port", "25565")
 
+    val SERVER_NAME_PATTERN = Pair("server.name.pattern", "<group_name>-<numerical_id>")
+
+    val FAILED_SERVER_FINDER_MESSAGE = Pair("message.failed.server.finder", "")
+
+    val GROUP_NAME = Pair("group.name", "")
+
+    val QUICK_JOIN_FILTER_PLAYERS = Pair("filter.player.count", "LEAST")
+
+    val QUICK_JOIN_FILTER_STATE = Pair("filter.server.state", "AVAILABLE")
+
 }
