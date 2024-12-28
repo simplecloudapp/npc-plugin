@@ -6,9 +6,6 @@ import app.simplecloud.npc.plugin.paper.command.commandName
 import app.simplecloud.npc.plugin.paper.command.message.CommandMessages
 import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.controller.ControllerService
-import app.simplecloud.npc.shared.hologram.HologramOptions
-import app.simplecloud.npc.shared.inventory.NpcInventory
-import app.simplecloud.npc.shared.inventory.configuration.InventoryRepository
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.npc.shared.text
 import io.papermc.paper.command.brigadier.CommandSourceStack
@@ -47,9 +44,8 @@ class NpcCommand(
         @Argument("name", suggestions = "groupNames") name: String
     ) {
         val player = sender.sender as Player
-        val optionName = HologramOptions.PLACEHOLDER_GROUP_NAME.first
         invokeConfig(player, npcId) { config ->
-            config.options[optionName] = name
+            config.hologramConfiguration.placeholderGroupName = name
             player.sendMessage(text("$PREFIX <#ffffff>HologramGroup $name has been <#a3e635>created."))
             CoroutineScope(Dispatchers.IO).launch { namespace.hologramManager.updateTextHologramByGroup(config, name) }
             config
@@ -62,7 +58,6 @@ class NpcCommand(
             ControllerService.controllerApi.getGroups().getAllGroups().map { it.name }
         }
     }
-
 
     private fun invokeConfig(player: Player, npcId: String, function: (NpcConfig) -> NpcConfig) {
         val npcConfig = findNpcConfigById(player, npcId) ?: return

@@ -52,7 +52,7 @@ class HologramManager(
     suspend fun updateHolograms(npcConfig: NpcConfig) {
         destroyHolograms(npcConfig.id)
         val joinState = JoinStateHelper.getJoinState(npcConfig)
-        val hologram = npcConfig.getHologram(joinState)
+        val hologram = npcConfig.hologramConfiguration.getHologram(joinState)
         sync { updateHologram(npcConfig.id, hologram) }
     }
 
@@ -102,7 +102,7 @@ class HologramManager(
      * @param state of the join state
      */
     suspend fun updateTextHologram(config: NpcConfig, state: String?) {
-        val hologram = config.getHologram(state)
+        val hologram = config.hologramConfiguration.getHologram(state)
         updateTextHologram(config.id, hologram.lores.reversed().map { it.text })
     }
 

@@ -16,7 +16,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 data class NpcConfig(
     val version: String = ConfigVersion.version,
     val id: String = "",
-    val holograms: List<NpcHologram> = mutableListOf(),
+    val hologramConfiguration: NpcHologramConfiguration = NpcHologramConfiguration(),
     val actions: MutableList<NpcInteraction> = mutableListOf(),
     val options: HashMap<String, String> = hashMapOf()
 ) {
@@ -37,27 +37,29 @@ data class NpcConfig(
     }
 
     @ConfigSerializable
+    data class NpcHologramConfiguration(
+        var placeholderGroupName: String = "lobby",
+        val holograms: List<NpcHologram> = mutableListOf(),
+    ) {
+        fun getHologram(joinState: String?): NpcHologram {
+            return this.holograms.firstOrNull { it.joinState == joinState } ?: getFallbackHologram()
+        }
+
+        fun getFallbackHologram(): NpcHologram {
+            return this.holograms.firstOrNull { it.joinState.isBlank() }
+                ?: throw NullPointerException("failed to find fallback hologram")
+        }
+    }
+
+    @ConfigSerializable
     data class NpcHologram(
         val startHeight: Double = 2.073,
         val joinState: String = "",
         val lores: List<HologramConfiguration> = emptyList()
     )
 
-    fun getHologram(joinState: String?): NpcHologram {
-        return this.holograms.firstOrNull { it.joinState == joinState } ?: getFallbackHologram()
-    }
-
-    fun getFallbackHologram(): NpcHologram {
-        return this.holograms.firstOrNull { it.joinState.isBlank() }
-                ?: throw NullPointerException("failed to find fallback hologram")
-    }
-
     fun getOption(key: String): Option? {
         return this.options[key]?.let { Option(key, it) }
-    }
-
-    fun getOptionProvider(): OptionProvider {
-        return OptionProvider.with(*this.options.map { Option(it.key, it.value) }.toTypedArray())
     }
 
     fun updateAction(npcInteraction: NpcInteraction): NpcConfig {
