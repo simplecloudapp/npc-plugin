@@ -4,7 +4,6 @@ import app.simplecloud.npc.shared.action.Action
 import app.simplecloud.npc.shared.action.interaction.PlayerInteraction
 import app.simplecloud.npc.shared.hologram.config.HologramConfiguration
 import app.simplecloud.npc.shared.option.Option
-import app.simplecloud.npc.shared.option.OptionProvider
 import app.simplecloud.npc.shared.utils.ConfigVersion
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
