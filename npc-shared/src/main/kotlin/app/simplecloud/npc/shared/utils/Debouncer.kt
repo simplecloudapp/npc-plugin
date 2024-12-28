@@ -1,5 +1,6 @@
 package app.simplecloud.npc.shared.utils
 
+import app.simplecloud.npc.shared.sync
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -20,6 +21,14 @@ class Debouncer(
         this.job = scope.launch {
             delay(delayMillis)
             action()
+        }
+    }
+
+    fun debounceSync(scope: CoroutineScope, action: () -> Unit) {
+        this.job?.cancel()
+        this.job = scope.launch {
+            delay(delayMillis)
+            sync { action() }
         }
     }
 }
