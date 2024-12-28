@@ -2,7 +2,6 @@ package app.simplecloud.npc.shared.hologram.placeholder
 
 import app.simplecloud.controller.shared.group.Group
 import app.simplecloud.npc.shared.controller.ControllerService
-import app.simplecloud.npc.shared.hologram.HologramOptions
 import app.simplecloud.npc.shared.hologram.placeholder.arguments.*
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.npc.shared.text
@@ -65,7 +64,7 @@ class HologramPlaceholderHandler(
 
     private suspend fun getGroupByConfig(id: String): Group? {
         val config = this.namespace.npcRepository.get(id) ?: return null
-        val groupName = config.getOptionProvider().getOption(HologramOptions.PLACEHOLDER_GROUP_NAME)
+        val groupName = config.hologramConfiguration.placeholderGroupName
         return this.controllerApi.getGroups().getGroupByName(groupName)
     }
 

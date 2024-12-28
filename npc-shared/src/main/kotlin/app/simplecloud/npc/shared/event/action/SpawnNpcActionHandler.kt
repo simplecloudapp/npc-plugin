@@ -3,7 +3,6 @@ package app.simplecloud.npc.shared.event.action
 import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.event.EventActionHandler
 import app.simplecloud.npc.shared.hologram.HologramManager
-import app.simplecloud.npc.shared.hologram.HologramOptions
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.npc.shared.utils.Debouncer
 import kotlinx.coroutines.CoroutineScope
@@ -35,7 +34,7 @@ class SpawnNpcActionHandler : EventActionHandler {
             coroutineScope.launch { hologramManager.updateHolograms(npcConfig) }
             return
         }
-        val groupName = npcConfig.getOptionProvider().getOption(HologramOptions.PLACEHOLDER_GROUP_NAME)
+        val groupName = npcConfig.hologramConfiguration.placeholderGroupName
         coroutineScope.launch { hologramManager.updateTextHologramByGroup(npcConfig, groupName) }
     }
 

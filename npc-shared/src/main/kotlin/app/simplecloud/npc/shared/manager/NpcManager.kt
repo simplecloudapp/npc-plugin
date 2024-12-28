@@ -1,7 +1,7 @@
 package app.simplecloud.npc.shared.manager
 
 import app.simplecloud.npc.shared.config.NpcConfig
-import app.simplecloud.npc.shared.hologram.HologramOptions
+import app.simplecloud.npc.shared.config.NpcConfig.NpcHologramConfiguration
 import app.simplecloud.npc.shared.hologram.config.HologramConfiguration
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import org.bukkit.Bukkit
@@ -48,11 +48,9 @@ class NpcManager(
         )
         return NpcConfig(
             id = id,
-            holograms = listOf(
-                hologram
-            ),
-            options = hashMapOf(
-                HologramOptions.PLACEHOLDER_GROUP_NAME.first to "lobby"
+            hologramConfiguration = NpcHologramConfiguration(
+                "lobby",
+                listOf(hologram)
             )
         )
     }
