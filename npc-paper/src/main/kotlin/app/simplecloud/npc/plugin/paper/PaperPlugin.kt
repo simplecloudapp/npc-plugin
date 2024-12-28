@@ -24,7 +24,11 @@ class PaperPlugin : JavaPlugin() {
 
     private fun loadNamespace(): NpcNamespace {
         val namespace = NamespaceService.findPossibleNamespace()
-            ?: throw NullPointerException("failed to find npc namespace")
+        if (namespace == null) {
+            logger.warning("No supported NPC software was found on the server. Find the supported plugins at https://docs.simplecloud.app/plugin/npcs#usage-of-other-npc-plugins")
+            throw NullPointerException("failed to find npc namespace")
+        }
+
         logger.info("Load matching npc namespace: ${namespace.javaClass.simpleName}")
 
         ControllerService.eventHandler.registerEvents(namespace)
