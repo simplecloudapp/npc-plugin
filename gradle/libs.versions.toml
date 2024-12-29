@@ -6,7 +6,7 @@ paper = "1.20.6-R0.1-SNAPSHOT"
 cloudCommands = "2.0.0-beta.10"
 cloudAnnotationCommands = "2.0.0"
 interfaces = "1.2.0"
-simpleCloudPlugin = "0.0.1-dev.9519895"
+simpleCloudPlugin = "0.0.1-dev.3d90dc8"
 
 [libraries]
 kotlinJvm = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
