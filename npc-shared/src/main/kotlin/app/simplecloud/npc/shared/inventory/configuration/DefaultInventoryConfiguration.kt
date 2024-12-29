@@ -91,7 +91,7 @@ object DefaultInventoryConfiguration {
                 "LIME_BANNER",
                 "<group_name> <numerical_id>",
                 lores = listOf(
-                    "<gray>Players: <#38bdf8><player_count><dark_gray><dark_gray>/<#38bdf8><max_players>",
+                    "<gray>Players: <#38bdf8><online_players><dark_gray><dark_gray>/<#38bdf8><max_players>",
                     "",
                     "<gray>Version: <#a3a3a3><property:server-software> <property:minecraft-version>",
                     "<gray>Template: <#a3a3a3><property:template-id>"
