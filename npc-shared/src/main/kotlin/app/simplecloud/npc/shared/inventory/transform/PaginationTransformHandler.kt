@@ -4,8 +4,8 @@ import app.simplecloud.controller.api.ControllerApi
 import app.simplecloud.controller.shared.server.Server
 import app.simplecloud.npc.shared.inventory.configuration.InventoryConfig
 import app.simplecloud.npc.shared.inventory.item.ItemCreator
-import app.simplecloud.npc.shared.inventory.placeholder.InventoryPlaceholderHandler
 import app.simplecloud.npc.shared.utils.PlayerConnectionHelper
+import app.simplecloud.plugin.api.shared.placeholder.provider.ServerPlaceholderProvider
 import com.noxcrew.interfaces.element.StaticElement
 import com.noxcrew.interfaces.grid.GridPoint
 import com.noxcrew.interfaces.grid.GridPositionGenerator
@@ -13,6 +13,7 @@ import com.noxcrew.interfaces.interfaces.ChestInterfaceBuilder
 import com.noxcrew.interfaces.pane.Pane
 import com.noxcrew.interfaces.transform.builtin.PaginationButton
 import com.noxcrew.interfaces.transform.builtin.PaginationTransformation
+import kotlinx.coroutines.runBlocking
 
 /**
  * @author Niklas Nieberler
@@ -20,7 +21,7 @@ import com.noxcrew.interfaces.transform.builtin.PaginationTransformation
 
 class PaginationTransformHandler(
     private val controllerApi: ControllerApi.Coroutine,
-    private val placeholderHandler: InventoryPlaceholderHandler,
+    private val placeholderProvider: ServerPlaceholderProvider,
     config: InventoryConfig
 ) {
 
@@ -47,7 +48,7 @@ class PaginationTransformHandler(
 
     private fun buildListedGroupElement(server: Server): StaticElement {
         val itemId = this.pagination.stateItems[server.state] ?: "default"
-        val drawable = this.itemCreator.buildDrawableItem(itemId) { this.placeholderHandler.placeholderComponent(server, it) }
+        val drawable = this.itemCreator.buildDrawableItem(itemId) { runBlocking { placeholderProvider.append(server, it) } }
             ?: throw NullPointerException("failed to find item")
         return StaticElement(drawable) {
             val serverName = pagination.serverNamePattern

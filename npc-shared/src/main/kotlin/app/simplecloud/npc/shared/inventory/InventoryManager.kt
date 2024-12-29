@@ -1,8 +1,8 @@
 package app.simplecloud.npc.shared.inventory
 
 import app.simplecloud.npc.shared.controller.ControllerService
-import app.simplecloud.npc.shared.inventory.placeholder.InventoryPlaceholderHandler
 import app.simplecloud.npc.shared.namespace.NpcNamespace
+import app.simplecloud.plugin.api.shared.placeholder.PlaceholderProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,7 +16,7 @@ class InventoryManager(
     private val namespace: NpcNamespace
 ) {
 
-    private val placeholderHandler = InventoryPlaceholderHandler()
+    private val placeholderProvider = PlaceholderProvider.serverPlaceholderProvider
 
     /**
      * Opens an inventory by a config
@@ -26,7 +26,7 @@ class InventoryManager(
     fun openInventory(player: Player, id: String) {
         val config = this.namespace.inventoryRepository.get(id) ?: return
         CoroutineScope(Dispatchers.IO).launch {
-            NpcInventory(ControllerService.controllerApi, config, placeholderHandler).open(player)
+            NpcInventory(ControllerService.controllerApi, config, placeholderProvider).open(player)
         }
     }
 

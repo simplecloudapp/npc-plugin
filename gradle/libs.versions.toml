@@ -6,6 +6,7 @@ paper = "1.20.6-R0.1-SNAPSHOT"
 cloudCommands = "2.0.0-beta.10"
 cloudAnnotationCommands = "2.0.0"
 interfaces = "1.2.0"
+simpleCloudPlugin = "0.0.1-dev.9519895"
 
 [libraries]
 kotlinJvm = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
@@ -17,11 +18,12 @@ cloudAnnotation = { module = "org.incendo:cloud-annotations", version.ref = "clo
 
 simpleCloudControllerApi = { module = "app.simplecloud.controller:controller-api", version.ref = "simpleCloudController" }
 simpleCloudControllerShared = { module = "app.simplecloud.controller:controller-shared", version.ref = "simpleCloudController" }
+simpleCloudPluginApi = { module = "app.simplecloud.plugin:plugin-shared", version.ref = "simpleCloudPlugin" }
 
 interfacesApi = { module = "com.noxcrew.interfaces:interfaces", version.ref = "interfaces" }
 
 [bundles]
-simpleCloudController = ["simpleCloudControllerApi", "simpleCloudControllerShared"]
+simpleCloudController = ["simpleCloudControllerApi", "simpleCloudControllerShared", "simpleCloudPluginApi"]
 cloudPaper = ["cloudPaper", "cloudMinecraftExtras", "cloudAnnotation"]
 
 [plugins]
