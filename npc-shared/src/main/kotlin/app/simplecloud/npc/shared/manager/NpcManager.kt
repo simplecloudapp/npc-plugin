@@ -21,11 +21,21 @@ class NpcManager(
      * Creates a new config if this npc does not already have one
      * @param id of the new npc
      */
-    fun create(id: String) {
+    fun create(id: String): NpcConfig? {
         if (this.repository.get(id) != null)
-            return
-        this.repository.save("$id.yml", createConfig(id))
+            return null
+        val config = createConfig(id)
+        this.repository.save("$id.yml", config)
         this.logger.info("[SimpleCloud-NPC] New config was created for npc $id")
+        return config
+    }
+
+    /**
+     * Returns true when a npc already exist with the same id
+     * @param id of the npc
+     */
+    fun exist(id: String): Boolean {
+        return this.repository.get(id) != null
     }
 
     /**

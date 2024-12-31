@@ -55,6 +55,14 @@ abstract class NpcNamespace(
     abstract fun findAllNpcs(): List<String>
 
     /**
+     * Returns true when a npc already exist with the same id
+     * @param id of the npc
+     */
+    fun existNpc(id: String): Boolean {
+        return findAllNpcs().contains(id)
+    }
+
+    /**
      * Gets the location by a npc
      * @param id of the npc
      */
