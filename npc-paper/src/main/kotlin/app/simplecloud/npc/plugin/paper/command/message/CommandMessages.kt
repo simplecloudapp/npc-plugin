@@ -32,6 +32,7 @@ object CommandMessages {
 
     fun sendHelpMessage(player: Player) {
         val component = text("$PREFIX <#ffffff>Commands of NPC Plugin").appendNewline()
+            .append(text("   <#a3a3a3>/scnpc apply <npcId>")).appendNewline()
             .append(text("   <#a3a3a3>/scnpc <npcId> interact <type>")).appendNewline()
             .append(text("   <#a3a3a3>/scnpc <npcId> interact <type> setAction <action>")).appendNewline()
             .append(text("   <#a3a3a3>/scnpc <npcId> interact <type> setOption <key> <value>")).appendNewline()

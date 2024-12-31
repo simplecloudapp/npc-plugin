@@ -27,8 +27,6 @@ class CitizensNamespace : NpcNamespace(
         listenEvent<NPCDespawnEvent>(plugin)
             .addAction { hologramManager.destroyHolograms(it.npc.id.toString()) }
 
-        eventManager.registerActionEvent<PlayerCreateNPCEvent>(plugin, EventActionType.CREATE, { it.npc.id.toString() })
-        eventManager.registerActionEvent<NPCSpawnEvent>(plugin, EventActionType.SPAWN, { it.npc.id.toString() })
         eventManager.registerActionEvent<NPCRemoveEvent>(plugin, EventActionType.REMOVE, { it.npc.id.toString() })
     }
 
