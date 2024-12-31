@@ -36,6 +36,32 @@ class NpcCommand(
         CommandMessages.sendHelpMessage(player)
     }
 
+    @Command("$commandName apply <id>")
+    @Permission("simplecloud.command.npc")
+    fun executeApplyNpc(
+        sender: CommandSourceStack,
+        @Argument("id", suggestions = "availableNpcIds") npcId: String
+    ) {
+        val player = sender.sender as Player
+        val npcManager = this.namespace.npcManager
+
+        if (!this.namespace.existNpc(npcId)) {
+            player.sendMessage(text("$PREFIX <#dc2626>Npc with id $npcId does not exist!"))
+            return
+        }
+
+        if (npcManager.exist(npcId)) {
+            player.sendMessage(text("$PREFIX <#dc2626>Npc with id $npcId already exist!"))
+            return
+        }
+
+        val npcConfig = npcManager.create(npcId) ?: return
+        player.sendMessage(text("$PREFIX <#ffffff>Npc with id $npcId has been <#a3e635>created."))
+        CoroutineScope(Dispatchers.IO).launch {
+            updateHolograms(npcConfig)
+        }
+    }
+
     @Command("$commandName <id> setHologramGroup <name>")
     @Permission("simplecloud.command.npc")
     fun executeHologramGroup(
@@ -57,6 +83,23 @@ class NpcCommand(
         return runBlocking {
             ControllerService.controllerApi.getGroups().getAllGroups().map { it.name }
         }
+    }
+
+    @Suggestions("availableNpcIds")
+    fun suggestAvailableNpcId(): List<String> {
+        return this.namespace.findAllNpcs()
+            .filter { !this.namespace.npcManager.exist(it) }
+    }
+
+    private fun updateHolograms(npcConfig: NpcConfig) {
+        val hologramManager = this.namespace.hologramManager
+        val coroutineScope = CoroutineScope(Dispatchers.IO)
+        if (hologramManager.getTextDisplays(npcConfig.id).isEmpty()) {
+            coroutineScope.launch { hologramManager.updateHolograms(npcConfig) }
+            return
+        }
+        val groupName = npcConfig.hologramConfiguration.placeholderGroupName
+        coroutineScope.launch { hologramManager.updateTextHologramByGroup(npcConfig, groupName) }
     }
 
     private fun invokeConfig(player: Player, npcId: String, function: (NpcConfig) -> NpcConfig) {

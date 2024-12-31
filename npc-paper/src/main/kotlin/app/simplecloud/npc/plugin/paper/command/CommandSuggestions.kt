@@ -16,6 +16,7 @@ open class CommandSuggestions(
     @Suggestions("npcIds")
     fun suggestNpcId(): List<String> {
         return this.namespace.findAllNpcs()
+            .filter { this.namespace.npcManager.exist(it) }
     }
 
     @Suggestions("playerInteractions")

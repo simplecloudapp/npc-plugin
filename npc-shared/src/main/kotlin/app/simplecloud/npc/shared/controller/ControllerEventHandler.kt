@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
  */
 
 class ControllerEventHandler(
-    private val controllerApi: ControllerApi.Coroutine
+    private val controllerApi: ControllerApi.Coroutine,
 ) {
 
     private val debouncer = Debouncer(1000L)
@@ -29,12 +29,14 @@ class ControllerEventHandler(
     }
 
     private suspend fun updateHolograms(namespace: NpcNamespace) {
-        namespace.findAllNpcs().forEach {
-            val config = namespace.npcRepository.get(it)
-                ?: throw NullPointerException("failed to find npc $it")
-            val joinState = JoinStateHelper.getJoinState(config)
-            namespace.hologramManager.updateTextHologram(config, joinState)
-        }
+        namespace.findAllNpcs()
+            .filter { namespace.npcManager.exist(it) }
+            .forEach {
+                val config = namespace.npcRepository.get(it)
+                    ?: throw NullPointerException("failed to find npc $it")
+                val joinState = JoinStateHelper.getJoinState(config)
+                namespace.hologramManager.updateTextHologram(config, joinState)
+            }
     }
 
 }
