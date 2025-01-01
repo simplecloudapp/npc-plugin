@@ -33,15 +33,6 @@ class HologramManager(
     private val textDisplays = hashMapOf<UUID, String>()
 
     /**
-     * Clears all legacy hologram entities
-     */
-    fun clearLegacyHolograms() {
-        this.namespace.findAllNpcs().forEach {
-            destroyLegacyHolograms(it)
-        }
-    }
-
-    /**
      * Registers a new file request for the npc config files
      */
     fun registerFileRequest() {
@@ -55,6 +46,7 @@ class HologramManager(
      * @param npcConfig of npc
      */
     suspend fun updateHolograms(npcConfig: NpcConfig) {
+        destroyLegacyHolograms(npcConfig.id)
         destroyHolograms(npcConfig.id)
         val joinState = JoinStateHelper.getJoinState(npcConfig)
         val hologram = npcConfig.hologramConfiguration.getHologram(joinState)
@@ -88,7 +80,9 @@ class HologramManager(
             sync {
                 val displays = getTextDisplays(id)
                     .sortedBy { it.persistentDataContainer.get(createAtNamespacedKey, PersistentDataType.LONG) }
-                displays[index].text(component)
+                if (displays.isNotEmpty()) {
+                    displays[index].text(component)
+                }
             }
         }
     }
@@ -126,10 +120,25 @@ class HologramManager(
      * @param id of the npc
      */
     fun destroyLegacyHolograms(id: String) {
-        val location = this.namespace.findLocationByNpc(id)
-            ?: throw NullPointerException("failed to find location")
-        location.world.entities
-            .filter { it.persistentDataContainer.get(hologramNamespacedKey, PersistentDataType.STRING) == id }
+        sync {
+            val location = this.namespace.findLocationByNpc(id)
+                ?: throw NullPointerException("failed to find location")
+            location.world.entities
+                .filter { it.persistentDataContainer.get(hologramNamespacedKey, PersistentDataType.STRING) == id }
+                .forEach { it.remove() }
+        }
+    }
+
+    /**
+     * Destroys all text display holograms by a npc
+     */
+    fun destroyAllHolograms() {
+        this.namespace.findAllNpcs()
+            .mapNotNull { this.namespace.findLocationByNpc(it) }
+            .map { it.world.entities }
+            .flatten()
+            .filterIsInstance<TextDisplay>()
+            .filter { it.persistentDataContainer.has(hologramNamespacedKey) }
             .forEach { it.remove() }
     }
 
