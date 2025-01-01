@@ -10,6 +10,8 @@ enum class EventActionType(
     val eventActionHandler: EventActionHandler
 ) {
 
+    SPAWN(SpawnNpcActionHandler()),
+
     REMOVE(RemoveNpcActionHandler()),
 
 }

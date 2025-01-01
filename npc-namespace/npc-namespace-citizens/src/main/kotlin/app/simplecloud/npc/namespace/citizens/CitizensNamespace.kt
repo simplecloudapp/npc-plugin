@@ -28,6 +28,7 @@ class CitizensNamespace : NpcNamespace(
             .addAction { hologramManager.destroyHolograms(it.npc.id.toString()) }
 
         eventManager.registerActionEvent<NPCRemoveEvent>(plugin, EventActionType.REMOVE, { it.npc.id.toString() })
+        eventManager.registerActionEvent<NPCSpawnEvent>(plugin, EventActionType.SPAWN, { it.npc.id.toString() })
     }
 
     override fun findAllNpcs(): List<String> {

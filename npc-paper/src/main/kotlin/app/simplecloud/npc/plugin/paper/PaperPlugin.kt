@@ -3,8 +3,11 @@ package app.simplecloud.npc.plugin.paper
 import app.simplecloud.npc.plugin.paper.command.CommandHandler
 import app.simplecloud.npc.plugin.paper.namespace.NamespaceService
 import app.simplecloud.npc.shared.controller.ControllerService
+import app.simplecloud.npc.shared.hologramNamespacedKey
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import com.noxcrew.interfaces.InterfacesListeners
+import io.ktor.util.reflect.instanceOf
+import org.bukkit.entity.TextDisplay
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
@@ -13,6 +16,8 @@ import org.bukkit.plugin.java.JavaPlugin
 
 class PaperPlugin : JavaPlugin() {
 
+    private var namespace: NpcNamespace? = null
+
     override fun onEnable() {
         server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
 
@@ -20,6 +25,12 @@ class PaperPlugin : JavaPlugin() {
 
         val namespace = loadNamespace()
         CommandHandler(namespace, this).parseCommands()
+    }
+
+    override fun onDisable() {
+        if (this.namespace == null)
+            return
+        this.namespace!!.hologramManager.destroyAllHolograms()
     }
 
     private fun loadNamespace(): NpcNamespace {
@@ -38,11 +49,11 @@ class PaperPlugin : JavaPlugin() {
         namespace.inventoryRepository.load()
 
         val hologramManager = namespace.hologramManager
-        hologramManager.clearLegacyHolograms()
         hologramManager.registerFileRequest()
 
         namespace.onEnable()
         namespace.registerListeners(server.pluginManager, this)
+        this.namespace = namespace
         return namespace
     }
 
