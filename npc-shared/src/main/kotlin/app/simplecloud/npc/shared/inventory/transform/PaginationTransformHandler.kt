@@ -5,6 +5,7 @@ import app.simplecloud.controller.shared.server.Server
 import app.simplecloud.npc.shared.inventory.configuration.InventoryConfig
 import app.simplecloud.npc.shared.inventory.item.ItemCreator
 import app.simplecloud.npc.shared.utils.PlayerConnectionHelper
+import app.simplecloud.plugin.api.shared.pattern.ServerPatternIdentifier
 import app.simplecloud.plugin.api.shared.placeholder.provider.ServerPlaceholderProvider
 import com.noxcrew.interfaces.element.StaticElement
 import com.noxcrew.interfaces.grid.GridPoint
@@ -28,6 +29,7 @@ class PaginationTransformHandler(
     private val pagination = config.pagination
         ?: throw NullPointerException("failed to find pagination configuration")
     private val itemCreator = ItemCreator(config)
+    private val serverPatternIdentifier = ServerPatternIdentifier(pagination.serverNamePattern)
 
     suspend fun handle(chestInterface: ChestInterfaceBuilder) {
         val reactiveTransform = PaginationTransformation<Pane>(
@@ -51,10 +53,7 @@ class PaginationTransformHandler(
         val drawable = this.itemCreator.buildDrawableItem(itemId) { runBlocking { placeholderProvider.append(server, it) } }
             ?: throw NullPointerException("failed to find item")
         return StaticElement(drawable) {
-            val serverName = pagination.serverNamePattern
-                .replace("<group_name>", server.group)
-                .replace("<id>", server.uniqueId)
-                .replace("<numerical_id>", server.numericalId.toString())
+            val serverName = serverPatternIdentifier.parseServerToPattern(server)
             PlayerConnectionHelper.sendPlayerToServer(it.player, serverName)
             it.player.closeInventory()
         }
