@@ -60,7 +60,7 @@ class HologramManager(
         hologram.lores.reversed().forEach {
             modifyHologram(id, it, hologramEditor)
             runBlocking {
-                val component = placeholderProvider.append(getGroupByConfig(id), it.text)
+                val component = placeholderProvider.append(getGroupByConfig(id), it.text, "group")
                 hologramEditor = hologramEditor.withCustomName(component)
                     .withNextLine()
                 modifyHologram(id, it, hologramEditor)
@@ -76,7 +76,7 @@ class HologramManager(
      */
     suspend fun updateTextHologram(id: String, lores: List<String>) {
         lores.forEachIndexed { index, newText ->
-            val component = this.placeholderProvider.append(getGroupByConfig(id), newText)
+            val component = this.placeholderProvider.append(getGroupByConfig(id), newText, "group")
             sync {
                 val displays = getTextDisplays(id)
                     .sortedBy { it.persistentDataContainer.get(createAtNamespacedKey, PersistentDataType.LONG) }
