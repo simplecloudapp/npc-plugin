@@ -6,6 +6,6 @@ package app.simplecloud.npc.shared.utils
 
 object ConfigVersion {
 
-    const val version = "1.0"
+    const val VERSION = "2"
 
 }

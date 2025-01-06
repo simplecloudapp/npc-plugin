@@ -13,7 +13,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
 @ConfigSerializable
 data class NpcConfig(
-    val version: String = ConfigVersion.version,
+    val version: String = ConfigVersion.VERSION,
     val id: String = "",
     val hologramConfiguration: NpcHologramConfiguration = NpcHologramConfiguration(),
     val actions: MutableList<NpcInteraction> = mutableListOf(),

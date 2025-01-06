@@ -41,7 +41,7 @@ object DefaultInventoryConfiguration {
     )
 
     val defaultInventoryConfig = InventoryConfig(
-        ConfigVersion.version,
+        ConfigVersion.VERSION,
         "default",
         "<#ffffff>Inventory",
         6,
