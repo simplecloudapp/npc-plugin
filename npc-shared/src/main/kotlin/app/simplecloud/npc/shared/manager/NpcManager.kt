@@ -53,7 +53,7 @@ class NpcManager(
         val hologram = NpcConfig.NpcHologram(
             lores = listOf(
                 HologramConfiguration("<#38bdf8><bold><group_name>"),
-                HologramConfiguration("waiting for <#a3a3a3><player_count:available> players")
+                HologramConfiguration("waiting for <#a3a3a3><group_player_count:available> players")
             )
         )
         return NpcConfig(
