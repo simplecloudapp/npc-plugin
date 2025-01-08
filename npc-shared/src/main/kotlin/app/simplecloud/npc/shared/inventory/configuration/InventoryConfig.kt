@@ -11,7 +11,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
 @ConfigSerializable
 data class InventoryConfig(
-    val version: String = ConfigVersion.version,
+    val version: String = ConfigVersion.VERSION,
     var id: String = "",
     val title: String = "",
     val rows: Int = 6,
