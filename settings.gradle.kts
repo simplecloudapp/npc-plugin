@@ -15,3 +15,5 @@ include("npc-namespace:npc-namespace-fancynpcs")
 findProject(":npc-namespace:npc-namespace-fancynpcs")?.name = "npc-namespace-fancynpcs"
 include("npc-namespace:npc-namespace-mythicmobs")
 findProject(":npc-namespace:npc-namespace-mythicmobs")?.name = "npc-namespace-mythicmobs"
+include("npc-namespace:npc-namespace-znpcs-plus")
+findProject(":npc-namespace:npc-namespace-znpcs-plus")?.name = "npc-namespace-znpcs-plus"

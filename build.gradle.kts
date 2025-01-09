@@ -26,6 +26,10 @@ allprojects {
         maven {
             url = uri("https://repo.papermc.io/repository/maven-public/")
         }
+        maven {
+            name = "pyrSnapshots"
+            url = uri("https://repo.pyr.lol/snapshots")
+        }
         maven("https://maven.citizensnpcs.co/repo")
         maven("https://repo.minebench.de")
         maven("https://buf.build/gen/maven")

@@ -4,6 +4,7 @@ import app.simplecloud.npc.namespace.citizens.CitizensNamespace
 import app.simplecloud.npc.namespace.fancynpcs.FancyNpcsNamespace
 import app.simplecloud.npc.namespace.mythicmobs.MythicMobsNamespace
 import app.simplecloud.npc.namespace.playernpc.PlayerNPCNamespace
+import app.simplecloud.npc.namespace.znpcsplus.ZNpcsPlusNamespace
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import org.bukkit.Bukkit
 
@@ -17,7 +18,8 @@ object NamespaceService {
         CitizensNamespace(),
         PlayerNPCNamespace(),
         FancyNpcsNamespace(),
-        MythicMobsNamespace()
+        MythicMobsNamespace(),
+        ZNpcsPlusNamespace()
     )
 
     /**
