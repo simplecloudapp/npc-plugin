@@ -121,8 +121,7 @@ class HologramManager(
      */
     fun destroyLegacyHolograms(id: String) {
         sync {
-            val location = this.namespace.findLocationByNpc(id)
-                ?: throw NullPointerException("failed to find location")
+            val location = this.namespace.findLocationByNpc(id) ?: return@sync
             location.world.entities
                 .filter { it.persistentDataContainer.get(hologramNamespacedKey, PersistentDataType.STRING) == id }
                 .forEach { it.remove() }

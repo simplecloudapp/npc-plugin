@@ -1,7 +1,5 @@
 package app.simplecloud.npc.shared.option
 
-import java.util.UUID
-
 /**
  * @author Niklas Nieberler
  */

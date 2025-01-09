@@ -30,6 +30,7 @@ allprojects {
         maven("https://repo.minebench.de")
         maven("https://buf.build/gen/maven")
         maven("https://repo.fancyplugins.de/releases")
+        maven("https://mvn.lumine.io/repository/maven-public/")
         maven {
             name = "ranullRepoExternal"
             url = uri("https://repo.ranull.com/maven/external")
