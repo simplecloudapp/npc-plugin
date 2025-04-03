@@ -1,5 +1,4 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.gradle.kotlin.dsl.named
 
 plugins {
     alias(libs.plugins.minotaur)
@@ -7,8 +6,8 @@ plugins {
 
 dependencies {
     compileOnly(rootProject.libs.paperApi)
-    implementation(rootProject.libs.bundles.simpleCloudController)
-    implementation(rootProject.libs.bundles.cloudPaper)
+    compileOnly(rootProject.libs.bundles.simpleCloudController)
+    compileOnly(rootProject.libs.bundles.cloudPaper)
     implementation(rootProject.libs.interfacesApi)
 
     implementation(project(":npc-shared"))
