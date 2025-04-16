@@ -1,4 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -50,7 +49,7 @@ subprojects {
 
     dependencies {
         testImplementation(rootProject.libs.kotlinTest)
-        implementation(rootProject.libs.kotlinJvm)
+        compileOnly(rootProject.libs.kotlinJvm)
     }
 
     kotlin {
@@ -66,25 +65,24 @@ subprojects {
     }
 
     tasks.processResources {
-        expand("version" to project.version,
-            "name" to project.name)
+        expand(
+            "version" to project.version,
+            "name" to project.name
+        )
     }
 
     tasks.shadowJar {
-        relocate("io.grpc", "app.simplecloud.relocate.grpc")
-        relocate("org.incendo", "app.simplecloud.relocate.org.incendo")
-        relocate("app.simplecloud.controller", "app.simplecloud.relocate.controller")
-        relocate("app.simplecloud.plugin.api", "app.simplecloud.relocate.plugin.api")
-        relocate("app.simplecloud.pubsub", "app.simplecloud.relocate.pubsub")
-        relocate("app.simplecloud.droplet", "app.simplecloud.relocate.droplet")
-        relocate("build.buf.gen", "app.simplecloud.relocate.buf")
-        relocate("com.google.protobuf", "app.simplecloud.relocate.protobuf")
+        exclude("kotlin")
+        exclude("kotlinx")
+        mergeServiceFiles()
     }
 }
 
 tasks.processResources {
-    expand("version" to project.version,
-        "name" to project.name)
+    expand(
+        "version" to project.version,
+        "name" to project.name
+    )
 }
 
 tasks.test {

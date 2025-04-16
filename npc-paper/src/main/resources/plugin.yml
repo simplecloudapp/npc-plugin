@@ -4,6 +4,9 @@ author: MrManHD
 main: app.simplecloud.npc.plugin.paper.PaperPlugin
 api-version: 1.20
 
+depend:
+  - simplecloud-api
+
 softdepend:
   - Citizens
   - FancyNpcs
