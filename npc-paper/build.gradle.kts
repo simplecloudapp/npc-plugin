@@ -7,7 +7,7 @@ plugins {
 dependencies {
     compileOnly(rootProject.libs.paperApi)
     compileOnly(rootProject.libs.bundles.simpleCloudController)
-    compileOnly(rootProject.libs.bundles.cloudPaper)
+    implementation(rootProject.libs.bundles.cloudPaper)
     implementation(rootProject.libs.interfacesApi) {
         exclude(group = "org.jetbrains.kotlin")
         exclude(group = "org.jetbrains.kotlinx")
@@ -44,7 +44,8 @@ modrinth {
         "1.21.1",
         "1.21.2",
         "1.21.3",
-        "1.21.4"
+        "1.21.4",
+        "1.21.5",
     )
     loaders.add("paper")
     changelog.set("https://docs.simplecloud.app/changelog")
