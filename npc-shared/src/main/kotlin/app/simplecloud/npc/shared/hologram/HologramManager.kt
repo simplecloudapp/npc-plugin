@@ -55,7 +55,7 @@ class HologramManager(
 
     private fun updateHologram(id: String, hologram: NpcConfig.NpcHologram) {
         val location = this.namespace.findLocationByNpc(id)
-            ?: throw NullPointerException("failed to find location")
+            ?: throw NullPointerException("failed to find location, there is probably no npc with id $id")
         var hologramEditor = HologramEditor(id, location.clone().add(0.0, hologram.startHeight, 0.0))
         hologram.lores.reversed().forEach {
             modifyHologram(id, it, hologramEditor)

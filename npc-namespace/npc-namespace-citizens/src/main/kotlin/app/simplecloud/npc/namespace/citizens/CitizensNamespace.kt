@@ -36,7 +36,7 @@ class CitizensNamespace : NpcNamespace(
     }
 
     override fun findLocationByNpc(id: String): Location? {
-        return CitizensAPI.getNPCRegistry().getById(id.toInt()).storedLocation
+        return CitizensAPI.getNPCRegistry().getById(id.toInt())?.storedLocation
     }
 
 }
