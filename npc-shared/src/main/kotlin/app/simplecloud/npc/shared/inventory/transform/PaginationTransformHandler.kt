@@ -1,7 +1,8 @@
 package app.simplecloud.npc.shared.inventory.transform
 
-import app.simplecloud.controller.api.ControllerApi
-import app.simplecloud.controller.shared.server.Server
+import app.simplecloud.api.CloudApi
+import app.simplecloud.api.server.Server
+import app.simplecloud.api.server.ServerQuery
 import app.simplecloud.npc.shared.inventory.configuration.InventoryConfig
 import app.simplecloud.npc.shared.inventory.item.ItemCreator
 import app.simplecloud.npc.shared.utils.PlayerConnectionHelper
@@ -14,6 +15,7 @@ import com.noxcrew.interfaces.interfaces.ChestInterfaceBuilder
 import com.noxcrew.interfaces.pane.Pane
 import com.noxcrew.interfaces.transform.builtin.PaginationButton
 import com.noxcrew.interfaces.transform.builtin.PaginationTransformation
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -21,7 +23,7 @@ import kotlinx.coroutines.runBlocking
  */
 
 class PaginationTransformHandler(
-    private val controllerApi: ControllerApi.Coroutine,
+    private val cloudApi: CloudApi,
     private val placeholderProvider: ServerPlaceholderProvider,
     config: InventoryConfig
 ) {
@@ -42,9 +44,11 @@ class PaginationTransformHandler(
     }
 
     private suspend fun getListedGroupElements(): List<StaticElement> {
-        return this.controllerApi.getServers().getServersByGroup(this.pagination.listedGroupName)
-            .filter { this.pagination.stateItems.contains(it.state) }
-            .sortedBy { it.state.number }
+        val query = ServerQuery.create()
+            .filterByServerGroupName(this.pagination.listedGroupName)
+            .filterByState(*this.pagination.stateItems.keys.toTypedArray())
+        return this.cloudApi.server().getAllServers(query).await()
+            .sortedBy { it.state.ordinal }
             .map { buildListedGroupElement(it) }
     }
 

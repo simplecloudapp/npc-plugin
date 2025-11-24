@@ -26,7 +26,7 @@ class InventoryManager(
     fun openInventory(player: Player, id: String) {
         val config = this.namespace.inventoryRepository.get(id) ?: return
         CoroutineScope(Dispatchers.IO).launch {
-            NpcInventory(ControllerService.controllerApi, config, placeholderProvider).open(player)
+            NpcInventory(ControllerService.cloudApi, config, placeholderProvider).open(player)
         }
     }
 

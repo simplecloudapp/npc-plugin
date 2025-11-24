@@ -1,6 +1,6 @@
 package app.simplecloud.npc.shared.inventory
 
-import app.simplecloud.controller.api.ControllerApi
+import app.simplecloud.api.CloudApi
 import app.simplecloud.npc.shared.inventory.configuration.InventoryConfig
 import app.simplecloud.npc.shared.inventory.transform.PaginationTransformHandler
 import app.simplecloud.npc.shared.inventory.transform.StaticItemTransformHandler
@@ -14,7 +14,7 @@ import org.bukkit.entity.Player
  */
 
 class NpcInventory(
-    private val controllerApi: ControllerApi.Coroutine,
+    private val cloudApi: CloudApi,
     private val config: InventoryConfig,
     private val placeholderProvider: ServerPlaceholderProvider
 ) {
@@ -30,7 +30,7 @@ class NpcInventory(
 
         StaticItemTransformHandler(config).handle(this)
         if (config.pagination?.stateItems?.isNotEmpty() == true) {
-            PaginationTransformHandler(controllerApi, placeholderProvider, config).handle(this)
+            PaginationTransformHandler(cloudApi, placeholderProvider, config).handle(this)
         }
     }
 

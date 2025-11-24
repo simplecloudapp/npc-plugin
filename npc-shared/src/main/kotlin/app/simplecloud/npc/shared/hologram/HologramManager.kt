@@ -1,6 +1,6 @@
 package app.simplecloud.npc.shared.hologram
 
-import app.simplecloud.controller.shared.group.Group
+import app.simplecloud.api.group.Group
 import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.controller.ControllerService
 import app.simplecloud.npc.shared.createAtNamespacedKey
@@ -12,6 +12,7 @@ import app.simplecloud.npc.shared.sync
 import app.simplecloud.npc.shared.utils.NpcFileUpdater
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.bukkit.Bukkit
@@ -27,7 +28,7 @@ class HologramManager(
     private val namespace: NpcNamespace
 ) {
 
-    private val controllerApi = ControllerService.controllerApi
+    private val cloudApi = ControllerService.cloudApi
 
     private val placeholderProvider = PlaceholderProvider.groupPlaceholderProvider
     private val textDisplays = hashMapOf<UUID, String>()
@@ -160,6 +161,6 @@ class HologramManager(
         val config = this.namespace.npcRepository.get(id)
             ?: throw NullPointerException("failed to find npc $id")
         val groupName = config.hologramConfiguration.placeholderGroupName
-        return this.controllerApi.getGroups().getGroupByName(groupName)
+        return this.cloudApi.group().getGroupByName(groupName).await()
     }
 }

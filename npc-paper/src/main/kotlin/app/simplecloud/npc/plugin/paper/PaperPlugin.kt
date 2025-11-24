@@ -3,11 +3,8 @@ package app.simplecloud.npc.plugin.paper
 import app.simplecloud.npc.plugin.paper.command.CommandHandler
 import app.simplecloud.npc.plugin.paper.namespace.NamespaceService
 import app.simplecloud.npc.shared.controller.ControllerService
-import app.simplecloud.npc.shared.hologramNamespacedKey
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import com.noxcrew.interfaces.InterfacesListeners
-import io.ktor.util.reflect.instanceOf
-import org.bukkit.entity.TextDisplay
 import org.bukkit.plugin.java.JavaPlugin
 
 /**

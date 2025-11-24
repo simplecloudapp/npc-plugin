@@ -1,8 +1,8 @@
 package app.simplecloud.npc.shared.inventory.configuration
 
+import app.simplecloud.api.server.ServerState
 import app.simplecloud.npc.shared.inventory.configuration.InventoryConfig.PaginationInventory.PaginationItem
 import app.simplecloud.npc.shared.utils.ConfigVersion
-import build.buf.gen.simplecloud.controller.v1.ServerState
 import org.bukkit.event.inventory.ClickType
 
 /**

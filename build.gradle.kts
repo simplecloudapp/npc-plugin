@@ -51,6 +51,7 @@ subprojects {
     dependencies {
         testImplementation(rootProject.libs.kotlinTest)
         implementation(rootProject.libs.kotlinJvm)
+        implementation(rootProject.libs.kotlinX)
     }
 
     kotlin {

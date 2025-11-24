@@ -1,6 +1,8 @@
 package app.simplecloud.npc.shared.action.handler
 
-import app.simplecloud.controller.shared.server.Server
+import app.simplecloud.api.server.Server
+import app.simplecloud.api.server.ServerQuery
+import app.simplecloud.api.server.ServerState
 import app.simplecloud.npc.shared.action.Action
 import app.simplecloud.npc.shared.action.ActionHandler
 import app.simplecloud.npc.shared.action.ActionOptions
@@ -10,9 +12,9 @@ import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.npc.shared.option.OptionProvider
 import app.simplecloud.npc.shared.utils.MessageHelper
 import app.simplecloud.npc.shared.utils.PlayerConnectionHelper
-import build.buf.gen.simplecloud.controller.v1.ServerState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -37,7 +39,7 @@ class QuickJoinActionHandler : ActionHandler {
             }
 
             val serverNamePattern = optionProvider.getOption(ActionOptions.SERVER_NAME_PATTERN)
-                .replace("<group_name>", server.group)
+                .replace("<group_name>", server.serverGroup.name)
                 .replace("<numerical_id>", server.numericalId.toString())
 
             PlayerConnectionHelper.sendPlayerToServer(player, serverNamePattern)
@@ -60,8 +62,11 @@ class QuickJoinActionHandler : ActionHandler {
             return null
         }
 
-        val servers = ControllerService.controllerApi.getServers().getServersByGroup(groupName)
-            .filter { serverState.equals(it.state.name, ignoreCase = true) }
+        val groupQuery = ServerQuery.create()
+            .filterByServerGroupName(groupName)
+            .filterByState(ServerState.valueOf(serverState))
+
+        val servers = ControllerService.cloudApi.server().getAllServers(groupQuery).await()
         return when (QuantityType.valueOf(quantityType.uppercase())) {
             QuantityType.MOST -> servers.maxByOrNull { it.playerCount }
             QuantityType.LEAST -> servers.minByOrNull { it.playerCount }

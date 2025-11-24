@@ -1,5 +1,6 @@
 package app.simplecloud.npc.shared.controller
 
+import app.simplecloud.api.CloudApi
 import app.simplecloud.controller.api.ControllerApi
 import app.simplecloud.npc.shared.hologram.JoinStateHelper
 import app.simplecloud.npc.shared.namespace.NpcNamespace
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
  */
 
 class ControllerEventHandler(
-    private val controllerApi: ControllerApi.Coroutine,
+    private val cloudApi: CloudApi,
 ) {
 
     private val debouncer = Debouncer(1000L)
