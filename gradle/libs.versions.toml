@@ -2,7 +2,7 @@
 kotlin = "2.0.0"
 kotlinX = "1.10.1"
 shadow = "8.3.3"
-simpleCloudApi = "0.1.0-platform.1-dev.1763294516035-de96444"
+simpleCloudApi = "0.1.0-platform.2-dev.1764512836044-875e3e8"
 paper = "1.20.6-R0.1-SNAPSHOT"
 cloudCommands = "2.0.0-beta.10"
 cloudAnnotationCommands = "2.0.0"
