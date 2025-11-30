@@ -1,11 +1,9 @@
 package app.simplecloud.npc.shared.controller
 
 import app.simplecloud.api.CloudApi
-import app.simplecloud.controller.api.ControllerApi
 import app.simplecloud.npc.shared.hologram.JoinStateHelper
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.npc.shared.utils.Debouncer
-import build.buf.gen.simplecloud.controller.v1.ServerUpdateEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,11 +19,14 @@ class ControllerEventHandler(
     private val debouncer = Debouncer(1000L)
 
     fun registerEvents(namespace: NpcNamespace) {
-        val pubSubClient = this.controllerApi.getPubSubClient()
-        pubSubClient.subscribe("event", ServerUpdateEvent::class.java) { event ->
-            CoroutineScope(Dispatchers.IO).launch {
-                debouncer.debounce(this) { updateHolograms(namespace) }
-            }
+        val event = this.cloudApi.event()
+        event.server().onUpdated { registerEvent(namespace) }
+        event.group().onUpdated { registerEvent(namespace) }
+    }
+
+    private fun registerEvent(namespace: NpcNamespace) {
+        CoroutineScope(Dispatchers.IO).launch {
+            debouncer.debounce(this) { updateHolograms(namespace) }
         }
     }
 
