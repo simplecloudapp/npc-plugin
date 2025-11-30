@@ -4,8 +4,12 @@ author: MrManHD
 main: app.simplecloud.npc.plugin.paper.PaperPlugin
 api-version: 1.20
 
+libraries:
+  - "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0"
+  - "org.jetbrains.kotlin:kotlin-stdlib:2.0.20"
+  - "org.jetbrains.kotlin:kotlin-reflect:2.0.20"
+
 softdepend:
   - Citizens
   - FancyNpcs
-  - PlayerNPC
   - MythicMobs
