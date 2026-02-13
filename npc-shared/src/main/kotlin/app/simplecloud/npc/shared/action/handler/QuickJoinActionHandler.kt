@@ -6,7 +6,7 @@ import app.simplecloud.api.server.ServerState
 import app.simplecloud.npc.shared.action.Action
 import app.simplecloud.npc.shared.action.ActionHandler
 import app.simplecloud.npc.shared.action.ActionOptions
-import app.simplecloud.npc.shared.controller.ControllerService
+import app.simplecloud.npc.shared.cloud.CloudService
 import app.simplecloud.npc.shared.enums.QuantityType
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.npc.shared.option.OptionProvider
@@ -39,7 +39,7 @@ class QuickJoinActionHandler : ActionHandler {
             }
 
             val serverNamePattern = optionProvider.getOption(ActionOptions.SERVER_NAME_PATTERN)
-                .replace("<group_name>", server.serverGroup.name)
+                .replace("<group_name>", server.group.name)
                 .replace("<numerical_id>", server.numericalId.toString())
 
             PlayerConnectionHelper.sendPlayerToServer(player, serverNamePattern)
@@ -66,11 +66,10 @@ class QuickJoinActionHandler : ActionHandler {
             .filterByServerGroupName(groupName)
             .filterByState(ServerState.valueOf(serverState))
 
-        val servers = ControllerService.cloudApi.server().getAllServers(groupQuery).await()
+        val servers = CloudService.cloudApi.server().getAllServers(groupQuery).await()
         return when (QuantityType.valueOf(quantityType.uppercase())) {
             QuantityType.MOST -> servers.maxByOrNull { it.playerCount }
             QuantityType.LEAST -> servers.minByOrNull { it.playerCount }
-            else -> servers.firstOrNull()
         }
     }
 

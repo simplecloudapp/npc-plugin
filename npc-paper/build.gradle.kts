@@ -1,5 +1,4 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.gradle.kotlin.dsl.named
 
 plugins {
     alias(libs.plugins.minotaur)
@@ -7,9 +6,11 @@ plugins {
 
 dependencies {
     compileOnly(rootProject.libs.paperApi)
-    implementation(rootProject.libs.bundles.simpleCloud)
+    compileOnly(rootProject.libs.simpleCloudApi)
+
     implementation(rootProject.libs.bundles.cloudPaper)
     implementation(rootProject.libs.interfacesApi)
+    implementation(rootProject.libs.simpleCloudPluginApi)
 
     implementation(project(":npc-shared"))
     implementation(project(":npc-namespace:npc-namespace-citizens"))
@@ -45,7 +46,10 @@ modrinth {
         "1.21.5",
         "1.21.6",
         "1.21.7",
-        "1.21.8"
+        "1.21.8",
+        "1.21.9",
+        "1.21.10",
+        "1.21.11"
     )
     loaders.add("paper")
     changelog.set("https://docs.simplecloud.app/changelog")

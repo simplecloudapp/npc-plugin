@@ -34,6 +34,10 @@ class NpcInteractCommand(
         @Argument("id", suggestions = "npcIds") npcId: String,
         @Argument("playerInteraction", suggestions = "playerInteractions") playerInteraction: String
     ) {
+        if (sender.sender !is Player) {
+            sender.sender.sendMessage(text("$PREFIX <#dc2626>This command can only be executed by a player!"))
+            return
+        }
         val player = sender.sender as Player
 
         val npcConfig = findNpcConfigById(player, npcId) ?: return
@@ -60,6 +64,10 @@ class NpcInteractCommand(
         @Argument("playerInteraction", suggestions = "playerInteractions") playerInteraction: String,
         @Argument("action", suggestions = "actions") action: String,
     ) {
+        if (sender.sender !is Player) {
+            sender.sender.sendMessage(text("$PREFIX <#dc2626>This command can only be executed by a player!"))
+            return
+        }
         val player = sender.sender as Player
 
         val npcConfig = findNpcConfigById(player, npcId) ?: return
@@ -79,7 +87,7 @@ class NpcInteractCommand(
         player.sendMessage(text("$PREFIX <#ffffff>Action ${npcAction.name.lowercase()} for npc ${npcConfig.id} has been <#a3e635>created."))
     }
 
-    fun findNpcAction(player: Player, action: String): Action? {
+    private fun findNpcAction(player: Player, action: String): Action? {
         val action = Action.getOrNull(action)
         if (action == null) {
             player.sendMessage(text("$PREFIX <#dc2626>This action does not exist! Please use ${Action.entries.joinToString(", ") { it.name.lowercase() }}"))

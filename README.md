@@ -48,9 +48,9 @@ This repository is licensed under [Apache 2.0][license].
 
 <!-- ✅ PLEASE EDIT -->
 [banner]: https://raw.githubusercontent.com/simplecloudapp/branding/refs/heads/main/readme/banner/plugin/npcs.png
-[issue-bug-report]: https://github.com/theSimpleCloud/npc-plugin/issues/new?labels=bug&projects=template=01_BUG-REPORT.yml&title=%5BBUG%5D+%3Ctitle%3E
-[issue-feature-request]: https://github.com/theSimpleCloud/npc-plugin/discussions/new?category=ideas
-[docs-thisproject]: https://docs.simplecloud.app/plugin/npcs
+[issue-bug-report]: https://github.com/simplecloudapp/npc-plugin/issues/new?labels=bug&projects=template=01_BUG-REPORT.yml&title=%5BBUG%5D+%3Ctitle%3E
+[issue-feature-request]: https://github.com/simplecloudapp/npc-plugin/discussions/new?category=ideas
+[docs-thisproject]: https://docs.simplecloud.app/en/manual/plugin/npcs
 [docs-contribute]: https://docs.simplecloud.app/contribute
 
 [modrinth]: https://modrinth.com/plugin/npcs-plugin

@@ -1,6 +1,8 @@
 dependencies {
     compileOnly(rootProject.libs.paperApi)
-    compileOnly(rootProject.libs.bundles.simpleCloud)
+    compileOnly(rootProject.libs.simpleCloudApi)
+
+    implementation(rootProject.libs.simpleCloudPluginApi)
 
     compileOnly("net.citizensnpcs:citizens-main:2.0.35-SNAPSHOT")
 

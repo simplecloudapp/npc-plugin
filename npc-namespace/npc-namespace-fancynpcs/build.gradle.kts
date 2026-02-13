@@ -1,8 +1,10 @@
 dependencies {
     compileOnly(rootProject.libs.paperApi)
-    compileOnly(rootProject.libs.bundles.simpleCloud)
+    compileOnly(rootProject.libs.simpleCloudApi)
 
-    compileOnly("de.oliver:FancyNpcs:2.4.0")
+    implementation(rootProject.libs.simpleCloudPluginApi)
+
+    compileOnly("de.oliver:FancyNpcs:2.9.0")
 
     implementation(project(":npc-shared"))
 }

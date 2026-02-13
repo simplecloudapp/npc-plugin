@@ -22,7 +22,7 @@ class ItemCreator(
         return buildDrawableItem(item, placeholder)
     }
 
-    fun buildDrawableItem(
+    private fun buildDrawableItem(
         item: InventoryConfig.InventoryItem,
         placeholder: (String) -> Component = { decodeComponent(text(it)) }
     ): Drawable {

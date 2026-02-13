@@ -23,9 +23,7 @@ class NpcRepository : YamlDirectoryRepository<NpcConfig>(
     }
 
     override fun watchUpdateEvent(file: File) {
-        val npcConfig = get(file.nameWithoutExtension)
-        if (npcConfig == null)
-            return
+        val npcConfig = get(file.nameWithoutExtension) ?: return
         NpcFileUpdater.invokeFile(npcConfig)
     }
 

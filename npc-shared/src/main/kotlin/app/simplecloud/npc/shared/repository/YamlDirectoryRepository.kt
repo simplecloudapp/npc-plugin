@@ -13,7 +13,6 @@ import java.io.File
 import java.lang.reflect.Type
 import java.nio.file.*
 
-
 abstract class YamlDirectoryRepository<E>(
     private val directory: Path,
     private val clazz: Class<E>,
@@ -21,7 +20,7 @@ abstract class YamlDirectoryRepository<E>(
 
     private val watchService = FileSystems.getDefault().newWatchService()
     private val loaders = mutableMapOf<File, YamlConfigurationLoader>()
-    protected val entities = mutableMapOf<File, E>()
+    private val entities = mutableMapOf<File, E>()
 
     fun delete(element: E): Boolean {
         val file = entities.keys.find { entities[it] == element } ?: return false

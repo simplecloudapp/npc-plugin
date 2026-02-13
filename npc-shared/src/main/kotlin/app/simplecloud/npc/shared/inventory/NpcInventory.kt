@@ -26,7 +26,9 @@ class NpcInventory(
 
     private suspend fun createCombinedInterface() = buildChestInterface {
         rows = config.rows
-        initialTitle = text(config.title)
+        titleSupplier = {
+            text(config.title)
+        }
 
         StaticItemTransformHandler(config).handle(this)
         if (config.pagination?.stateItems?.isNotEmpty() == true) {

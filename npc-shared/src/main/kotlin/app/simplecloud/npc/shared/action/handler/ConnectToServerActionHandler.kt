@@ -7,8 +7,6 @@ import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.npc.shared.option.OptionProvider
 import app.simplecloud.npc.shared.utils.MessageHelper
 import app.simplecloud.npc.shared.utils.PlayerConnectionHelper
-import com.google.common.io.ByteStreams
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 /**

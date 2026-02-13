@@ -1,7 +1,8 @@
 dependencies {
     compileOnly(rootProject.libs.paperApi)
-    compileOnly(rootProject.libs.interfacesApi)
-    compileOnly(rootProject.libs.bundles.simpleCloud)
+    compileOnly(rootProject.libs.simpleCloudApi)
 
-    compileOnly(rootProject.libs.configurate)
+    implementation(rootProject.libs.simpleCloudPluginApi)
+    implementation(rootProject.libs.interfacesApi)
+    implementation(rootProject.libs.bundles.configurate)
 }

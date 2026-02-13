@@ -1,8 +1,10 @@
 dependencies {
     compileOnly(rootProject.libs.paperApi)
-    compileOnly(rootProject.libs.bundles.simpleCloud)
+    compileOnly(rootProject.libs.simpleCloudApi)
 
-    compileOnly("io.lumine:Mythic-Dist:5.6.1")
+    implementation(rootProject.libs.simpleCloudPluginApi)
+
+    compileOnly("io.lumine:Mythic-Dist:5.11.2")
 
     implementation(project(":npc-shared"))
 }

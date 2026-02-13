@@ -35,6 +35,10 @@ class NpcInteractOptionCommand(
         @Argument("key", suggestions = "actionOptionKeys") key: String,
         @Argument("value", suggestions = "actionOptionValues") value: String,
     ) {
+        if (sender.sender !is Player) {
+            sender.sender.sendMessage(text("$PREFIX <#dc2626>This command can only be executed by a player!"))
+            return
+        }
         val player = sender.sender as Player
         invokeConfig(player, npcId, playerInteraction) { config, interaction ->
             interaction.options[key] = value
@@ -51,6 +55,10 @@ class NpcInteractOptionCommand(
         @Argument("playerInteraction", suggestions = "playerInteractions") playerInteraction: String,
         @Argument("key", suggestions = "optionKeys") key: String
     ) {
+        if (sender.sender !is Player) {
+            sender.sender.sendMessage(text("$PREFIX <#dc2626>This command can only be executed by a player!"))
+            return
+        }
         val player = sender.sender as Player
         invokeConfig(player, npcId, playerInteraction) { config, interaction ->
             interaction.options.remove(key)
@@ -67,6 +75,10 @@ class NpcInteractOptionCommand(
         @Argument("playerInteraction", suggestions = "playerInteractions") playerInteraction: String,
         @Argument("key", suggestions = "optionKeys") key: String
     ) {
+        if (sender.sender !is Player) {
+            sender.sender.sendMessage(text("$PREFIX <#dc2626>This command can only be executed by a player!"))
+            return
+        }
         val player = sender.sender as Player
 
         val npcConfig = findNpcConfigById(player, npcId) ?: return

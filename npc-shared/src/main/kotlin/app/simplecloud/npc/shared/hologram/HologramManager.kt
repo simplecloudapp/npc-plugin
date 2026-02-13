@@ -1,10 +1,11 @@
 package app.simplecloud.npc.shared.hologram
 
-import app.simplecloud.api.group.Group
 import app.simplecloud.npc.shared.config.NpcConfig
-import app.simplecloud.npc.shared.controller.ControllerService
+import app.simplecloud.npc.shared.cloud.CloudService
 import app.simplecloud.npc.shared.createAtNamespacedKey
+import app.simplecloud.npc.shared.enums.NpcType
 import app.simplecloud.npc.shared.hologram.config.HologramConfiguration
+import app.simplecloud.npc.shared.placeholder.PersistentServerPlaceholderProvider
 import app.simplecloud.plugin.api.shared.placeholder.PlaceholderProvider
 import app.simplecloud.npc.shared.hologramNamespacedKey
 import app.simplecloud.npc.shared.namespace.NpcNamespace
@@ -15,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.entity.TextDisplay
 import org.bukkit.persistence.PersistentDataType
@@ -28,9 +30,10 @@ class HologramManager(
     private val namespace: NpcNamespace
 ) {
 
-    private val cloudApi = ControllerService.cloudApi
+    private val cloudApi = CloudService.cloudApi
 
-    private val placeholderProvider = PlaceholderProvider.groupPlaceholderProvider
+    private val groupPlaceholderProvider = PlaceholderProvider.groupPlaceholderProvider
+    private val persistentServerPlaceholderProvider = PersistentServerPlaceholderProvider()
     private val textDisplays = hashMapOf<UUID, String>()
 
     /**
@@ -61,7 +64,7 @@ class HologramManager(
         hologram.lores.reversed().forEach {
             modifyHologram(id, it, hologramEditor)
             runBlocking {
-                val component = placeholderProvider.append(getGroupByConfig(id), it.text, "group")
+                val component = buildHologramComponent(id, it.text)
                 hologramEditor = hologramEditor.withCustomName(component)
                     .withNextLine()
                 modifyHologram(id, it, hologramEditor)
@@ -75,13 +78,13 @@ class HologramManager(
      * @param id of the npc
      * @param lores new hologram lores
      */
-    suspend fun updateTextHologram(id: String, lores: List<String>) {
+    private suspend fun updateTextHologram(id: String, lores: List<String>) {
         lores.forEachIndexed { index, newText ->
-            val component = this.placeholderProvider.append(getGroupByConfig(id), newText, "group")
+            val component = buildHologramComponent(id, newText)
             sync {
                 val displays = getTextDisplays(id)
                     .sortedBy { it.persistentDataContainer.get(createAtNamespacedKey, PersistentDataType.LONG) }
-                if (displays.isNotEmpty()) {
+                if (index < displays.size) {
                     displays[index].text(component)
                 }
             }
@@ -91,9 +94,9 @@ class HologramManager(
     /**
      * Updates from a npc only the hologram texts
      * @param config of the npc
-     * @param name of the group
+     * @param name of the group or persistent server
      */
-    suspend fun updateTextHologramByGroup(config: NpcConfig, name: String) {
+    suspend fun updateTextHologramByName(config: NpcConfig, name: String) {
         val joinState = JoinStateHelper.getJoinState(name)
         updateTextHologram(config, joinState)
     }
@@ -134,11 +137,13 @@ class HologramManager(
      */
     fun destroyAllHolograms() {
         this.namespace.findAllNpcs()
+            .asSequence()
             .mapNotNull { this.namespace.findLocationByNpc(it) }
             .map { it.world.entities }
             .flatten()
             .filterIsInstance<TextDisplay>()
             .filter { it.persistentDataContainer.has(hologramNamespacedKey) }
+            .toList()
             .forEach { it.remove() }
     }
 
@@ -157,10 +162,26 @@ class HologramManager(
         HologramModifier.modify(configuration, hologramEditor.textDisplay)
     }
 
-    private suspend fun getGroupByConfig(id: String): Group {
+    /**
+     * Builds a hologram component based on the NPC type
+     * @param id of the npc
+     * @param text to append placeholders to
+     */
+    private suspend fun buildHologramComponent(id: String, text: String): Component {
         val config = this.namespace.npcRepository.get(id)
             ?: throw NullPointerException("failed to find npc $id")
-        val groupName = config.hologramConfiguration.placeholderGroupName
-        return this.cloudApi.group().getGroupByName(groupName).await()
+        val placeholderName = config.hologramConfiguration.placeholderName
+
+        return when (config.npcType) {
+            NpcType.GROUP -> {
+                val group = this.cloudApi.group().getGroupByName(placeholderName).await()
+                this.groupPlaceholderProvider.append(group, text, "group")
+            }
+            NpcType.PERSISTENT -> {
+                val persistentServer = this.cloudApi.persistentServer().getPersistentServerByName(placeholderName).await()
+                this.persistentServerPlaceholderProvider.append(persistentServer, text, "persistent")
+            }
+            null -> throw NullPointerException("npc type is not set for npc $id")
+        }
     }
 }

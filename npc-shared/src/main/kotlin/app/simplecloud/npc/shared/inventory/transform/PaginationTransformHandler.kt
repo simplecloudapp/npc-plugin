@@ -3,6 +3,7 @@ package app.simplecloud.npc.shared.inventory.transform
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.server.Server
 import app.simplecloud.api.server.ServerQuery
+import app.simplecloud.npc.shared.enums.NpcType
 import app.simplecloud.npc.shared.inventory.configuration.InventoryConfig
 import app.simplecloud.npc.shared.inventory.item.ItemCreator
 import app.simplecloud.npc.shared.utils.PlayerConnectionHelper
@@ -25,7 +26,7 @@ import kotlinx.coroutines.runBlocking
 class PaginationTransformHandler(
     private val cloudApi: CloudApi,
     private val placeholderProvider: ServerPlaceholderProvider,
-    config: InventoryConfig
+    private val config: InventoryConfig
 ) {
 
     private val pagination = config.pagination
@@ -34,13 +35,21 @@ class PaginationTransformHandler(
     private val serverPatternIdentifier = ServerPatternIdentifier(pagination.serverNamePattern)
 
     suspend fun handle(chestInterface: ChestInterfaceBuilder) {
-        val reactiveTransform = PaginationTransformation<Pane>(
+        val reactiveTransform = PaginationTransformation.Simple<Pane>(
             buildGridPositionGenerator(),
-            getListedGroupElements(),
+            getListedServerElements(),
             buildPaginationButton(this.pagination.previousPageItem),
             buildPaginationButton(this.pagination.nextPageItem)
         )
         chestInterface.addTransform(reactiveTransform)
+    }
+
+    private suspend fun getListedServerElements(): List<StaticElement> {
+        return when (this.config.npcType) {
+            NpcType.GROUP -> getListedGroupElements()
+            NpcType.PERSISTENT -> getListedPersistentServerElements()
+            null -> throw NullPointerException("inventory npc type is not set")
+        }
     }
 
     private suspend fun getListedGroupElements(): List<StaticElement> {
@@ -49,18 +58,56 @@ class PaginationTransformHandler(
             .filterByState(*this.pagination.stateItems.keys.toTypedArray())
         return this.cloudApi.server().getAllServers(query).await()
             .sortedBy { it.state.ordinal }
-            .map { buildListedGroupElement(it) }
+            .map { buildListedServerElement(it) }
     }
 
-    private fun buildListedGroupElement(server: Server): StaticElement {
+    private fun buildListedServerElement(server: Server): StaticElement {
         val itemId = this.pagination.stateItems[server.state] ?: "default"
         val drawable = this.itemCreator.buildDrawableItem(itemId) { runBlocking { placeholderProvider.append(server, it) } }
             ?: throw NullPointerException("failed to find item")
         return StaticElement(drawable) {
-            val serverName = serverPatternIdentifier.parseServerToPattern(server)
-            PlayerConnectionHelper.sendPlayerToServer(it.player, serverName)
-            it.player.closeInventory()
+            val player = it.player
+
+            val serverName = when (config.npcType) {
+                NpcType.PERSISTENT -> {
+                    server.serverBase.name
+                }
+                else -> {
+                    val parsed = serverPatternIdentifier.parseServerToPattern(server)
+                    parsed
+                }
+            }
+
+            try {
+                PlayerConnectionHelper.sendPlayerToServer(player, serverName)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return@StaticElement
+            }
+
+            player.closeInventory()
         }
+    }
+
+    private suspend fun getListedPersistentServerElements(): List<StaticElement> {
+        val servers = mutableListOf<Server>()
+
+        for (persistentServerName in this.pagination.listedPersistentServers) {
+            try {
+                val persistentServer = this.cloudApi.persistentServer().getPersistentServerByName(persistentServerName).await()
+                val query = ServerQuery.create()
+                    .filterByPersistentServerId(persistentServer.persistentServerId)
+                    .filterByState(*this.pagination.stateItems.keys.toTypedArray())
+                val found = this.cloudApi.server().getAllServers(query).await()
+                servers.addAll(found)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        return servers
+            .sortedBy { it.state.ordinal }
+            .map { buildListedServerElement(it) }
     }
 
     private fun buildGridPositionGenerator(): GridPositionGenerator {

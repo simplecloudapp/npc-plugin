@@ -5,6 +5,7 @@ import app.simplecloud.npc.shared.player.PlayerActionHandler
 import app.simplecloud.npc.shared.player.PlayerActionOptions
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
+import org.bukkit.Registry
 import org.bukkit.entity.Player
 
 /**
@@ -23,8 +24,8 @@ class PlaySoundPlayerActionHandler : PlayerActionHandler {
     }
 
     override fun getSuggestions() = mapOf(
-        "play.sound" to org.bukkit.Sound.values().map { it.key.key },
-        "sound.source" to Sound.Source.values().map { it.name.lowercase() }
+        "play.sound" to Registry.SOUNDS.mapNotNull { Registry.SOUNDS.getKey(it)?.asString() },
+        "sound.source" to Sound.Source.NAMES.keys().map { it.lowercase() }
     )
 
     override fun getOptions() = listOf(

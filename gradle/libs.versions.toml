@@ -1,14 +1,14 @@
 [versions]
-kotlin = "2.0.0"
-kotlinX = "1.10.1"
-shadow = "8.3.3"
-simpleCloudApi = "0.1.0-platform.2-dev.1764512836044-875e3e8"
-paper = "1.20.6-R0.1-SNAPSHOT"
+kotlin = "2.2.20"
+kotlinX = "1.10.2"
+shadow = "9.3.1"
+simpleCloudApi = "0.1.0-platform.19-dev.1770725947326-23f3f70"
+paper = "1.21.11-R0.1-SNAPSHOT"
 cloudCommands = "2.0.0-beta.10"
 cloudAnnotationCommands = "2.0.0"
-interfaces = "1.2.0"
-simpleCloudPlugin = "0.0.1-dev.e695c3b"
-minotaur = "2.8.7"
+interfaces = "2.1.0-SNAPSHOT"
+simpleCloudPlugin = "0.0.1-platform.1766000824440-e57ed95"
+minotaur = "2.8.10"
 configurate = "4.2.0"
 
 [libraries]
@@ -26,10 +26,11 @@ simpleCloudPluginApi = { module = "app.simplecloud.plugin:plugin-shared", versio
 interfacesApi = { module = "com.noxcrew.interfaces:interfaces", version.ref = "interfaces" }
 
 configurate = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate" }
+configurate-kotlin = { module = "org.spongepowered:configurate-extra-kotlin ", version.ref = "configurate" }
 
 [bundles]
-simpleCloud = ["simpleCloudApi", "simpleCloudPluginApi"]
 cloudPaper = ["cloudPaper", "cloudMinecraftExtras", "cloudAnnotation"]
+configurate = ["configurate", "configurate-kotlin"]
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

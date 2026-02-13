@@ -34,6 +34,10 @@ class NpcOptionCommand(
         @Argument("key", suggestions = "playerActionOptionKeys") key: String,
         @Argument("value", suggestions = "globalActionOptionValues") value: String,
     ) {
+        if (sender.sender !is Player) {
+            sender.sender.sendMessage(text("$PREFIX <#dc2626>This command can only be executed by a player!"))
+            return
+        }
         val player = sender.sender as Player
         invokeConfig(player, npcId) { config ->
             config.options[key] = value
@@ -49,6 +53,10 @@ class NpcOptionCommand(
         @Argument("id", suggestions = "npcIds") npcId: String,
         @Argument("key", suggestions = "globalOptionKeys") key: String
     ) {
+        if (sender.sender !is Player) {
+            sender.sender.sendMessage(text("$PREFIX <#dc2626>This command can only be executed by a player!"))
+            return
+        }
         val player = sender.sender as Player
         invokeConfig(player, npcId) { config ->
             config.options.remove(key)
@@ -64,6 +72,10 @@ class NpcOptionCommand(
         @Argument("id", suggestions = "npcIds") npcId: String,
         @Argument("key", suggestions = "globalOptionKeys") key: String
     ) {
+        if (sender.sender !is Player) {
+            sender.sender.sendMessage(text("$PREFIX <#dc2626>This command can only be executed by a player!"))
+            return
+        }
         val player = sender.sender as Player
 
         val npcConfig = findNpcConfigById(player, npcId) ?: return

@@ -1,4 +1,4 @@
-package app.simplecloud.npc.shared.controller
+package app.simplecloud.npc.shared.cloud
 
 import app.simplecloud.api.CloudApi
 import app.simplecloud.npc.shared.hologram.JoinStateHelper
@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
  * @author Niklas Nieberler
  */
 
-class ControllerEventHandler(
+class CloudEventHandler(
     private val cloudApi: CloudApi,
 ) {
 

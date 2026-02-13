@@ -1,6 +1,5 @@
 package app.simplecloud.npc.plugin.paper.command
 
-import app.simplecloud.npc.shared.action.Action
 import app.simplecloud.npc.shared.action.interaction.PlayerInteraction
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import org.incendo.cloud.annotations.suggestion.Suggestions

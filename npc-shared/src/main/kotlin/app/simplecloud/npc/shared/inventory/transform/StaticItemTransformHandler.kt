@@ -17,7 +17,7 @@ class StaticItemTransformHandler(
     private val itemCreator = ItemCreator(config)
 
     fun handle(chestInterface: ChestInterfaceBuilder) {
-        chestInterface.withTransform { pane, view ->
+        chestInterface.withTransform { pane, _ ->
             this.config.staticSlots.forEach { buildStaticItemToPane(pane, it) }
         }
     }

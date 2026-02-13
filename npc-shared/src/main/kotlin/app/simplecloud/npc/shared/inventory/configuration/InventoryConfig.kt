@@ -1,6 +1,7 @@
 package app.simplecloud.npc.shared.inventory.configuration
 
 import app.simplecloud.api.server.ServerState
+import app.simplecloud.npc.shared.enums.NpcType
 import app.simplecloud.npc.shared.utils.ConfigVersion
 import org.bukkit.event.inventory.ClickType
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
@@ -13,6 +14,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 data class InventoryConfig(
     val version: String = ConfigVersion.VERSION,
     var id: String = "",
+    val npcType: NpcType? = null,
     val title: String = "",
     val rows: Int = 6,
     val pagination: PaginationInventory? = null,
@@ -31,6 +33,7 @@ data class InventoryConfig(
     @ConfigSerializable
     data class PaginationInventory(
         var listedGroupName: String = "lobby",
+        var listedPersistentServers: List<String> = emptyList(),
         val serverNamePattern: String = "<group_name>-<numerical_id>",
         val stateItems: Map<ServerState, String> = emptyMap(),
         val fromSlot: ItemSlot = ItemSlot(),

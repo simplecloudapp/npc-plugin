@@ -1,5 +1,5 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     alias(libs.plugins.kotlin)
@@ -17,28 +17,16 @@ allprojects {
     repositories {
         mavenCentral()
         mavenLocal()
-        maven {
-            url = uri("https://oss.sonatype.org/content/repositories/snapshots")
-        }
-        maven {
-            url = uri("https://libraries.minecraft.net")
-        }
-        maven {
-            url = uri("https://repo.papermc.io/repository/maven-public/")
-        }
+        maven("https://oss.sonatype.org/content/repositories/snapshots")
+        maven("https://libraries.minecraft.net")
+        maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://maven.citizensnpcs.co/repo")
         maven("https://repo.minebench.de")
         maven("https://buf.build/gen/maven")
         maven("https://repo.fancyplugins.de/releases")
         maven("https://mvn.lumine.io/repository/maven-public/")
-        maven {
-            name = "ranullRepoExternal"
-            url = uri("https://repo.ranull.com/maven/external")
-        }
-        maven {
-            name = "noxcrew-maven"
-            url = uri("https://maven.noxcrew.com/public")
-        }
+        maven("https://repo.ranull.com/maven/external")
+        maven("https://maven.noxcrew.com/public")
         maven("https://repo.simplecloud.app/snapshots")
         maven("https://buf.build/gen/maven")
     }
@@ -54,12 +42,16 @@ subprojects {
         implementation(rootProject.libs.kotlinX)
     }
 
-    kotlin {
-        jvmToolchain(21)
+    java {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
     }
 
-    tasks.withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "21"
+    kotlin {
+        jvmToolchain(21)
+        compilerOptions {
+            apiVersion.set(KotlinVersion.KOTLIN_2_0)
+            jvmTarget.set(JvmTarget.JVM_21)
+        }
     }
 
     tasks.test {
@@ -67,27 +59,14 @@ subprojects {
     }
 
     tasks.processResources {
-        expand("version" to project.version,
-            "name" to project.name)
+        expand(
+            "version" to project.version,
+            "name" to project.name
+        )
     }
 
     tasks.shadowJar {
-        relocate("io.grpc", "app.simplecloud.relocate.grpc")
         relocate("org.incendo", "app.simplecloud.relocate.org.incendo")
-        relocate("app.simplecloud.controller", "app.simplecloud.relocate.controller")
         relocate("app.simplecloud.plugin.api", "app.simplecloud.relocate.plugin.api")
-        relocate("app.simplecloud.pubsub", "app.simplecloud.relocate.pubsub")
-        relocate("app.simplecloud.droplet", "app.simplecloud.relocate.droplet")
-        relocate("build.buf.gen", "app.simplecloud.relocate.buf")
-        relocate("com.google.protobuf", "app.simplecloud.relocate.protobuf")
     }
-}
-
-tasks.processResources {
-    expand("version" to project.version,
-        "name" to project.name)
-}
-
-tasks.test {
-    useJUnitPlatform()
 }
