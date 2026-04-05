@@ -10,8 +10,6 @@ object ActionOptions {
 
     val CONNECT_TO_SERVER_NAME = Pair("server.name", "")
 
-    val OPEN_INVENTORY = Pair("inventory.name", "")
-
     val TRANSFER_SERVER_IP = Pair("server.ip", "")
 
     val TRANSFER_SERVER_PORT = Pair("server.port", "25565")

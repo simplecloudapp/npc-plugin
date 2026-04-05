@@ -10,8 +10,6 @@ enum class Action(
     val actionHandler: ActionHandler
 ) {
 
-    OPEN_INVENTORY(OpenInventoryActionHandler()),
-
     RUN_COMMAND(RunCommandActionHandler()),
 
     RUN_CONSOLE_COMMAND(RunConsoleCommandActionHandler()),

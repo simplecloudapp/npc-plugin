@@ -23,7 +23,7 @@ data class NpcConfig(
     @ConfigSerializable
     data class NpcInteraction(
         val playerInteraction: PlayerInteraction = PlayerInteraction.LEFT_CLICK,
-        var action: Action = Action.OPEN_INVENTORY,
+        var action: Action = Action.RUN_COMMAND,
         val options: HashMap<String, String> = hashMapOf()
     ) {
         fun getOption(key: String): Option? {

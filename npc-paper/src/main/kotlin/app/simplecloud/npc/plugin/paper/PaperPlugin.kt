@@ -44,7 +44,6 @@ class PaperPlugin : JavaPlugin() {
 
         val npcRepository = namespace.npcRepository
         npcRepository.load()
-        namespace.inventoryRepository.load()
 
         val hologramManager = namespace.hologramManager
         hologramManager.registerFileRequest()
