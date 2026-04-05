@@ -65,8 +65,20 @@ subprojects {
         )
     }
 
+    /* TODO: fix here
     tasks.shadowJar {
-        relocate("org.incendo", "app.simplecloud.relocate.org.incendo")
-        relocate("app.simplecloud.plugin.api", "app.simplecloud.relocate.plugin.api")
+        exclude("kotlin")
+        exclude("kotlinx")
+        mergeServiceFiles()
+
+        relocate("com.google.protobuf", "app.simplecloud.relocate.google.protobuf")
+        relocate("com.google.common", "app.simplecloud.relocate.google.common")
+        relocate("io.grpc", "app.simplecloud.relocate.io.grpc")
+
+        relocate("org.incendo", "app.simplecloud.npc.plugin.relocate.incendo")
+        relocate("org.spongepowered", "app.simplecloud.npc.plugin.relocate.spongepowered")
+        relocate("app.simplecloud.plugin.api", "app.simplecloud.npc.plugin.relocate.plugin.api")
     }
+
+     */
 }

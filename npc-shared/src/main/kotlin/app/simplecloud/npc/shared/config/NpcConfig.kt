@@ -2,7 +2,6 @@ package app.simplecloud.npc.shared.config
 
 import app.simplecloud.npc.shared.action.Action
 import app.simplecloud.npc.shared.action.interaction.PlayerInteraction
-import app.simplecloud.npc.shared.enums.NpcType
 import app.simplecloud.npc.shared.hologram.config.HologramConfiguration
 import app.simplecloud.npc.shared.option.Option
 import app.simplecloud.npc.shared.utils.ConfigVersion
@@ -16,7 +15,6 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 data class NpcConfig(
     val version: String = ConfigVersion.VERSION,
     val id: String = "",
-    val npcType: NpcType? = null,
     val hologramConfiguration: NpcHologramConfiguration = NpcHologramConfiguration(),
     val actions: MutableList<NpcInteraction> = mutableListOf(),
     val options: HashMap<String, String> = hashMapOf()
@@ -39,7 +37,7 @@ data class NpcConfig(
 
     @ConfigSerializable
     data class NpcHologramConfiguration(
-        var placeholderName: String = "lobby",
+        var placeholderGroupName: String = "lobby",
         val holograms: List<NpcHologram> = mutableListOf(),
     ) {
         fun getHologram(joinState: String?): NpcHologram {

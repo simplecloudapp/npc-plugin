@@ -20,7 +20,7 @@ class PaperPlugin : JavaPlugin() {
 
         InterfacesListeners.install(this)
 
-        val namespace = loadNamespace()
+        val namespace = loadNamespace() ?: return
         CommandHandler(namespace, this).parseCommands()
     }
 
@@ -30,11 +30,12 @@ class PaperPlugin : JavaPlugin() {
         this.namespace!!.hologramManager.destroyAllHolograms()
     }
 
-    private fun loadNamespace(): NpcNamespace {
+    private fun loadNamespace(): NpcNamespace? {
         val namespace = NamespaceService.findPossibleNamespace()
         if (namespace == null) {
             logger.warning("No supported NPC software was found on the server. Find the supported plugins at https://docs.simplecloud.app/manual/plugins/npcs#required-npc-plugins")
-            throw NullPointerException("failed to find npc namespace")
+            server.pluginManager.disablePlugin(this)
+            return null
         }
 
         logger.info("Load matching npc namespace: ${namespace.javaClass.simpleName}")

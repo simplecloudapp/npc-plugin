@@ -13,7 +13,6 @@ object DefaultInventoryConfiguration {
 
     private val pagination = InventoryConfig.PaginationInventory(
         listedGroupName = "lobby",
-        listedPersistentServers = emptyList(),
         serverNamePattern = "<group_name>-<numerical_id>",
         stateItems = mapOf(
             ServerState.PREPARING to "starting_pagination_item",
@@ -44,7 +43,6 @@ object DefaultInventoryConfiguration {
     val defaultInventoryConfig = InventoryConfig(
         version = ConfigVersion.VERSION,
         id = "default",
-        npcType = null,
         title = "<#ffffff>Inventory",
         rows = 6,
         pagination = pagination,

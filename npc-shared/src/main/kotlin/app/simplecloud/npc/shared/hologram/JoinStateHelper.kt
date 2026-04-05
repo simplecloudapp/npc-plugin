@@ -2,7 +2,6 @@ package app.simplecloud.npc.shared.hologram
 
 import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.cloud.CloudService
-import app.simplecloud.npc.shared.enums.NpcType
 import kotlinx.coroutines.future.await
 
 /**
@@ -12,21 +11,13 @@ import kotlinx.coroutines.future.await
 object JoinStateHelper {
 
     suspend fun getJoinState(config: NpcConfig): String? {
-        val placeholderName = config.hologramConfiguration.placeholderName
-        return when (config.npcType) {
-            NpcType.GROUP -> getJoinState(placeholderName)
-            NpcType.PERSISTENT -> null
-            null -> null
-        }
+        val groupName = config.hologramConfiguration.placeholderGroupName
+        return getJoinState(groupName)
     }
 
     suspend fun getJoinState(groupName: String): String? {
-        return try {
-            val group = CloudService.cloudApi.group().getGroupByName(groupName).await()
-            group.properties?.get("joinstate") as String?
-        } catch (e: Exception) {
-            null
-        }
+        val group = CloudService.cloudApi.group().getGroupByName(groupName).await()
+        return group.properties["joinstate"] as String?
     }
 
 }

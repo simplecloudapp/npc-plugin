@@ -12,10 +12,10 @@ import org.bukkit.Bukkit
 
 object NamespaceService {
 
-    private val namespaces = mapOf(
-        "Citizens" to ::CitizensNamespace,
-        "FancyNpcs" to ::FancyNpcsNamespace,
-        "MythicMobs" to ::MythicMobsNamespace
+    private val spaces = arrayOf(
+        CitizensNamespace(),
+        FancyNpcsNamespace(),
+        MythicMobsNamespace()
     )
 
     /**
@@ -23,10 +23,7 @@ object NamespaceService {
      * @return the best possible [NpcNamespace]
      */
     fun findPossibleNamespace(): NpcNamespace? {
-        val availablePlugins = getAvailablePluginNames()
-        return namespaces.entries
-            .firstOrNull { (pluginName, _) -> availablePlugins.contains(pluginName) }
-            ?.value?.invoke()
+        return this.spaces.firstOrNull { getAvailablePluginNames().contains(it.pluginName) }
     }
 
     private fun getAvailablePluginNames(): List<String> {

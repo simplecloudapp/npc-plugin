@@ -6,11 +6,13 @@ plugins {
 
 dependencies {
     compileOnly(rootProject.libs.paperApi)
-    compileOnly(rootProject.libs.simpleCloudApi)
+    compileOnly(rootProject.libs.simplecloud)
 
     implementation(rootProject.libs.bundles.cloudPaper)
-    implementation(rootProject.libs.interfacesApi)
-    implementation(rootProject.libs.simpleCloudPluginApi)
+    implementation(rootProject.libs.interfacesApi) {
+        exclude(group = "org.jetbrains.kotlin")
+        exclude(group = "org.jetbrains.kotlinx")
+    }
 
     implementation(project(":npc-shared"))
     implementation(project(":npc-namespace:npc-namespace-citizens"))
@@ -49,9 +51,11 @@ modrinth {
         "1.21.8",
         "1.21.9",
         "1.21.10",
-        "1.21.11"
+        "1.21.11",
+        "26.1",
+        "26.1.1"
     )
-    loaders.add("paper")
+    loaders.addAll("paper", "purpur")
     changelog.set("https://docs.simplecloud.app/changelog")
     syncBodyFrom.set(rootProject.file("README.md").readText())
 }

@@ -1,8 +1,6 @@
 dependencies {
     compileOnly(rootProject.libs.paperApi)
-    compileOnly(rootProject.libs.simpleCloudApi)
-
-    implementation(rootProject.libs.simpleCloudPluginApi)
+    compileOnly(rootProject.libs.simplecloud)
 
     implementation(project(":npc-shared"))
 }

@@ -3,7 +3,7 @@ package app.simplecloud.npc.shared.inventory.transform
 import app.simplecloud.npc.shared.inventory.configuration.InventoryConfig
 import app.simplecloud.npc.shared.inventory.item.ItemCreator
 import com.noxcrew.interfaces.element.StaticElement
-import com.noxcrew.interfaces.interfaces.ChestInterfaceBuilder
+import com.noxcrew.interfaces.interfaces.ContainerInterfaceBuilder
 import com.noxcrew.interfaces.pane.Pane
 
 /**
@@ -16,7 +16,7 @@ class StaticItemTransformHandler(
 
     private val itemCreator = ItemCreator(config)
 
-    fun handle(chestInterface: ChestInterfaceBuilder) {
+    fun handle(chestInterface: ContainerInterfaceBuilder.Simple) {
         chestInterface.withTransform { pane, _ ->
             this.config.staticSlots.forEach { buildStaticItemToPane(pane, it) }
         }

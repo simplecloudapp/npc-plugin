@@ -1,8 +1,6 @@
 dependencies {
     compileOnly(rootProject.libs.paperApi)
-    compileOnly(rootProject.libs.simpleCloudApi)
-
-    implementation(rootProject.libs.simpleCloudPluginApi)
+    compileOnly(rootProject.libs.simplecloud)
 
     compileOnly("io.lumine:Mythic-Dist:5.11.2")
 

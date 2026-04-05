@@ -3,7 +3,6 @@ package app.simplecloud.npc.shared.inventory.transform
 import app.simplecloud.api.CloudApi
 import app.simplecloud.api.server.Server
 import app.simplecloud.api.server.ServerQuery
-import app.simplecloud.npc.shared.enums.NpcType
 import app.simplecloud.npc.shared.inventory.configuration.InventoryConfig
 import app.simplecloud.npc.shared.inventory.item.ItemCreator
 import app.simplecloud.npc.shared.utils.PlayerConnectionHelper
@@ -12,8 +11,8 @@ import app.simplecloud.plugin.api.shared.placeholder.provider.ServerPlaceholderP
 import com.noxcrew.interfaces.element.StaticElement
 import com.noxcrew.interfaces.grid.GridPoint
 import com.noxcrew.interfaces.grid.GridPositionGenerator
-import com.noxcrew.interfaces.interfaces.ChestInterfaceBuilder
-import com.noxcrew.interfaces.pane.Pane
+import com.noxcrew.interfaces.interfaces.ContainerInterfaceBuilder
+import com.noxcrew.interfaces.pane.ContainerPane
 import com.noxcrew.interfaces.transform.builtin.PaginationButton
 import com.noxcrew.interfaces.transform.builtin.PaginationTransformation
 import kotlinx.coroutines.future.await
@@ -26,7 +25,7 @@ import kotlinx.coroutines.runBlocking
 class PaginationTransformHandler(
     private val cloudApi: CloudApi,
     private val placeholderProvider: ServerPlaceholderProvider,
-    private val config: InventoryConfig
+    config: InventoryConfig
 ) {
 
     private val pagination = config.pagination
@@ -34,22 +33,14 @@ class PaginationTransformHandler(
     private val itemCreator = ItemCreator(config)
     private val serverPatternIdentifier = ServerPatternIdentifier(pagination.serverNamePattern)
 
-    suspend fun handle(chestInterface: ChestInterfaceBuilder) {
-        val reactiveTransform = PaginationTransformation.Simple<Pane>(
+    suspend fun handle(chestInterface: ContainerInterfaceBuilder.Simple) {
+        val reactiveTransform = PaginationTransformation.Simple<ContainerPane>(
             buildGridPositionGenerator(),
-            getListedServerElements(),
+            getListedGroupElements(),
             buildPaginationButton(this.pagination.previousPageItem),
             buildPaginationButton(this.pagination.nextPageItem)
         )
         chestInterface.addTransform(reactiveTransform)
-    }
-
-    private suspend fun getListedServerElements(): List<StaticElement> {
-        return when (this.config.npcType) {
-            NpcType.GROUP -> getListedGroupElements()
-            NpcType.PERSISTENT -> getListedPersistentServerElements()
-            null -> throw NullPointerException("inventory npc type is not set")
-        }
     }
 
     private suspend fun getListedGroupElements(): List<StaticElement> {
@@ -58,56 +49,18 @@ class PaginationTransformHandler(
             .filterByState(*this.pagination.stateItems.keys.toTypedArray())
         return this.cloudApi.server().getAllServers(query).await()
             .sortedBy { it.state.ordinal }
-            .map { buildListedServerElement(it) }
+            .map { buildListedGroupElement(it) }
     }
 
-    private fun buildListedServerElement(server: Server): StaticElement {
+    private fun buildListedGroupElement(server: Server): StaticElement {
         val itemId = this.pagination.stateItems[server.state] ?: "default"
         val drawable = this.itemCreator.buildDrawableItem(itemId) { runBlocking { placeholderProvider.append(server, it) } }
             ?: throw NullPointerException("failed to find item")
         return StaticElement(drawable) {
-            val player = it.player
-
-            val serverName = when (config.npcType) {
-                NpcType.PERSISTENT -> {
-                    server.serverBase.name
-                }
-                else -> {
-                    val parsed = serverPatternIdentifier.parseServerToPattern(server)
-                    parsed
-                }
-            }
-
-            try {
-                PlayerConnectionHelper.sendPlayerToServer(player, serverName)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                return@StaticElement
-            }
-
-            player.closeInventory()
+            val serverName = serverPatternIdentifier.parseServerToPattern(server)
+            PlayerConnectionHelper.sendPlayerToServer(it.player, serverName)
+            it.player.closeInventory()
         }
-    }
-
-    private suspend fun getListedPersistentServerElements(): List<StaticElement> {
-        val servers = mutableListOf<Server>()
-
-        for (persistentServerName in this.pagination.listedPersistentServers) {
-            try {
-                val persistentServer = this.cloudApi.persistentServer().getPersistentServerByName(persistentServerName).await()
-                val query = ServerQuery.create()
-                    .filterByPersistentServerId(persistentServer.persistentServerId)
-                    .filterByState(*this.pagination.stateItems.keys.toTypedArray())
-                val found = this.cloudApi.server().getAllServers(query).await()
-                servers.addAll(found)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-        return servers
-            .sortedBy { it.state.ordinal }
-            .map { buildListedServerElement(it) }
     }
 
     private fun buildGridPositionGenerator(): GridPositionGenerator {

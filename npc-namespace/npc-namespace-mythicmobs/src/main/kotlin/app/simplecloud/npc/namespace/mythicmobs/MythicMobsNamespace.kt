@@ -20,7 +20,11 @@ class MythicMobsNamespace : NpcNamespace(
     "MythicMobs"
 ) {
 
-    private val mythicBukkit = MythicBukkit.inst()
+    private lateinit var mythicBukkit: MythicBukkit
+
+    override fun onEnable() {
+        this.mythicBukkit = MythicBukkit.inst()
+    }
 
     override fun registerListeners(pluginManager: PluginManager, plugin: Plugin) {
         pluginManager.registerEvents(MythicMobInteractListener(this), plugin)

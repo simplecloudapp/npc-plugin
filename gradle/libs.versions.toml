@@ -2,11 +2,11 @@
 kotlin = "2.2.20"
 kotlinX = "1.10.2"
 shadow = "9.3.1"
-simpleCloudApi = "0.1.0-platform.19-dev.1770725947326-23f3f70"
 paper = "1.21.11-R0.1-SNAPSHOT"
 cloudCommands = "2.0.0-beta.10"
 cloudAnnotationCommands = "2.0.0"
 interfaces = "2.1.0-SNAPSHOT"
+simplecloud = "0.1.0-platform.22-dev.1774376168759-1e20f57"
 simpleCloudPlugin = "0.0.1-platform.1766000824440-e57ed95"
 minotaur = "2.8.10"
 configurate = "4.2.0"
@@ -20,7 +20,7 @@ cloudMinecraftExtras = { module = "org.incendo:cloud-minecraft-extras", version.
 cloudPaper = { module = "org.incendo:cloud-paper", version.ref = "cloudCommands" }
 cloudAnnotation = { module = "org.incendo:cloud-annotations", version.ref = "cloudAnnotationCommands" }
 
-simpleCloudApi = { module = "app.simplecloud.api:api", version.ref = "simpleCloudApi" }
+simplecloud = { module = "app.simplecloud.api:api", version.ref = "simplecloud" }
 simpleCloudPluginApi = { module = "app.simplecloud.plugin:plugin-shared", version.ref = "simpleCloudPlugin" }
 
 interfacesApi = { module = "com.noxcrew.interfaces:interfaces", version.ref = "interfaces" }
