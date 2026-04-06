@@ -4,7 +4,7 @@ import app.simplecloud.npc.plugin.paper.command.AbstractNpcCommand
 import app.simplecloud.npc.plugin.paper.command.PREFIX
 import app.simplecloud.npc.plugin.paper.command.commandName
 import app.simplecloud.npc.plugin.paper.command.message.CommandMessages
-import app.simplecloud.npc.shared.text
+import app.simplecloud.plugin.api.shared.extension.text
 import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.npc.shared.player.PlayerActions
@@ -98,7 +98,7 @@ class NpcInteractOptionCommand(
     fun suggestActionOptionKey(context: CommandContext<CommandSourceStack>): List<String> {
         val optionKeys = PlayerActions.getAllOptionKeys()
         val text = context.rawInput().input().split(" ")
-        val npcConfig = this.namespace.npcRepository.get(text[1]) ?: return optionKeys
+        val npcConfig = this.namespace.npcRepository.find(text[1]) ?: return optionKeys
         return listOf(*(npcConfig.getPlayerInteraction(text[3])?.action?.actionHandler?.getOptions()?.map { it.first }
             ?: emptyList()).toTypedArray(), *optionKeys.toTypedArray())
     }
@@ -113,7 +113,7 @@ class NpcInteractOptionCommand(
     @Suggestions("optionKeys")
     fun suggestOptionKey(context: CommandContext<CommandSourceStack>): List<String> {
         val text = context.rawInput().input().split(" ")
-        val npcConfig = this.namespace.npcRepository.get(text[1]) ?: return emptyList()
+        val npcConfig = this.namespace.npcRepository.find(text[1]) ?: return emptyList()
         return npcConfig.getPlayerInteraction(text[3])?.options?.map { it.key } ?: emptyList()
     }
 
@@ -131,7 +131,7 @@ class NpcInteractOptionCommand(
             return
         }
         val newConfig = function(npcConfig, newInteraction)
-        this.namespace.npcRepository.save("${newConfig.id}.yml", newConfig)
+        this.namespace.npcRepository.save(newConfig)
     }
 
 }

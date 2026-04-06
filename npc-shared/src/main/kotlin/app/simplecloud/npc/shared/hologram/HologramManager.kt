@@ -156,7 +156,7 @@ class HologramManager(
     }
 
     private suspend fun getServerBridgeById(id: String): ServerBridge {
-        val config = this.namespace.npcRepository.get(id)
+        val config = this.namespace.npcRepository.find(id)
             ?: throw NullPointerException("failed to find npc $id")
         val serverBaseName = config.hologramConfiguration.placeholderServerBaseName
         return ServerBridgeFinder.find(serverBaseName)

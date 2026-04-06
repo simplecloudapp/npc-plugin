@@ -23,7 +23,7 @@ class InteractionExecutor(
      * @param optionProvider the possible options
      */
     fun execute(id: String, player: Player, playerInteraction: PlayerInteraction, optionProvider: OptionProvider = OptionProvider()) {
-        val config = this.namespace.npcRepository.get(id) ?: return
+        val config = this.namespace.npcRepository.find(id) ?: return
         val sneakingInteraction = PlayerInteraction.getOrNull("SHIFT_$playerInteraction")
         if (player.isSneaking && sneakingInteraction != null && config.existPlayerInteraction(sneakingInteraction)) {
             executeSingle(config, player, sneakingInteraction, optionProvider)

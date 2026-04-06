@@ -4,7 +4,6 @@ import app.simplecloud.npc.plugin.paper.command.CommandHandler
 import app.simplecloud.npc.plugin.paper.namespace.NamespaceService
 import app.simplecloud.npc.shared.cloud.CloudService
 import app.simplecloud.npc.shared.namespace.NpcNamespace
-import com.noxcrew.interfaces.InterfacesListeners
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
@@ -17,8 +16,6 @@ class PaperPlugin : JavaPlugin() {
 
     override fun onEnable() {
         server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
-
-        InterfacesListeners.install(this)
 
         val namespace = loadNamespace() ?: return
         CommandHandler(namespace, this).parseCommands()

@@ -7,7 +7,7 @@ import app.simplecloud.npc.plugin.paper.command.message.CommandMessages
 import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.cloud.CloudService
 import app.simplecloud.npc.shared.namespace.NpcNamespace
-import app.simplecloud.npc.shared.text
+import app.simplecloud.plugin.api.shared.extension.text
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -134,7 +134,7 @@ class NpcCommand(
     private fun invokeConfig(player: Player, npcId: String, function: (NpcConfig) -> NpcConfig) {
         val npcConfig = findNpcConfigById(player, npcId) ?: return
         val newConfig = function(npcConfig)
-        this.namespace.npcRepository.save("${newConfig.id}.yml", newConfig)
+        this.namespace.npcRepository.save(newConfig)
     }
 
 }

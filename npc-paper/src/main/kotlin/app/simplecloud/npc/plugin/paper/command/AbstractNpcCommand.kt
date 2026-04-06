@@ -3,7 +3,7 @@ package app.simplecloud.npc.plugin.paper.command
 import app.simplecloud.npc.shared.action.interaction.PlayerInteraction
 import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.namespace.NpcNamespace
-import app.simplecloud.npc.shared.text
+import app.simplecloud.plugin.api.shared.extension.text
 import org.bukkit.entity.Player
 
 /**
@@ -26,7 +26,7 @@ abstract class AbstractNpcCommand(
     }
 
     fun findNpcConfigById(player: Player, id: String): NpcConfig? {
-        val npcConfig = this.namespace.npcRepository.get(id)
+        val npcConfig = this.namespace.npcRepository.find(id)
         if (npcConfig == null) {
             player.sendMessage(text("$PREFIX <#dc2626>Npc with id $id does not exist!"))
             return null

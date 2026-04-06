@@ -22,10 +22,10 @@ class NpcManager(
      * @param id of the new npc
      */
     fun create(id: String): NpcConfig? {
-        if (this.repository.get(id) != null)
+        if (this.repository.find(id) != null)
             return null
         val config = createConfig(id)
-        this.repository.save("$id.yml", config)
+        this.repository.save(config)
         this.logger.info("[SimpleCloud-NPC] New config was created for npc $id")
         this.namespace.applyNewNpc(id)
         return config
@@ -36,7 +36,7 @@ class NpcManager(
      * @param id of the npc
      */
     fun exist(id: String): Boolean {
-        return this.repository.get(id) != null
+        return this.repository.find(id) != null
     }
 
     /**
@@ -44,7 +44,7 @@ class NpcManager(
      * @param id the npc where the config should be deleted
      */
     fun delete(id: String) {
-        val npcConfig = this.repository.get(id) ?: return
+        val npcConfig = this.repository.find(id) ?: return
         this.namespace.hologramManager.destroyHolograms(id)
         this.repository.delete(npcConfig)
         this.logger.info("[SimpleCloud-NPC] The config for npc $id has been deleted")

@@ -7,7 +7,7 @@ import app.simplecloud.npc.plugin.paper.command.message.CommandMessages
 import app.simplecloud.npc.shared.action.Action
 import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.namespace.NpcNamespace
-import app.simplecloud.npc.shared.text
+import app.simplecloud.plugin.api.shared.extension.text
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.entity.Player
 import org.incendo.cloud.annotations.Argument
@@ -82,7 +82,7 @@ class NpcInteractCommand(
         newInteraction.action = npcAction
         npcConfig.updateAction(newInteraction)
 
-        this.repository.save("${npcConfig.id}.yml", npcConfig)
+        this.repository.save(npcConfig)
 
         player.sendMessage(text("$PREFIX <#ffffff>Action ${npcAction.name.lowercase()} for npc ${npcConfig.id} has been <#a3e635>created."))
     }

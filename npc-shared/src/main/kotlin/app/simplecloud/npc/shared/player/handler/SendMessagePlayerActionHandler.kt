@@ -3,7 +3,7 @@ package app.simplecloud.npc.shared.player.handler
 import app.simplecloud.npc.shared.option.OptionProvider
 import app.simplecloud.npc.shared.player.PlayerActionHandler
 import app.simplecloud.npc.shared.player.PlayerActionOptions
-import app.simplecloud.npc.shared.text
+import app.simplecloud.plugin.api.shared.extension.text
 import org.bukkit.entity.Player
 
 /**

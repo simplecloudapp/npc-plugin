@@ -18,7 +18,7 @@ class SpawnNpcActionHandler : EventActionHandler {
     private val debouncer = Debouncer(1500L)
 
     override fun handle(namespace: NpcNamespace, id: String) {
-        val npcConfig = namespace.npcRepository.get(id) ?: return
+        val npcConfig = namespace.npcRepository.find(id) ?: return
         CoroutineScope(Dispatchers.IO).launch {
             debouncer.debounceSync(this) { updateHolograms(namespace.hologramManager, npcConfig) }
         }

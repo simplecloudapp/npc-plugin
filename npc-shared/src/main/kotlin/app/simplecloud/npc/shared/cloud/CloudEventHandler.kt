@@ -34,7 +34,7 @@ class CloudEventHandler(
         namespace.findAllNpcs()
             .filter { namespace.npcManager.exist(it) }
             .forEach {
-                val config = namespace.npcRepository.get(it)
+                val config = namespace.npcRepository.find(it)
                     ?: throw NullPointerException("failed to find npc $it")
                 val joinState = JoinStateHelper.getJoinState(config)
                 namespace.hologramManager.updateTextHologram(config, joinState)

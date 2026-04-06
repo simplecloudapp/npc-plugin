@@ -4,10 +4,10 @@ import app.simplecloud.npc.plugin.paper.command.AbstractNpcCommand
 import app.simplecloud.npc.plugin.paper.command.PREFIX
 import app.simplecloud.npc.plugin.paper.command.commandName
 import app.simplecloud.npc.plugin.paper.command.message.CommandMessages
-import app.simplecloud.npc.shared.text
 import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.npc.shared.player.PlayerActions
+import app.simplecloud.plugin.api.shared.extension.text
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.entity.Player
 import org.incendo.cloud.annotations.Argument
@@ -97,14 +97,14 @@ class NpcOptionCommand(
     @Suggestions("globalOptionKeys")
     fun suggestGlobalOptionKey(context: CommandContext<CommandSourceStack>): List<String> {
         val text = context.rawInput().input().split(" ")
-        val npcConfig = this.namespace.npcRepository.get(text[1]) ?: return emptyList()
+        val npcConfig = this.namespace.npcRepository.find(text[1]) ?: return emptyList()
         return npcConfig.options.map { it.key }
     }
 
     private fun invokeConfig(player: Player, npcId: String, function: (NpcConfig) -> NpcConfig) {
         val npcConfig = findNpcConfigById(player, npcId) ?: return
         val newConfig = function(npcConfig)
-        this.namespace.npcRepository.save("${newConfig.id}.yml", newConfig)
+        this.namespace.npcRepository.save(newConfig)
     }
 
 }
