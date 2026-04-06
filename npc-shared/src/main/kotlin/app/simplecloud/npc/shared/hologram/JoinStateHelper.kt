@@ -1,8 +1,7 @@
 package app.simplecloud.npc.shared.hologram
 
+import app.simplecloud.npc.shared.bridge.ServerBridgeFinder
 import app.simplecloud.npc.shared.config.NpcConfig
-import app.simplecloud.npc.shared.cloud.CloudService
-import kotlinx.coroutines.future.await
 
 /**
  * @author Niklas Nieberler
@@ -11,13 +10,13 @@ import kotlinx.coroutines.future.await
 object JoinStateHelper {
 
     suspend fun getJoinState(config: NpcConfig): String? {
-        val groupName = config.hologramConfiguration.placeholderGroupName
-        return getJoinState(groupName)
+        val serverBaseName = config.hologramConfiguration.placeholderServerBaseName
+        return getJoinState(serverBaseName)
     }
 
-    suspend fun getJoinState(groupName: String): String? {
-        val group = CloudService.cloudApi.group().getGroupByName(groupName).await()
-        return group.properties["joinstate"] as String?
+    suspend fun getJoinState(baseName: String): String? {
+        val serverBridge = ServerBridgeFinder.find(baseName)
+        return serverBridge?.properties["joinstate"] as String?
     }
 
 }

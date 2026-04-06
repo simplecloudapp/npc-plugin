@@ -30,6 +30,8 @@ class NpcCommand(
     namespace
 ) {
 
+    private val cloudApi = CloudService.cloudApi
+
     @Command(commandName)
     @Permission("simplecloud.command.npc")
     fun execute(sender: CommandSourceStack) {
@@ -71,26 +73,44 @@ class NpcCommand(
         }
     }
 
-    @Command("$commandName <id> setHologramGroup <name>")
+    @Command("$commandName <id>")
+    @Permission("simplecloud.command.npc")
+    fun executeNpc(
+        sender: CommandSourceStack,
+        @Argument("id", suggestions = "npcIds") npcId: String
+    ) {
+        if (sender.sender !is Player) {
+            sender.sender.sendMessage(text("$PREFIX <#dc2626>This command can only be executed by a player!"))
+            return
+        }
+        val player = sender.sender as Player
+        CommandMessages.sendHelpMessage(player)
+    }
+
+    @Command("$commandName <id> setHologramServerBase <name>")
     @Permission("simplecloud.command.npc")
     fun executeHologramGroup(
         sender: CommandSourceStack,
         @Argument("id", suggestions = "npcIds") npcId: String,
-        @Argument("name", suggestions = "groupNames") name: String
+        @Argument("name", suggestions = "serverBases") name: String
     ) {
         val player = sender.sender as Player
         invokeConfig(player, npcId) { config ->
-            config.hologramConfiguration.placeholderGroupName = name
-            player.sendMessage(text("$PREFIX <#ffffff>HologramGroup $name has been <#a3e635>created."))
+            config.hologramConfiguration.placeholderServerBaseName = name
+            player.sendMessage(text("$PREFIX <#ffffff>HologramServerBase $name has been <#a3e635>created."))
             CoroutineScope(Dispatchers.IO).launch { namespace.hologramManager.updateTextHologramByGroup(config, name) }
             config
         }
     }
 
-    @Suggestions("groupNames")
-    fun suggestGroupNames(): List<String> {
+    @Suggestions("serverBases")
+    fun suggestServerBaseNames(): List<String> {
         return runBlocking {
-            CloudService.cloudApi.group().allGroups.await().map { it.name }
+            buildList {
+                addAll(cloudApi.group().allGroups.await().map { it.name })
+                addAll(cloudApi.server().allServers.await().map { it.group.name + "-" + it.numericalId })
+                addAll(cloudApi.persistentServer().allPersistentServers.await().map { it.name })
+            }
         }
     }
 
@@ -107,8 +127,8 @@ class NpcCommand(
             coroutineScope.launch { hologramManager.updateHolograms(npcConfig) }
             return
         }
-        val placeholderGroupName = npcConfig.hologramConfiguration.placeholderGroupName
-        coroutineScope.launch { hologramManager.updateTextHologramByGroup(npcConfig, placeholderGroupName) }
+        val serverBaseName = npcConfig.hologramConfiguration.placeholderServerBaseName
+        coroutineScope.launch { hologramManager.updateTextHologramByGroup(npcConfig, serverBaseName) }
     }
 
     private fun invokeConfig(player: Player, npcId: String, function: (NpcConfig) -> NpcConfig) {

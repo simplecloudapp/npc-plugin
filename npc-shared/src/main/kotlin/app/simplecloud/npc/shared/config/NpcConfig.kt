@@ -37,7 +37,7 @@ data class NpcConfig(
 
     @ConfigSerializable
     data class NpcHologramConfiguration(
-        var placeholderGroupName: String = "lobby",
+        var placeholderServerBaseName: String = "lobby",
         val holograms: List<NpcHologram> = mutableListOf(),
     ) {
         fun getHologram(joinState: String?): NpcHologram {
@@ -73,6 +73,10 @@ data class NpcConfig(
 
     fun getPlayerInteraction(playerInteraction: String): NpcInteraction? {
         return this.actions.firstOrNull { it.playerInteraction.name.equals(playerInteraction, true) }
+    }
+
+    fun existPlayerInteraction(playerInteraction: PlayerInteraction): Boolean {
+        return getPlayerInteraction(playerInteraction) != null
     }
 
 }

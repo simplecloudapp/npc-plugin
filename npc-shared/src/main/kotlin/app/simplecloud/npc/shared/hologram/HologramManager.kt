@@ -1,18 +1,17 @@
 package app.simplecloud.npc.shared.hologram
 
-import app.simplecloud.api.group.Group
+import app.simplecloud.npc.shared.bridge.ServerBridge
+import app.simplecloud.npc.shared.bridge.ServerBridgeFinder
 import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.cloud.CloudService
 import app.simplecloud.npc.shared.createAtNamespacedKey
 import app.simplecloud.npc.shared.hologram.config.HologramConfiguration
-import app.simplecloud.plugin.api.shared.placeholder.PlaceholderProvider
 import app.simplecloud.npc.shared.hologramNamespacedKey
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.npc.shared.sync
 import app.simplecloud.npc.shared.utils.NpcFileUpdater
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.bukkit.Bukkit
@@ -28,8 +27,6 @@ class HologramManager(
     private val namespace: NpcNamespace
 ) {
 
-    private val cloudApi = CloudService.cloudApi
-    private val placeholderProvider = PlaceholderProvider.groupPlaceholderProvider
     private val textDisplays = hashMapOf<UUID, String>()
 
     /**
@@ -60,7 +57,8 @@ class HologramManager(
         hologram.lores.reversed().forEach {
             modifyHologram(id, it, hologramEditor)
             runBlocking {
-                val component = placeholderProvider.append(getGroupByConfig(id), it.text, "group")
+                val serverBridge = getServerBridgeById(id)
+                val component = HologramPlaceholderHelper.appendPlaceholder(serverBridge, it.text)
                 hologramEditor = hologramEditor.withCustomName(component)
                     .withNextLine()
                 modifyHologram(id, it, hologramEditor)
@@ -76,7 +74,8 @@ class HologramManager(
      */
     suspend fun updateTextHologram(id: String, lores: List<String>) {
         lores.forEachIndexed { index, newText ->
-            val component = this.placeholderProvider.append(getGroupByConfig(id), newText, "group")
+            val serverBridge = getServerBridgeById(id)
+            val component = HologramPlaceholderHelper.appendPlaceholder(serverBridge, newText)
             sync {
                 val displays = getTextDisplays(id)
                     .sortedBy { it.persistentDataContainer.get(createAtNamespacedKey, PersistentDataType.LONG) }
@@ -156,10 +155,12 @@ class HologramManager(
         HologramModifier.modify(configuration, hologramEditor.textDisplay)
     }
 
-    private suspend fun getGroupByConfig(id: String): Group {
+    private suspend fun getServerBridgeById(id: String): ServerBridge {
         val config = this.namespace.npcRepository.get(id)
             ?: throw NullPointerException("failed to find npc $id")
-        val groupName = config.hologramConfiguration.placeholderGroupName
-        return cloudApi.group().getGroupByName(groupName).await()
+        val serverBaseName = config.hologramConfiguration.placeholderServerBaseName
+        return ServerBridgeFinder.find(serverBaseName)
+            ?: throw NullPointerException("failed to find serverBase $serverBaseName for npc $id")
     }
+
 }
