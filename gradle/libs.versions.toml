@@ -3,30 +3,32 @@ kotlin = "2.2.20"
 kotlinX = "1.10.2"
 shadow = "9.3.1"
 paper = "1.21.11-R0.1-SNAPSHOT"
-cloudCommands = "2.0.0-beta.10"
-cloudAnnotationCommands = "2.0.0"
+cloud-commands = "2.0.0-beta.10"
+cloud-annotation-commands = "2.0.0"
 simplecloud = "0.1.0-platform.22-dev.1774376168759-1e20f57"
-simpleCloudPlugin = "0.0.1-platform.1775477402159-95a0407"
+simplecloud-plugin = "0.0.1-platform.1775490876745-b364849"
 minotaur = "2.8.10"
 configurate = "4.2.0"
 
 [libraries]
-kotlinJvm = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
-kotlinTest = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-kotlinX = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinX" }
-paperApi = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
-cloudMinecraftExtras = { module = "org.incendo:cloud-minecraft-extras", version.ref = "cloudCommands" }
-cloudPaper = { module = "org.incendo:cloud-paper", version.ref = "cloudCommands" }
-cloudAnnotation = { module = "org.incendo:cloud-annotations", version.ref = "cloudAnnotationCommands" }
+kotlin-jvm = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinX" }
+
+paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
+
+cloud-minecraft-extras = { module = "org.incendo:cloud-minecraft-extras", version.ref = "cloud-commands" }
+cloud-paper = { module = "org.incendo:cloud-paper", version.ref = "cloud-commands" }
+cloud-annotation = { module = "org.incendo:cloud-annotations", version.ref = "cloud-annotation-commands" }
 
 simplecloud = { module = "app.simplecloud.api:api", version.ref = "simplecloud" }
-simpleCloudPluginApi = { module = "app.simplecloud.plugin:plugin-shared", version.ref = "simpleCloudPlugin" }
+simplecloud-plugin = { module = "app.simplecloud.plugin:plugin-shared", version.ref = "simplecloud-plugin" }
 
 configurate = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate" }
 configurate-kotlin = { module = "org.spongepowered:configurate-extra-kotlin ", version.ref = "configurate" }
 
 [bundles]
-cloudPaper = ["cloudPaper", "cloudMinecraftExtras", "cloudAnnotation"]
+cloud = ["cloud-paper", "cloud-minecraft-extras", "cloud-annotation"]
 configurate = ["configurate", "configurate-kotlin"]
 
 [plugins]

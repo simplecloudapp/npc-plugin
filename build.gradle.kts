@@ -37,9 +37,14 @@ subprojects {
     apply(plugin = "com.gradleup.shadow")
 
     dependencies {
-        testImplementation(rootProject.libs.kotlinTest)
-        implementation(rootProject.libs.kotlinJvm)
-        implementation(rootProject.libs.kotlinX)
+        testImplementation(rootProject.libs.kotlin.test)
+        implementation(rootProject.libs.kotlin.jvm)
+        implementation(rootProject.libs.kotlin.coroutines)
+
+        compileOnly(rootProject.libs.paper.api)
+
+        compileOnly(rootProject.libs.simplecloud)
+        compileOnly(rootProject.libs.simplecloud.plugin)
     }
 
     java {
