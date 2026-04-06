@@ -19,6 +19,18 @@ class FancyNpcsNamespace : NpcNamespace(
     "FancyNpcs"
 ) {
 
+    private lateinit var fancyNpcPlugin: FancyNpcsPlugin
+
+    override fun onEnable() {
+        this.fancyNpcPlugin = FancyNpcsPlugin.get()
+    }
+
+    override fun applyNewNpc(id: String) {
+        val npc = this.fancyNpcPlugin.npcManager.getNpc(id)
+        npc.data.setDisplayName("<empty>")
+        npc.updateForAll()
+    }
+
     override fun registerListeners(pluginManager: PluginManager, plugin: Plugin) {
         pluginManager.registerEvents(NpcInteractListener(this), plugin)
         eventManager.registerActionEvent<NpcSpawnEvent>(plugin, EventActionType.SPAWN, { it.npc.data.name })
@@ -26,11 +38,11 @@ class FancyNpcsNamespace : NpcNamespace(
     }
 
     override fun findAllNpcs(): List<String> {
-        return FancyNpcsPlugin.get().npcManager.allNpcs.map { it.data.name }
+        return this.fancyNpcPlugin.npcManager.allNpcs.map { it.data.name }
     }
 
     override fun findLocationByNpc(id: String): Location? {
-        return FancyNpcsPlugin.get().npcManager.getNpc(id)?.data?.location
+        return this.fancyNpcPlugin.npcManager.getNpc(id)?.data?.location
     }
 
 }

@@ -27,6 +27,7 @@ class NpcManager(
         val config = createConfig(id)
         this.repository.save("$id.yml", config)
         this.logger.info("[SimpleCloud-NPC] New config was created for npc $id")
+        this.namespace.applyNewNpc(id)
         return config
     }
 
