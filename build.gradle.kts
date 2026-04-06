@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.shadow)
 }
 
-val baseVersion = "0.0.2"
+val baseVersion = "0.1.0"
 val commitHash = System.getenv("COMMIT_HASH")
 val snapshotVersion = "${baseVersion}-dev.$commitHash"
 
