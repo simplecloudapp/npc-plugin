@@ -5,9 +5,8 @@ shadow = "9.3.1"
 paper = "1.21.11-R0.1-SNAPSHOT"
 cloudCommands = "2.0.0-beta.10"
 cloudAnnotationCommands = "2.0.0"
-interfaces = "2.1.0-SNAPSHOT"
 simplecloud = "0.1.0-platform.22-dev.1774376168759-1e20f57"
-simpleCloudPlugin = "0.0.1-platform.1766000824440-e57ed95"
+simpleCloudPlugin = "0.0.1-platform.1775477402159-95a0407"
 minotaur = "2.8.10"
 configurate = "4.2.0"
 
@@ -22,8 +21,6 @@ cloudAnnotation = { module = "org.incendo:cloud-annotations", version.ref = "clo
 
 simplecloud = { module = "app.simplecloud.api:api", version.ref = "simplecloud" }
 simpleCloudPluginApi = { module = "app.simplecloud.plugin:plugin-shared", version.ref = "simpleCloudPlugin" }
-
-interfacesApi = { module = "com.noxcrew.interfaces:interfaces", version.ref = "interfaces" }
 
 configurate = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate" }
 configurate-kotlin = { module = "org.spongepowered:configurate-extra-kotlin ", version.ref = "configurate" }

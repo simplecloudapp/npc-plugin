@@ -9,10 +9,6 @@ dependencies {
     compileOnly(rootProject.libs.simplecloud)
 
     implementation(rootProject.libs.bundles.cloudPaper)
-    implementation(rootProject.libs.interfacesApi) {
-        exclude(group = "org.jetbrains.kotlin")
-        exclude(group = "org.jetbrains.kotlinx")
-    }
 
     implementation(project(":npc-shared"))
     implementation(project(":npc-namespace:npc-namespace-citizens"))
