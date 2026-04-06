@@ -1,6 +1,7 @@
 package app.simplecloud.npc.namespace.mythicmobs
 
 import app.simplecloud.npc.namespace.mythicmobs.listener.*
+import app.simplecloud.npc.shared.action.interaction.PlayerInteraction
 import app.simplecloud.npc.shared.event.EventActionType
 import app.simplecloud.npc.shared.event.registerActionEvent
 import app.simplecloud.npc.shared.namespace.NpcNamespace
@@ -36,6 +37,10 @@ class MythicMobsNamespace : NpcNamespace(
         return this.mythicBukkit.mobManager.activeMobs
             .filter { !it.isDead }
             .map { MobIdFetcher.fetch(it) }
+    }
+
+    override fun getAvailablePlayerInteractions(): List<PlayerInteraction> {
+        return listOf(PlayerInteraction.RIGHT_CLICK, PlayerInteraction.SHIFT_RIGHT_CLICK)
     }
 
     override fun findLocationByNpc(id: String): Location? {

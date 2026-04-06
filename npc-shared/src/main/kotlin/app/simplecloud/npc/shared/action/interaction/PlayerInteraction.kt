@@ -8,7 +8,11 @@ enum class PlayerInteraction {
 
     RIGHT_CLICK,
 
-    LEFT_CLICK;
+    LEFT_CLICK,
+
+    SHIFT_RIGHT_CLICK,
+
+    SHIFT_LEFT_CLICK;
 
     companion object {
         fun getOrNull(name: String): PlayerInteraction? {

@@ -1,6 +1,5 @@
 package app.simplecloud.npc.plugin.paper.command
 
-import app.simplecloud.npc.shared.action.interaction.PlayerInteraction
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import org.incendo.cloud.annotations.suggestion.Suggestions
 
@@ -20,7 +19,7 @@ open class CommandSuggestions(
 
     @Suggestions("playerInteractions")
     fun suggestPlayerInteraction(): List<String> {
-        return PlayerInteraction.entries.map { it.name.lowercase() }
+        return this.namespace.getAvailablePlayerInteractions().map { it.name.lowercase() }
     }
 
 }
