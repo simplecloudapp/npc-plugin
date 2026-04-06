@@ -13,7 +13,8 @@ object HologramPlaceholderHelper {
     suspend fun appendPlaceholder(serverBridge: ServerBridge, text: String): Component {
         return when {
             serverBridge.isPersistentServer -> {
-                Component.text("Persistent server placeholders are not supported.")
+                val persistentServer = requireNotNull(serverBridge.getPersistentServer()) { "Failed to find persistent server for $serverBridge" }
+                PlaceholderProvider.persistentServerPlaceholderProvider.append(persistentServer, text, "group")
             }
 
             serverBridge.isGroup -> {
