@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
     implementation(rootProject.libs.bundles.cloud)
+    implementation(rootProject.libs.bundles.configurate)
 
     implementation(rootProject.libs.simplecloud.plugin)
 

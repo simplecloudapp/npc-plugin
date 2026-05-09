@@ -3,7 +3,7 @@ kotlin = "2.2.20"
 kotlinX = "1.10.2"
 shadow = "9.3.1"
 paper = "1.21.11-R0.1-SNAPSHOT"
-cloud-commands = "2.0.0-beta.10"
+cloud-commands = "2.0.0-beta.15"
 cloud-annotation-commands = "2.0.0"
 simplecloud = "0.1.0-platform.22-dev.1774376168759-1e20f57"
 simplecloud-plugin = "0.0.1-platform.1775490876745-b364849"
@@ -25,7 +25,7 @@ simplecloud = { module = "app.simplecloud.api:api", version.ref = "simplecloud" 
 simplecloud-plugin = { module = "app.simplecloud.plugin:plugin-shared", version.ref = "simplecloud-plugin" }
 
 configurate = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate" }
-configurate-kotlin = { module = "org.spongepowered:configurate-extra-kotlin ", version.ref = "configurate" }
+configurate-kotlin = { module = "org.spongepowered:configurate-extra-kotlin", version.ref = "configurate" }
 
 [bundles]
 cloud = ["cloud-paper", "cloud-minecraft-extras", "cloud-annotation"]
