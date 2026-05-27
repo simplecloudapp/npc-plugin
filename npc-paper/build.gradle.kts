@@ -15,6 +15,7 @@ dependencies {
     implementation(project(":npc-namespace:npc-namespace-standalone"))
     implementation(project(":npc-namespace:npc-namespace-fancynpcs"))
     implementation(project(":npc-namespace:npc-namespace-mythicmobs"))
+    implementation(project(":npc-namespace:npc-namespace-znpcs-plus"))
 }
 
 tasks.named("shadowJar", ShadowJar::class) {

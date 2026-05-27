@@ -18,6 +18,8 @@ findProject(":npc-namespace:npc-namespace-citizens")?.name = "npc-namespace-citi
 findProject(":npc-namespace:npc-namespace-standalone")?.name = "npc-namespace-standalone"
 findProject(":npc-namespace:npc-namespace-fancynpcs")?.name = "npc-namespace-fancynpcs"
 findProject(":npc-namespace:npc-namespace-mythicmobs")?.name = "npc-namespace-mythicmobs"
+include("npc-namespace:npc-namespace-znpcs-plus")
+findProject(":npc-namespace:npc-namespace-znpcs-plus")?.name = "npc-namespace-znpcs-plus"
 
 //include("npc-namespace:npc-namespace-playernpc")
 //findProject(":npc-namespace:npc-namespace-playernpc")?.name = "npc-namespace-playernpc"

@@ -34,7 +34,7 @@ class MythicMobsNamespace : NpcNamespace(
     }
 
     override fun findAllNpcs(): List<String> {
-        return this.mythicBukkit.mobManager.activeMobs
+        return MythicBukkit.inst().mobManager.activeMobs
             .filter { !it.isDead }
             .map { MobIdFetcher.fetch(it) }
     }
@@ -44,7 +44,7 @@ class MythicMobsNamespace : NpcNamespace(
     }
 
     override fun findLocationByNpc(id: String): Location? {
-        val abstractLocation = this.mythicBukkit.mobManager.activeMobs
+        val abstractLocation = MythicBukkit.inst().mobManager.activeMobs
             .firstOrNull { MobIdFetcher.fetch(it) == id }?.location ?: return null
         val world = Bukkit.getWorld(abstractLocation.world.name)
             ?: throw NullPointerException("failed to find world ${abstractLocation.world.name}")

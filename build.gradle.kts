@@ -20,6 +20,7 @@ allprojects {
         maven("https://oss.sonatype.org/content/repositories/snapshots")
         maven("https://libraries.minecraft.net")
         maven("https://repo.papermc.io/repository/maven-public/")
+        maven("https://repo.pyr.lol/snapshots")
         maven("https://maven.citizensnpcs.co/repo")
         maven("https://repo.minebench.de")
         maven("https://buf.build/gen/maven")
