@@ -24,7 +24,7 @@ allprojects {
         maven("https://maven.citizensnpcs.co/repo")
         maven("https://repo.minebench.de")
         maven("https://buf.build/gen/maven")
-        maven("https://repo.fancyplugins.de/releases")
+        maven("https://repo.fancyinnovations.com/releases")
         maven("https://mvn.lumine.io/repository/maven-public/")
         maven("https://repo.ranull.com/maven/external")
         maven("https://maven.noxcrew.com/public")
