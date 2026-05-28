@@ -20,13 +20,6 @@ import org.bukkit.plugin.PluginManager
 class MythicMobsNamespace : NpcNamespace(
     "MythicMobs"
 ) {
-
-    private lateinit var mythicBukkit: MythicBukkit
-
-    override fun onEnable() {
-        this.mythicBukkit = MythicBukkit.inst()
-    }
-
     override fun registerListeners(pluginManager: PluginManager, plugin: Plugin) {
         pluginManager.registerEvents(MythicMobInteractListener(this), plugin)
         eventManager.registerActionEvent<MythicMobSpawnEvent>(plugin, EventActionType.SPAWN, { MobIdFetcher.fetch(it.mob) })
