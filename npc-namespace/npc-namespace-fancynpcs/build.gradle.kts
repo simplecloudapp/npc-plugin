@@ -1,5 +1,5 @@
 dependencies {
-    compileOnly("de.oliver:FancyNpcs:2.9.2")
+    compileOnly(rootProject.libs.fancynpcs)
 
     implementation(project(":npc-shared"))
 }

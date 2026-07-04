@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.shadow)
 }
 
-val baseVersion = "0.1.1"
+val baseVersion = "0.1.2"
 val commitHash = System.getenv("COMMIT_HASH")
 val snapshotVersion = "${baseVersion}-dev.$commitHash"
 
@@ -55,7 +55,7 @@ subprojects {
     kotlin {
         jvmToolchain(21)
         compilerOptions {
-            apiVersion.set(KotlinVersion.KOTLIN_2_0)
+            apiVersion.set(KotlinVersion.KOTLIN_2_2)
             jvmTarget.set(JvmTarget.JVM_21)
         }
     }

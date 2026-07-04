@@ -1,5 +1,5 @@
 dependencies {
-    compileOnly("net.citizensnpcs:citizens-main:2.0.35-SNAPSHOT")
+    compileOnly(rootProject.libs.citizens.main)
 
     implementation(project(":npc-shared"))
 }

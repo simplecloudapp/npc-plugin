@@ -1,5 +1,5 @@
 dependencies {
-    compileOnly("io.lumine:Mythic-Dist:5.11.2")
+    compileOnly(rootProject.libs.mythic.dist)
 
     implementation(project(":npc-shared"))
 }

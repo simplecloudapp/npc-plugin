@@ -2,7 +2,6 @@ package app.simplecloud.npc.shared.repository
 
 import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.utils.NpcFileUpdater
-import app.simplecloud.plugin.api.shared.config.YamlDirectoryRepository
 import java.io.File
 import kotlin.io.path.Path
 
@@ -10,10 +9,14 @@ import kotlin.io.path.Path
  * @author Niklas Nieberler
  */
 
-class NpcRepository : YamlDirectoryRepository<NpcConfig, String>(
-    Path("plugins/simplecloud-npc"),
+class NpcRepository : WatchableYamlDirectoryRepository<NpcConfig, String>(
+    CONFIG_DIRECTORY,
     NpcConfig::class.java
 ) {
+
+    companion object {
+        private val CONFIG_DIRECTORY = Path("plugins/simplecloud-npc")
+    }
 
     override fun save(entity: NpcConfig) {
         save("${entity.id}.yml", entity)
@@ -28,8 +31,7 @@ class NpcRepository : YamlDirectoryRepository<NpcConfig, String>(
     }
 
     override fun watchUpdateEvent(file: File) {
-        val npcConfig = find(file.nameWithoutExtension) ?: return
-        NpcFileUpdater.invokeFile(npcConfig)
+        find(file.nameWithoutExtension)?.let(NpcFileUpdater::invokeFile)
     }
 
 }

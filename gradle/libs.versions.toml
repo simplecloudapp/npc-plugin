@@ -1,14 +1,18 @@
 [versions]
-kotlin = "2.2.20"
-kotlinX = "1.10.2"
-shadow = "9.3.1"
+kotlin = "2.4.0"
+kotlinX = "1.11.0"
+shadow = "9.4.3"
 paper = "1.21.11-R0.1-SNAPSHOT"
-cloud-commands = "2.0.0-beta.15"
+cloud-commands = "2.0.0-beta.17"
 cloud-annotation-commands = "2.0.0"
-simplecloud = "0.1.0-platform.22-dev.1774376168759-1e20f57"
-simplecloud-plugin = "0.0.1-platform.1775490876745-b364849"
-minotaur = "2.8.10"
+simplecloud = "0.1.0-platform.33-dev.52.1-9490b37"
+simplecloud-plugin = "0.0.1-platform.1778966459069-b1e45e2"
+minotaur = "2.9.0"
 configurate = "4.2.0"
+citizens = "2.0.43-SNAPSHOT"
+fancynpcs = "2.9.2"
+mythic-dist = "5.12.1"
+znpcsplus = "2.1.0-SNAPSHOT"
 
 [libraries]
 kotlin-jvm = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
@@ -26,6 +30,11 @@ simplecloud-plugin = { module = "app.simplecloud.plugin:plugin-shared", version.
 
 configurate = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate" }
 configurate-kotlin = { module = "org.spongepowered:configurate-extra-kotlin", version.ref = "configurate" }
+
+citizens-main = { module = "net.citizensnpcs:citizens-main", version.ref = "citizens" }
+fancynpcs = { module = "de.oliver:FancyNpcs", version.ref = "fancynpcs" }
+mythic-dist = { module = "io.lumine:Mythic-Dist", version.ref = "mythic-dist" }
+znpcsplus-api = { module = "lol.pyr:znpcsplus-api", version.ref = "znpcsplus" }
 
 [bundles]
 cloud = ["cloud-paper", "cloud-minecraft-extras", "cloud-annotation"]

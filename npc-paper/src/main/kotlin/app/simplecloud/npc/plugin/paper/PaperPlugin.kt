@@ -22,9 +22,9 @@ class PaperPlugin : JavaPlugin() {
     }
 
     override fun onDisable() {
-        if (this.namespace == null)
-            return
-        this.namespace!!.hologramManager.destroyAllHolograms()
+        val namespace = this.namespace ?: return
+        namespace.npcRepository.stopWatching()
+        namespace.hologramManager.destroyAllHolograms()
     }
 
     private fun loadNamespace(): NpcNamespace? {
@@ -40,7 +40,7 @@ class PaperPlugin : JavaPlugin() {
         CloudService.eventHandler.registerEvents(namespace)
 
         val npcRepository = namespace.npcRepository
-        npcRepository.load()
+        npcRepository.loadAndWatch()
 
         val hologramManager = namespace.hologramManager
         hologramManager.registerFileRequest()
