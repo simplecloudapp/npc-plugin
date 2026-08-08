@@ -1,10 +1,10 @@
 package app.simplecloud.npc.namespace.mythicmobs
 
-import app.simplecloud.npc.namespace.mythicmobs.listener.*
-import app.simplecloud.npc.shared.action.interaction.PlayerInteraction
-import app.simplecloud.npc.shared.event.EventActionType
-import app.simplecloud.npc.shared.event.registerActionEvent
-import app.simplecloud.npc.shared.namespace.NpcNamespace
+import app.simplecloud.npc.namespace.mythicmobs.listener.MythicMobInteractListener
+import app.simplecloud.npc.shared.provider.NpcProvider
+import app.simplecloud.npc.shared.provider.NpcProviderEvents
+import app.simplecloud.npc.shared.provider.NpcProviderType
+import app.simplecloud.npc.shared.event.listener.listenEvent
 import io.lumine.mythic.bukkit.MythicBukkit
 import io.lumine.mythic.bukkit.events.MythicMobDespawnEvent
 import io.lumine.mythic.bukkit.events.MythicMobSpawnEvent
@@ -13,42 +13,38 @@ import org.bukkit.Location
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.PluginManager
 
-/**
- * @author Niklas Nieberler
- */
+class MythicMobsNamespace : NpcProvider {
+    override val type = NpcProviderType.MYTHIC_MOBS
+    override val pluginName = "MythicMobs"
 
-class MythicMobsNamespace : NpcNamespace(
-    "MythicMobs"
-) {
-    override fun registerListeners(pluginManager: PluginManager, plugin: Plugin) {
-        pluginManager.registerEvents(MythicMobInteractListener(this), plugin)
-        eventManager.registerActionEvent<MythicMobSpawnEvent>(plugin, EventActionType.SPAWN, { MobIdFetcher.fetch(it.mob) })
-        eventManager.registerActionEvent<MythicMobDespawnEvent>(plugin, EventActionType.REMOVE, { MobIdFetcher.fetch(it.mob) })
+    override fun registerListeners(pluginManager: PluginManager, plugin: Plugin, events: NpcProviderEvents) {
+        pluginManager.registerEvents(MythicMobInteractListener(events), plugin)
+        listenEvent<MythicMobSpawnEvent>(plugin)
+            .addAction { events.spawn(type, MobIdFetcher.fetch(it.mob)) }
+        listenEvent<MythicMobDespawnEvent>(plugin)
+            .addAction { events.remove(type, MobIdFetcher.fetch(it.mob)) }
     }
 
-    override fun findAllNpcs(): List<String> {
-        return MythicBukkit.inst().mobManager.activeMobs
-            .filter { !it.isDead }
-            .map { MobIdFetcher.fetch(it) }
-    }
+    override fun exists(reference: String): Boolean = find(reference) != null
 
-    override fun getAvailablePlayerInteractions(): List<PlayerInteraction> {
-        return listOf(PlayerInteraction.RIGHT_CLICK, PlayerInteraction.SHIFT_RIGHT_CLICK)
-    }
+    override fun references(): List<String> = MythicBukkit.inst().mobManager.activeMobs
+        .filterNot { it.isDead }
+        .map(MobIdFetcher::fetch)
+        .distinct()
 
-    override fun findLocationByNpc(id: String): Location? {
-        val abstractLocation = MythicBukkit.inst().mobManager.activeMobs
-            .firstOrNull { MobIdFetcher.fetch(it) == id }?.location ?: return null
-        val world = Bukkit.getWorld(abstractLocation.world.name)
-            ?: throw NullPointerException("failed to find world ${abstractLocation.world.name}")
+    override fun location(reference: String): Location? {
+        val abstractLocation = find(reference)?.location ?: return null
+        val world = Bukkit.getWorld(abstractLocation.world.name) ?: return null
         return Location(
             world,
             abstractLocation.x,
             abstractLocation.y,
             abstractLocation.z,
             abstractLocation.yaw,
-            abstractLocation.pitch
+            abstractLocation.pitch,
         )
     }
 
+    private fun find(reference: String) = MythicBukkit.inst().mobManager.activeMobs
+        .firstOrNull { !it.isDead && MobIdFetcher.fetch(it) == reference }
 }

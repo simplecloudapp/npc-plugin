@@ -31,4 +31,9 @@ class Debouncer(
             sync { action() }
         }
     }
+
+    fun cancel() {
+        job?.cancel()
+        job = null
+    }
 }

@@ -1,0 +1,39 @@
+version: '1'
+
+variables:
+  prefix: '<#0EA5E9><bold>NPCs</bold> <#475569>|'
+
+command:
+  help:
+    title: '<prefix> <#0EA5E9>Commands'
+    topic-title: '<prefix> <#0EA5E9>Help <#475569>— <#F8FAFC><topic>'
+    unknown: '<prefix> <#DC2626>Unknown help topic. <#94A3B8>Try: <#F8FAFC>create, link, edit, target, hologram, action, pushback, admin'
+  reload:
+    success: '<prefix> <#A3E635>SimpleCloud NPCs was reloaded.'
+    failed: '<prefix> <#DC2626>SimpleCloud NPCs could not be reloaded.'
+  npc:
+    create:
+      success: '<prefix> <#A3E635>Created NPC <#F8FAFC><id><#A3E635>.'
+      failed: '<prefix> <#DC2626>Could not create the NPC<#F8FAFC><detail-suffix>'
+    link:
+      success: '<prefix> <#A3E635>Linked NPC <#F8FAFC><id><#A3E635>.'
+    unlink:
+      success: '<prefix> <#A3E635>Unlinked NPC <#F8FAFC><id><#A3E635>.'
+    delete:
+      success: '<prefix> <#A3E635>Deleted NPC <#F8FAFC><id><#A3E635>.'
+      failed: '<prefix> <#DC2626>Could not delete NPC <#F8FAFC><detail><#DC2626>.'
+    error:
+      not-found: '<prefix> <#DC2626>NPC <#F8FAFC><detail> <#DC2626>was not found.'
+      already-exists: '<prefix> <#DC2626>NPC <#F8FAFC><detail> <#DC2626>already exists.'
+      invalid-id: '<prefix> <#DC2626>NPC id <#F8FAFC><detail> <#DC2626>is invalid.'
+  provider:
+    error:
+      required: '<prefix> <#DC2626>More than one creation provider is installed; specify one.'
+      creation-unavailable: '<prefix> <#DC2626>Install Citizens, FancyNPCs, or ZNPCsPlus to create NPCs.'
+      unavailable: '<prefix> <#DC2626>Provider <#F8FAFC><detail> <#DC2626>is unavailable.'
+      external-npc-missing: '<prefix> <#DC2626>Provider NPC <#F8FAFC><detail> <#DC2626>was not found.'
+      already-linked: '<prefix> <#DC2626>Provider NPC <#F8FAFC><detail> <#DC2626>is already linked.'
+  target:
+    error:
+      not-found: '<prefix> <#DC2626>Target <#F8FAFC><detail> <#DC2626>was not found.'
+      ambiguous: '<prefix> <#DC2626>Target <#F8FAFC><detail> <#DC2626>exists as both a group and persistent server. Rename one of them.'

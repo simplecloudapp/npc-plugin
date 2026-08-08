@@ -12,7 +12,6 @@ dependencies {
 
     implementation(project(":npc-shared"))
     implementation(project(":npc-namespace:npc-namespace-citizens"))
-    implementation(project(":npc-namespace:npc-namespace-standalone"))
     implementation(project(":npc-namespace:npc-namespace-fancynpcs"))
     implementation(project(":npc-namespace:npc-namespace-mythicmobs"))
     implementation(project(":npc-namespace:npc-namespace-znpcs-plus"))

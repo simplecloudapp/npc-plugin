@@ -5,77 +5,73 @@ import app.simplecloud.npc.shared.action.interaction.PlayerInteraction
 import app.simplecloud.npc.shared.event.EventManager
 import app.simplecloud.npc.shared.hologram.HologramManager
 import app.simplecloud.npc.shared.manager.NpcManager
+import app.simplecloud.npc.shared.provider.NpcProviderEvents
+import app.simplecloud.npc.shared.provider.NpcProviderRegistry
+import app.simplecloud.npc.shared.pushback.PushbackListener
 import app.simplecloud.npc.shared.repository.NpcRepository
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.plugin.Plugin
-import org.bukkit.plugin.PluginManager
+import java.nio.file.Path
 
 /**
- * @author Niklas Nieberler
+ * Shared runtime for every configured NPC and every installed provider.
+ *
+ * Provider integrations no longer own repositories or core managers. This lets
+ * Citizens and FancyNPCs configurations coexist on the same server.
  */
-
-/**
- * This is a separate space for the loaded npc plugin on the server
- * @param pluginName will be loaded if this plugin is installed
- */
-abstract class NpcNamespace(
-    val pluginName: String
+class NpcNamespace(
+    val providerRegistry: NpcProviderRegistry,
+    configDirectory: Path,
 ) {
 
-    val npcRepository = NpcRepository()
-
+    val npcRepository = NpcRepository(configDirectory, providerRegistry)
     val eventManager = EventManager(this)
     val npcManager = NpcManager(this)
     val interactionExecutor = InteractionExecutor(this)
     val hologramManager = HologramManager(this)
 
-    /**
-     * Is executed when namespace must be loaded
-     */
-    open fun onEnable() {}
-
-    /**
-     * Is only executed if this namespace was loaded at startup
-     */
-    open fun onDisable() {}
-
-    /**
-     * Apply a new npc
-     * @param id of the npc
-     */
-    open fun applyNewNpc(id: String) {}
-
-    /**
-     * Loads all required listeners for this namespace
-     * @param pluginManager of the minecraft server
-     * @param plugin of the npc plugin
-     */
-    abstract fun registerListeners(pluginManager: PluginManager, plugin: Plugin)
-
-    /**
-     * Gets all npcs
-     */
-    abstract fun findAllNpcs(): List<String>
-
-    /**
-     * Gets all available player interactions for the npc actions
-     */
-    open fun getAvailablePlayerInteractions(): List<PlayerInteraction> {
-        return PlayerInteraction.entries
+    init {
+        npcRepository.externalDeleteListener = {
+            hologramManager.destroyHolograms(it.id)
+            hologramManager.destroyLegacyHolograms(it.id)
+        }
     }
 
-    /**
-     * Returns true when a npc already exist with the same id
-     * @param id of the npc
-     */
-    fun existNpc(id: String): Boolean {
-        return findAllNpcs().contains(id)
+    fun onEnable(plugin: Plugin) {
+        providerRegistry.enable(Bukkit.getPluginManager(), plugin, providerEvents())
+        Bukkit.getPluginManager().registerEvents(PushbackListener(this), plugin)
     }
 
-    /**
-     * Gets the location by a npc
-     * @param id of the npc
-     */
-    abstract fun findLocationByNpc(id: String): Location?
+    fun onDisable() {
+        providerRegistry.disable(Bukkit.getPluginManager())
+    }
 
+    fun findAllNpcs(): List<String> = npcRepository.findAll().map { it.id }
+
+    fun getAvailablePlayerInteractions(): List<PlayerInteraction> = PlayerInteraction.entries
+
+    fun existNpc(id: String): Boolean = npcRepository.find(id) != null
+
+    fun findLocationByNpc(id: String): Location? {
+        val config = npcRepository.find(id) ?: return null
+        val provider = providerRegistry.getAvailable(config.provider.type, Bukkit.getPluginManager()) ?: return null
+        return provider.location(config.provider.reference)
+    }
+
+    private fun providerEvents() = NpcProviderEvents(
+        interact = { provider, reference, player, interaction, options ->
+            val config = npcRepository.findByProvider(provider, reference) ?: return@NpcProviderEvents
+            interactionExecutor.execute(config.id, player, interaction, options)
+        },
+        spawn = { provider, reference ->
+            val config = npcRepository.findByProvider(provider, reference) ?: return@NpcProviderEvents
+            hologramManager.createOrUpdate(config)
+        },
+        remove = { provider, reference ->
+            val config = npcRepository.findByProvider(provider, reference) ?: return@NpcProviderEvents
+            hologramManager.destroyHolograms(config.id)
+            hologramManager.destroyLegacyHolograms(config.id)
+        },
+    )
 }

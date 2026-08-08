@@ -1,6 +1,7 @@
 package app.simplecloud.npc.shared.hologram
 
 import app.simplecloud.npc.shared.createAtNamespacedKey
+import app.simplecloud.npc.shared.hologramLineNamespacedKey
 import app.simplecloud.npc.shared.hologramNamespacedKey
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
@@ -12,16 +13,12 @@ import org.bukkit.persistence.PersistentDataType
  * @author Niklas Nieberler
  */
 
-data class HologramEditor(
+class HologramEditor(
     private val npcId: String,
     private val location: Location,
+    private val lineIndex: Int,
 ) {
-
-    private var yCloneLocation = 0.3
-    private var nextLineHologram: HologramEditor? = null
-
     val textDisplay = createTextDisplay()
-    val id = textDisplay.uniqueId
 
     /**
      * Sets a custom name to the text display
@@ -33,23 +30,6 @@ data class HologramEditor(
         return this
     }
 
-    /**
-     * Creates a new hologram line
-     * @return new hologram instance
-     */
-    fun withNextLine(): HologramEditor {
-        if (this.nextLineHologram == null)
-            return HologramEditor(this.npcId, this.location.clone().add(0.0, this.yCloneLocation, 0.0))
-        return this.nextLineHologram!!
-    }
-
-    /**
-     * Destroys the text display
-     */
-    fun destroy() {
-        this.textDisplay.remove()
-    }
-
     private fun createTextDisplay(): TextDisplay {
         val textDisplay = this.location.world.spawn(this.location, TextDisplay::class.java)
         textDisplay.billboard = Billboard.CENTER
@@ -57,6 +37,7 @@ data class HologramEditor(
         val persistentDataContainer = textDisplay.persistentDataContainer
         persistentDataContainer.set(hologramNamespacedKey, PersistentDataType.STRING, this.npcId)
         persistentDataContainer.set(createAtNamespacedKey, PersistentDataType.LONG, System.currentTimeMillis())
+        persistentDataContainer.set(hologramLineNamespacedKey, PersistentDataType.INTEGER, this.lineIndex)
         return textDisplay
     }
 

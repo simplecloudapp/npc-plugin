@@ -16,12 +16,13 @@ object ServerBridgeFinder {
 
     suspend fun find(name: String): ServerBridge? {
         val persistentServer = this.cloudApi.persistentServer().allPersistentServers.await()
-                .firstOrNull { it.name == name }
+                .firstOrNull { it.name.equals(name, true) }
         val group = this.cloudApi.group().allGroups.await()
-                .firstOrNull { it.name == name }
+                .firstOrNull { it.name.equals(name, true) }
         val server = getServerByName(name)
 
         return when {
+            persistentServer != null && group != null -> null
             persistentServer != null -> ServerBridge(
                 persistentServer.name,
                 persistentServer.persistentServerId,

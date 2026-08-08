@@ -1,54 +1,71 @@
 package app.simplecloud.npc.plugin.paper
 
 import app.simplecloud.npc.plugin.paper.command.CommandHandler
+import app.simplecloud.npc.plugin.paper.command.message.CommandMessages
 import app.simplecloud.npc.plugin.paper.namespace.NamespaceService
 import app.simplecloud.npc.shared.cloud.CloudService
+import app.simplecloud.npc.shared.config.NpcConfigMigration
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import org.bukkit.plugin.java.JavaPlugin
-
-/**
- * @author Niklas Nieberler
- */
+import java.util.logging.Level
 
 class PaperPlugin : JavaPlugin() {
 
     private var namespace: NpcNamespace? = null
 
     override fun onEnable() {
-        server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
+        try {
+            when (val result = PluginDataFolderMigration.migrate(dataFolder.toPath())) {
+                PluginDataFolderMigration.Result.None -> Unit
+                PluginDataFolderMigration.Result.Moved -> logger.info(
+                    "Migrated the plugin data folder from ${PluginDataFolderMigration.LEGACY_FOLDER_NAME} to ${dataFolder.name}."
+                )
+                PluginDataFolderMigration.Result.Merged -> logger.info(
+                    "Merged the legacy ${PluginDataFolderMigration.LEGACY_FOLDER_NAME} data into ${dataFolder.name}."
+                )
+                is PluginDataFolderMigration.Result.MergedWithConflicts -> logger.warning(
+                    "Merged legacy plugin data, but kept conflicting files in ${PluginDataFolderMigration.LEGACY_FOLDER_NAME}: " +
+                        result.paths.joinToString()
+                )
+            }
+        } catch (exception: Exception) {
+            logger.log(Level.SEVERE, "Could not migrate the legacy plugin data folder; disabling to protect its data.", exception)
+            server.pluginManager.disablePlugin(this)
+            return
+        }
 
-        val namespace = loadNamespace() ?: return
+        server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
+        CommandMessages.initialize(this)
+
+        val registry = NamespaceService.createProviderRegistry()
+        val availableProviders = registry.availableProviders(server.pluginManager)
+        if (availableProviders.isEmpty()) {
+            logger.warning("No supported NPC provider is installed. Install Citizens, FancyNPCs, ZNPCsPlus, or MythicMobs.")
+            server.pluginManager.disablePlugin(this)
+            return
+        }
+
+        logger.info("Available NPC providers: ${availableProviders.joinToString { it.type.commandName }}")
+
+        val npcDirectory = dataFolder.toPath().resolve("npcs")
+        val namespace = NpcNamespace(registry, npcDirectory)
+        this.namespace = namespace
+        namespace.onEnable(this)
+        NpcConfigMigration.backupOutdated(npcDirectory)
+        namespace.npcRepository.loadAndWatch()
+        namespace.hologramManager.registerFileRequest()
+        CloudService.eventHandler.registerEvents(namespace)
         CommandHandler(namespace, this).parseCommands()
+
+        namespace.npcRepository.findAll().forEach(namespace.hologramManager::createOrUpdate)
     }
 
     override fun onDisable() {
-        val namespace = this.namespace ?: return
-        namespace.npcRepository.stopWatching()
-        namespace.hologramManager.destroyAllHolograms()
-    }
-
-    private fun loadNamespace(): NpcNamespace? {
-        val namespace = NamespaceService.findPossibleNamespace()
-        if (namespace == null) {
-            logger.warning("No supported NPC software was found on the server. Find the supported plugins at https://docs.simplecloud.app/manual/plugins/npcs#required-npc-plugins")
-            server.pluginManager.disablePlugin(this)
-            return null
+        CloudService.eventHandler.unregisterEvents()
+        namespace?.apply {
+            npcRepository.stopWatching()
+            hologramManager.destroyAllHolograms()
+            onDisable()
         }
-
-        logger.info("Load matching npc namespace: ${namespace.javaClass.simpleName}")
-
-        CloudService.eventHandler.registerEvents(namespace)
-
-        val npcRepository = namespace.npcRepository
-        npcRepository.loadAndWatch()
-
-        val hologramManager = namespace.hologramManager
-        hologramManager.registerFileRequest()
-
-        namespace.onEnable()
-        namespace.registerListeners(server.pluginManager, this)
-        this.namespace = namespace
-        return namespace
     }
-
 }

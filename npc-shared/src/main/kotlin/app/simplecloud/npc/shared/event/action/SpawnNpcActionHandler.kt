@@ -33,8 +33,7 @@ class SpawnNpcActionHandler : EventActionHandler {
             coroutineScope.launch { hologramManager.updateHolograms(npcConfig) }
             return
         }
-        val serverBaseName = npcConfig.hologramConfiguration.placeholderServerBaseName
-        coroutineScope.launch { hologramManager.updateTextHologramByGroup(npcConfig, serverBaseName) }
+        coroutineScope.launch { hologramManager.updateTextHologram(npcConfig) }
     }
 
 }

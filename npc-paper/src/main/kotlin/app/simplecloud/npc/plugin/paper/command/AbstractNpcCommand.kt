@@ -4,34 +4,36 @@ import app.simplecloud.npc.shared.action.interaction.PlayerInteraction
 import app.simplecloud.npc.shared.config.NpcConfig
 import app.simplecloud.npc.shared.namespace.NpcNamespace
 import app.simplecloud.plugin.api.shared.extension.text
-import org.bukkit.entity.Player
-
-/**
- * @author Niklas Nieberler
- */
+import org.bukkit.command.CommandSender
 
 abstract class AbstractNpcCommand(
-    val namespace: NpcNamespace
-) : CommandSuggestions(
-    namespace
-) {
+    namespace: NpcNamespace,
+) : CommandSuggestions(namespace) {
 
-    fun findPlayerInteraction(player: Player, playerInteraction: String): PlayerInteraction? {
-        val interaction = PlayerInteraction.getOrNull(playerInteraction)
-        if (interaction == null) {
-            player.sendMessage(text("$PREFIX <#dc2626>This type does not exist! Please use ${PlayerInteraction.entries.joinToString(", ") { it.name.lowercase() }}"))
-            return null
+    fun findPlayerInteraction(sender: CommandSender, value: String): PlayerInteraction? {
+        return PlayerInteraction.getOrNull(value) ?: run {
+            sender.sendMessage(text("$PREFIX <#dc2626>Unknown interaction <#f8fafc>$value<#dc2626>."))
+            null
         }
-        return interaction
     }
 
-    fun findNpcConfigById(player: Player, id: String): NpcConfig? {
-        val npcConfig = this.namespace.npcRepository.find(id)
-        if (npcConfig == null) {
-            player.sendMessage(text("$PREFIX <#dc2626>Npc with id $id does not exist!"))
-            return null
+    fun findNpcConfig(sender: CommandSender, id: String): NpcConfig? {
+        return namespace.npcRepository.findBySelector(id) ?: run {
+            sender.sendMessage(text("$PREFIX <#dc2626>NPC <#f8fafc>$id <#dc2626>was not found."))
+            null
         }
-        return npcConfig
     }
 
+    protected fun saveConfig(
+        sender: CommandSender,
+        config: NpcConfig,
+        successMessage: String,
+        refreshHologram: Boolean = true,
+    ) {
+        namespace.npcRepository.save(config)
+        if (refreshHologram) {
+            namespace.hologramManager.createOrUpdate(config)
+        }
+        sender.sendMessage(text("$PREFIX <#a3e635>$successMessage"))
+    }
 }

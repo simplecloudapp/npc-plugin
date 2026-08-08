@@ -25,7 +25,7 @@
 
 > All information about this project can be found in our detailed [documentation][docs-thisproject].
 
-Create NPCs on your server that allow your players to access other subservers through the NPCs. Perform various actions such as sending messages, titles, action bars, or sounds, or customize inventories with your items. Use your favourite NPC system or use the plugin as a standalone with its own NPC integration. The all new NPC plugin opens up limitless creative possibilities.
+Create NPCs on your server that allow your players to access other subservers through the NPCs. Perform various actions such as sending messages, titles, or sounds, and use your favourite supported NPC provider such as Citizens or FancyNPCs.
 
 ## Features
 
@@ -36,6 +36,45 @@ Create NPCs on your server that allow your players to access other subservers th
 - [x] **Customize with Actions**: Trigger messages, action bars, titles, sounds, and more when a player interacts with an NPC!  
 - [x] **Support for Other NPC Plugins**: Integrate NPCs from other plugins like Citizens, FancyNPCs, and more!  
 - [ ] **Use it as a Standalone**: No third-party plugins needed—just drag and drop!  
+
+## Quick start
+
+Install Citizens, FancyNPCs, or ZNPCsPlus, stand where the NPC should appear, and run:
+
+```text
+/scnpcs create <id> <group-or-persistent-server> [provider]
+```
+
+For example, `/scnpcs create lobby Lobby` creates the provider NPC, links it to the
+SimpleCloud target, writes its configuration, adds a default hologram, and makes
+right-click join the target. If multiple creation providers are installed, add
+`citizens`, `fancynpcs`, or `znpcsplus` to the command.
+
+Target names do not need `group:` or `ps:` prefixes. A name that exists as both a
+group and persistent server is rejected so that it can never resolve silently to
+the wrong target.
+
+Use `/scnpcs edit <id>` to discover the target, hologram, action, and pushback
+editors. Existing provider NPCs can be attached with
+`/scnpcs link <id> <provider> <reference> <target>`.
+
+## Hologram placeholders
+
+Run `/scnpcs placeholders` in-game for the current list. The placeholders shared
+by group and persistent-server targets are:
+
+```text
+<target_name>
+<target_type>
+<target_online_players>
+<target_max_players>
+<target_min_memory>
+<target_max_memory>
+<target_property:key>
+```
+
+Persistent servers also expose `<target_id>`, `<target_pretty_name>`, and
+`<target_motd>`. Join-state values in NPC files are always written in lower case.
 
 ## Contributing
 Contributions to SimpleCloud are welcome and highly appreciated. However, before you jump right into it, we would like you to read our [Contribution Guide][docs-contribute].

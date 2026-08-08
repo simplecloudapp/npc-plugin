@@ -19,7 +19,8 @@ import java.nio.file.WatchService
 abstract class WatchableYamlDirectoryRepository<E, I>(
     private val directory: Path,
     clazz: Class<E>,
-) : YamlDirectoryRepository<E, I>(directory, clazz) {
+    migrator: app.simplecloud.plugin.api.shared.config.ConfigMigrator? = null,
+) : YamlDirectoryRepository<E, I>(directory, clazz, migrator) {
 
     private val watchScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var watchJob: Job? = null

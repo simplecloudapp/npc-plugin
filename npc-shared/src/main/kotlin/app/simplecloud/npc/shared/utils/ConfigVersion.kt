@@ -1,11 +1,5 @@
 package app.simplecloud.npc.shared.utils
 
-/**
- * @author Niklas Nieberler
- */
-
 object ConfigVersion {
-
-    const val VERSION = "4"
-
+    const val VERSION = 5
 }

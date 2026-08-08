@@ -14,17 +14,17 @@ object HologramPlaceholderHelper {
         return when {
             serverBridge.isPersistentServer -> {
                 val persistentServer = requireNotNull(serverBridge.getPersistentServer()) { "Failed to find persistent server for $serverBridge" }
-                PlaceholderProvider.persistentServerPlaceholderProvider.append(persistentServer, text, "group")
+                PlaceholderProvider.persistentServerPlaceholderProvider.append(persistentServer, text, "target")
             }
 
             serverBridge.isGroup -> {
                 val group = requireNotNull(serverBridge.getGroup()) { "Failed to find group for $serverBridge" }
-                PlaceholderProvider.groupPlaceholderProvider.append(group, text, "group")
+                PlaceholderProvider.groupPlaceholderProvider.append(group, text, "target")
             }
 
             serverBridge.isServer -> {
                 val server = requireNotNull(serverBridge.getServer()) { "Failed to find server for $serverBridge" }
-                PlaceholderProvider.serverPlaceholderProvider.append(server, text, "server")
+                PlaceholderProvider.serverPlaceholderProvider.append(server, text, "target")
             }
 
             else -> throw IllegalStateException("no server placeholder found for $serverBridge")
