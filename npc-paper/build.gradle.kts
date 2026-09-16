@@ -52,6 +52,7 @@ modrinth {
         "26.1.1",
         "26.1.2",
         "26.2",
+        "26.3",
     )
     loaders.addAll("paper", "purpur")
     changelog.set("https://docs.simplecloud.app/changelog")
