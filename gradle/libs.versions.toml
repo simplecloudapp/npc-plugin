@@ -1,35 +1,65 @@
 [versions]
 kotlin = "2.4.0"
-kotlinX = "1.11.0"
+kotlinx = "1.11.0"
 shadow = "9.4.3"
-paper = "1.21.11-R0.1-SNAPSHOT"
-cloud-commands = "2.0.0-beta.17"
-cloud-annotation-commands = "2.0.0"
+minotaur = "2.9.0"
+# The plugin's API floor: every module but provider/mannequin compiles against this, so
+# the compiler rejects anything a supported server would not have. It is deliberately the
+# oldest version we publish (see the Modrinth gameVersions list), NOT the newest release.
+paper = "1.20.6-R0.1-SNAPSHOT"
+# Mannequin entity API (1.21.9+); only provider/mannequin compiles against this.
+paper-mannequin = "1.21.11-R0.1-SNAPSHOT"
+# The Adventure that paper-mannequin ships; provider/mannequin compiles against it instead of the floor.
+adventure-mannequin = "4.26.1"
+# cloud-core and cloud-annotations share a version line; cloud-minecraft (cloud-paper)
+# is versioned separately.
+cloud = "2.1.0"
+cloud-minecraft = "2.0.1"
 simplecloud = "0.1.0-platform.33-dev.52.1-9490b37"
 simplecloud-plugin = "0.0.1-platform.1778966459069-b1e45e2"
-minotaur = "2.9.0"
 configurate = "4.2.0"
+# What paper-api provides on our floor. The compile classpath is held to it in
+# the root build file, so the compiler rejects Adventure API a 1.20.6 server lacks.
+adventure-floor = "4.17.0"
+# The Adventure PacketEvents and EntityLib were built against. libs/packetevents ships it,
+# relocated, next to them. Our plugin code never runs on it, only some tests do.
+adventure = "4.26.1"
+packetevents = "2.14.0"
+# EntityLib only publishes snapshots; this is the 3.3.7 build, pinned so a release jar can be
+# rebuilt. libs/packetevents holds its api and common artifacts to the same build.
+entitylib = "3.3.7-20260731.141813-1"
 citizens = "2.0.43-SNAPSHOT"
 fancynpcs = "2.9.2"
 mythic-dist = "5.12.1"
 znpcsplus = "2.1.0-SNAPSHOT"
 
 [libraries]
-kotlin-jvm = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinX" }
+kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx" }
 
 paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
+paper-mannequin-api = { module = "io.papermc.paper:paper-api", version.ref = "paper-mannequin" }
 
-cloud-minecraft-extras = { module = "org.incendo:cloud-minecraft-extras", version.ref = "cloud-commands" }
-cloud-paper = { module = "org.incendo:cloud-paper", version.ref = "cloud-commands" }
-cloud-annotation = { module = "org.incendo:cloud-annotations", version.ref = "cloud-annotation-commands" }
+cloud-core = { module = "org.incendo:cloud-core", version.ref = "cloud" }
+cloud-annotations = { module = "org.incendo:cloud-annotations", version.ref = "cloud" }
+cloud-paper = { module = "org.incendo:cloud-paper", version.ref = "cloud-minecraft" }
 
-simplecloud = { module = "app.simplecloud.api:api", version.ref = "simplecloud" }
+simplecloud-api = { module = "app.simplecloud.api:api", version.ref = "simplecloud" }
 simplecloud-plugin = { module = "app.simplecloud.plugin:plugin-shared", version.ref = "simplecloud-plugin" }
 
-configurate = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate" }
-configurate-kotlin = { module = "org.spongepowered:configurate-extra-kotlin", version.ref = "configurate" }
+configurate-yaml = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate" }
+
+adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
+adventure-text-minimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure" }
+adventure-text-serializer-legacy = { module = "net.kyori:adventure-text-serializer-legacy", version.ref = "adventure" }
+adventure-text-serializer-gson = { module = "net.kyori:adventure-text-serializer-gson", version.ref = "adventure" }
+adventure-text-serializer-plain = { module = "net.kyori:adventure-text-serializer-plain", version.ref = "adventure" }
+adventure-nbt = { module = "net.kyori:adventure-nbt", version.ref = "adventure" }
+
+packetevents-spigot = { module = "com.github.retrooper:packetevents-spigot", version.ref = "packetevents" }
+entitylib-spigot = { module = "io.github.tofaa2:spigot", version.ref = "entitylib" }
+entitylib-api = { module = "io.github.tofaa2:api", version.ref = "entitylib" }
+entitylib-common = { module = "io.github.tofaa2:common", version.ref = "entitylib" }
 
 citizens-main = { module = "net.citizensnpcs:citizens-main", version.ref = "citizens" }
 fancynpcs = { module = "de.oliver:FancyNpcs", version.ref = "fancynpcs" }
@@ -37,8 +67,19 @@ mythic-dist = { module = "io.lumine:Mythic-Dist", version.ref = "mythic-dist" }
 znpcsplus-api = { module = "lol.pyr:znpcsplus-api", version.ref = "znpcsplus" }
 
 [bundles]
-cloud = ["cloud-paper", "cloud-minecraft-extras", "cloud-annotation"]
-configurate = ["configurate", "configurate-kotlin"]
+adventure = [
+    "adventure-api",
+    "adventure-text-minimessage",
+    "adventure-text-serializer-legacy",
+    "adventure-text-serializer-plain",
+]
+# What libs/packetevents bundles: everything PacketEvents and EntityLib reference.
+packet-adventure = [
+    "adventure-api",
+    "adventure-nbt",
+    "adventure-text-serializer-gson",
+    "adventure-text-serializer-legacy",
+]
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

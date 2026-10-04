@@ -1,0 +1,29 @@
+name: simplecloud-npc
+prefix: SimpleCloud-NPC
+provides:
+  - SimpleCloud-NPC
+version: '${version}'
+authors: [PrexorJustin, MrManHD]
+main: app.simplecloud.npc.paper.PaperPlugin
+api-version: '1.20.6'
+
+depend:
+  - simplecloud-api
+
+softdepend:
+  - Citizens
+  - FancyNpcs
+  - MythicMobs
+  - PlaceholderAPI
+  - ZNPCsPlus
+
+permissions:
+  simplecloud.npcs.command:
+    description: Manage SimpleCloud NPCs
+    default: op
+  simplecloud.npcs.inventory.open:
+    description: Open menus with /scnpcs inventory open
+    default: true
+  simplecloud.npcs.inventory.open.others:
+    description: Open menus for other players
+    default: op
