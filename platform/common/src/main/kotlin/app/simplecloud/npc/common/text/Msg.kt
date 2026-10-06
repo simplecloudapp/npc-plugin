@@ -4,7 +4,7 @@ import app.simplecloud.npc.core.platform.NpcCommandSender
 import net.kyori.adventure.text.minimessage.MiniMessage
 
 object Msg {
-    private const val PREFIX = "<#0ea5e9>SimpleCloud NPC <#475569>|"
+    private const val PREFIX = "<#0ea5e9>⚡ NPC <#475569>|"
 
     const val ERROR = "<#dc2626>"
     const val WARNING = "<#f59e0b>"

@@ -50,6 +50,12 @@ sealed interface InventoryEditorScreen {
         val interaction: PlayerInteraction,
     ) : Bound
 
+    data class ItemActionBlocks(
+        override val inventoryId: String,
+        val slots: List<Int>,
+        val interaction: PlayerInteraction,
+    ) : Bound
+
     data class ItemTitle(
         override val inventoryId: String,
         val slots: List<Int>,

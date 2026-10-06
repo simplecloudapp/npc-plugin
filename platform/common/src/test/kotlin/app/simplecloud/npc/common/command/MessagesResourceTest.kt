@@ -3,6 +3,8 @@ package app.simplecloud.npc.common.command
 import org.spongepowered.configurate.ConfigurationNode
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import kotlin.io.path.createTempDirectory
+import kotlin.io.path.readText
+import kotlin.io.path.writeText
 import kotlin.io.path.writeBytes
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -34,5 +36,20 @@ class MessagesResourceTest {
             .filterNot { it.startsWith("variables.") || it.startsWith("command.help.pages.") }
             .toSet()
         assertEquals(CommandMessages.resourcePaths(), fileLeaves)
+    }
+
+    @Test
+    fun `old default prefixes are replaced, custom ones kept`() {
+        val dir = createTempDirectory("npc-prefix")
+        val old = dir.resolve("old.yml")
+        old.writeText("variables:\n  prefix: '<#0EA5E9><bold>NPCs</bold> <#475569>|'\n")
+        val custom = dir.resolve("custom.yml")
+        custom.writeText("variables:\n  prefix: '<red>Mine |'\n")
+
+        CommandMessages.updateDefaultPrefix(old)
+        CommandMessages.updateDefaultPrefix(custom)
+
+        assertEquals("variables:\n  prefix: '<#0EA5E9>⚡ NPC <#475569>|'\n", old.readText())
+        assertEquals("variables:\n  prefix: '<red>Mine |'\n", custom.readText())
     }
 }

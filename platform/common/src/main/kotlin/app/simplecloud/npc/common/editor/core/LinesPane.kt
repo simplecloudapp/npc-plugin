@@ -5,7 +5,6 @@ import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.ui.Palette
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.item.NpcItem
-import app.simplecloud.npc.common.text.Msg
 
 class LineList<T>(
     val lines: List<T>,
@@ -13,9 +12,10 @@ class LineList<T>(
     val withText: (T, String) -> T,
     val create: (String) -> T,
     val edit: ((MutableList<T>) -> Boolean) -> Unit,
-    val prompt: (index: Int?, current: String?, onText: (String) -> Unit) -> Unit,
+    val prompt: (index: Int?, current: String?, onText: (String) -> Unit, onDelete: (() -> Unit)?) -> Unit,
     val hints: (T) -> List<String> = { emptyList() },
     val secondary: LineAction? = null,
+    val opensSecondary: (T) -> Boolean = { false },
 )
 
 class LineAction(val label: String, val onClick: (index: Int) -> Unit)
@@ -23,71 +23,53 @@ class LineAction(val label: String, val onClick: (index: Int) -> Unit)
 object LinesPane {
     const val SIZE = 36
 
-    fun <T> place(
-        pane: Pane,
-        list: LineList<T>,
-        controlsSlot: Int,
-        note: String? = null,
-        addLabel: String = "Add Line",
-    ) {
+    fun <T> place(pane: Pane, list: LineList<T>, slots: List<Int>, addLabel: String = "Add Line") {
         val lines = list.lines
-        val max = pane.size - 9
-        val addSlot = pane.size - 1
-        val full = lines.size >= max
+        val max = slots.size
 
         lines.take(max).forEachIndexed { index, line ->
             val text = list.textOf(line)
-            val item = lineItem(text, index, lines.size, list.hints(line), list.secondary?.label ?: "Duplicate")
-            pane.on(index, item) { click ->
+            val secondary = list.secondary?.takeIf { list.opensSecondary(line) }
+            val rightLabel = list.secondary?.label ?: "Duplicate"
+            val item = lineItem(text, index, lines.size, list.hints(line), rightLabel, secondary)
+            pane.on(slots[index], item) { click ->
                 when (click) {
-                    MenuClick.LEFT -> list.prompt(index, text) { typed ->
-                        list.edit { fresh ->
-                            if (index !in fresh.indices) return@edit false
-                            fresh[index] = list.withText(fresh[index], typed)
-                            true
-                        }
-                    }
-
+                    MenuClick.LEFT -> secondary?.onClick(index) ?: editText(list, index, text)
                     MenuClick.RIGHT -> list.secondary?.let { it.onClick(index) } ?: duplicate(list, index, max)
-
                     MenuClick.SHIFT_LEFT -> move(list, index, -1)
                     MenuClick.SHIFT_RIGHT -> move(list, index, +1)
-                    MenuClick.DROP -> list.edit { fresh ->
-                        if (index !in fresh.indices) return@edit false
-                        fresh.removeAt(index)
-                        true
-                    }
-
                     else -> Unit
                 }
             }
         }
 
-        if (full) {
-            pane[addSlot] = Ui.disabled(addLabel, listOf("<hnt>All $max are in use."))
-        } else {
-            pane.left(addSlot, Ui.addHead(addLabel, listOf("", "<key>Left <hnt>Type the text in chat"))) {
-                list.prompt(null, null) { typed ->
+        if (lines.size < max) {
+            pane.left(slots[lines.size], Ui.addHead(addLabel, listOf("<key>Left <hnt>Type the text in chat"))) {
+                list.prompt(null, null, { typed ->
                     list.edit { fresh ->
                         if (fresh.size >= max) return@edit false
                         fresh += list.create(typed)
                         true
                     }
-                }
+                }, null)
             }
         }
+    }
 
-        pane[controlsSlot] = Ui.item(
-            "BOOK",
-            "<ttl>Controls",
-            listOfNotNull(
-                "<key>Left <hnt>Edit this line in chat",
-                "<key>Right <hnt>${list.secondary?.label ?: "Duplicate below"}",
-                "<key>Shift+Left <hnt>Move up  <key>Shift+Right <hnt>Move down",
-                "<key>Q <err>Delete, no confirmation",
-                note,
-            ),
-        )
+    private fun <T> editText(list: LineList<T>, index: Int, text: String) {
+        list.prompt(index, text, { typed ->
+            list.edit { fresh ->
+                if (index !in fresh.indices) return@edit false
+                fresh[index] = list.withText(fresh[index], typed)
+                true
+            }
+        }) {
+            list.edit { fresh ->
+                if (index !in fresh.indices) return@edit false
+                fresh.removeAt(index)
+                true
+            }
+        }
     }
 
     private fun <T> duplicate(list: LineList<T>, index: Int, max: Int) = list.edit { fresh ->
@@ -109,17 +91,15 @@ object LinesPane {
         count: Int,
         hints: List<String>,
         rightLabel: String,
-    ): NpcItem = NpcItem(
-        "PAPER",
-        text.ifBlank { Palette.expand("<hnt>(blank line)") },
-        listOf(
-            Palette.expand("<hnt>Line ${index + 1} of $count"),
-            Palette.expand("<hnt>raw: ") + Msg.miniMessage.escapeTags(text.ifBlank { "(empty)" }),
-        ) + (hints + listOf(
-            "",
-            "<key>Left <hnt>Edit  <key>Right <hnt>$rightLabel",
-            "<key>Shift+Left <hnt>Move up  <key>Shift+Right <hnt>Move down",
-            "<key>Q <err>Delete line",
-        )).map(Palette::expand),
-    )
+        leftOpens: LineAction?,
+    ): NpcItem {
+        val clicks = leftOpens?.let { "<key>Left <hnt>${it.label} · <key>Shift <hnt>Move" }
+            ?: "<key>Left <hnt>Edit · <key>Right <hnt>$rightLabel · <key>Shift <hnt>Move"
+
+        return NpcItem(
+            "PAPER",
+            text.ifBlank { Palette.expand("<hnt>(blank line)") },
+            (listOf("<hnt>Line ${index + 1} of $count") + hints + clicks).map(Palette::expand),
+        )
+    }
 }

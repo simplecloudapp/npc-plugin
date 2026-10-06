@@ -248,7 +248,7 @@ object StudioMenuBuilder {
         ) { context.navigate(player, InventoryEditorScreen.Lore(config.id, slots)) }
 
         val amount = (StudioTargets.shared(items) { it.amount } as? Shared.Same)?.value ?: 1
-        pane[AMOUNT_SLOT] = AMOUNT.element(context.textPrompts, player, amount.toDouble()) { value ->
+        pane[AMOUNT_SLOT] = AMOUNT.element(amount.toDouble()) { value ->
             edit { it.copy(amount = value.toInt()) }
         }
 
@@ -267,7 +267,7 @@ object StudioMenuBuilder {
         ) { edit { it.copy(hideTooltip = hidden != true) } }
 
         val model = (StudioTargets.shared(items) { it.customModelData } as? Shared.Same)?.value ?: 0
-        pane[MODEL_SLOT] = MODEL_DATA.element(context.textPrompts, player, model.toDouble()) { value ->
+        pane[MODEL_SLOT] = MODEL_DATA.element(model.toDouble()) { value ->
             edit { it.copy(customModelData = value.toInt().takeIf { data -> data > 0 }) }
         }
 

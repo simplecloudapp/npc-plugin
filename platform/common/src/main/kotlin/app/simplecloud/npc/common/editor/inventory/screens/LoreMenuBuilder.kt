@@ -19,7 +19,8 @@ import app.simplecloud.npc.core.inventory.InventoryConfiguration
 import app.simplecloud.npc.core.platform.NpcPlayer
 
 object LoreMenuBuilder {
-    private const val CONTROLS_SLOT = 31
+    private const val NOTE_SLOT = 31
+    private val LINE_SLOTS = (0..26).toList()
 
     fun build(
         context: InventoryEditorContext,
@@ -45,17 +46,13 @@ object LoreMenuBuilder {
                 }
                 context.render(player, screen)
             },
-            prompt = { _, current, onText ->
+            prompt = { _, current, onText, onDelete ->
                 val tokens = PromptTokens.MENU + PromptTokens.ENTRY.takeIf { first?.liveGroup != null }.orEmpty()
-                promptLine(context, player, screen, current, tokens, onText)
+                promptLine(context, player, screen, current, tokens, onText, onDelete)
             },
         )
-        LinesPane.place(
-            pane,
-            lines,
-            CONTROLS_SLOT,
-            "<warn>Applies to ${targets.size} items.".takeIf { targets.size > 1 },
-        )
+        LinesPane.place(pane, lines, LINE_SLOTS)
+        if (targets.size > 1) pane[NOTE_SLOT] = Ui.item("PAPER", "<warn>Applies to ${targets.size} items")
         pane.back(context, player)
         pane.fillNavRow()
 
@@ -71,6 +68,7 @@ object LoreMenuBuilder {
         current: String?,
         placeholders: List<PromptPlaceholder>,
         apply: (String) -> Unit,
+        onDelete: (() -> Unit)?,
     ) {
         context.chatPrompt(
             player,
@@ -80,6 +78,7 @@ object LoreMenuBuilder {
                 format = PromptFormat.MINI_MESSAGE,
                 placeholders = placeholders,
                 current = current,
+                onClear = onDelete,
                 onCancel = { context.render(player, screen) },
                 onSubmit = { input ->
                     val text = input.trim()

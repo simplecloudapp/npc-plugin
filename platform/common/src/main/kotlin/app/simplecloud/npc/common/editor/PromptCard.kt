@@ -9,7 +9,6 @@ import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import java.time.Duration
-import java.util.Locale
 
 object PromptCard {
 
@@ -113,7 +112,7 @@ object PromptCard {
             .build()
     } else {
         Component.text()
-            .append(text("✎ ", BRAND))
+            .append(text("⚡ ", BRAND))
             .append(text(prompt.title, ACCENT))
             .append(text("  ·  type in chat  ·  ", SUBTLE))
             .append(text(prompt.cancelKeyword, MUTED))
@@ -130,10 +129,9 @@ object PromptCard {
     private fun rule(): Component = Component.text(" ".repeat(RULE_WIDTH), RULE, TextDecoration.STRIKETHROUGH)
 
     private fun header(prompt: Prompt, suffix: String?): Component {
-        val label = prompt.title.uppercase(Locale.ROOT)
         val builder = Component.text()
-            .append(text("✎ ", BRAND))
-            .append(Msg.miniMessage.deserialize("<b><gradient:#0ea5e9:#a3e635>${Msg.miniMessage.escapeTags(label)}"))
+            .append(text("⚡ ", BRAND))
+            .append(text(prompt.title, ACCENT))
         suffix?.let { builder.append(text("  ·  ", SUBTLE)).append(text(it, ACCENT)) }
         prompt.context?.let { builder.append(text("  ·  ", SUBTLE)).append(text(it, SUBTLE)) }
 

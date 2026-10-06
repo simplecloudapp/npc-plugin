@@ -20,7 +20,7 @@ object SoundTuning {
         step = 0.1,
         default = DEFAULTS.volume,
         decimals = 1,
-        hints = listOf("<hnt>1.0 is full volume up close;", "<hnt>above that it only carries further."),
+        hints = listOf("<hnt>Above 1.0 it only carries further."),
     )
     private val PITCH = Stepper(
         label = "Pitch",
@@ -33,7 +33,6 @@ object SoundTuning {
 
     fun place(
         pane: Pane,
-        prompts: TextPrompts,
         player: NpcPlayer,
         sound: String?,
         options: SoundOptions,
@@ -45,10 +44,10 @@ object SoundTuning {
             pane[VOLUME_SLOT] = Ui.disabled(VOLUME.label, hint)
             pane[PITCH_SLOT] = Ui.disabled(PITCH.label, hint)
         } else {
-            pane[VOLUME_SLOT] = VOLUME.element(prompts, player, options.volume) { value ->
+            pane[VOLUME_SLOT] = VOLUME.element(options.volume) { value ->
                 tune { it.copy(volume = value) }
             }
-            pane[PITCH_SLOT] = PITCH.element(prompts, player, options.pitch) { value ->
+            pane[PITCH_SLOT] = PITCH.element(options.pitch) { value ->
                 tune { it.copy(pitch = value) }
             }
         }
@@ -60,7 +59,6 @@ object SoundTuning {
                 listOf(
                     sound?.let { "<bd>Sound <val>$it" } ?: "<bd>Sound <off>none picked yet",
                     NpcFormat.soundSettings(options),
-                    "",
                     "<key>Left <hnt>Play it to me",
                 ),
             ),

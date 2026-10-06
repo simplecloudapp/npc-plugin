@@ -1,10 +1,15 @@
 package app.simplecloud.npc.paper.effects
 
+import app.simplecloud.npc.bukkit.compat.EntityIds
+import app.simplecloud.npc.bukkit.hologram.HologramGeometry
 import app.simplecloud.npc.bukkit.interact.InteractableEntities
+import app.simplecloud.npc.bukkit.packet.PacketComponents
 import app.simplecloud.npc.bukkit.packet.PacketPoses
+import app.simplecloud.npc.bukkit.packet.PacketTextDisplays
 import app.simplecloud.npc.common.platform.NpcEffects
 import app.simplecloud.npc.core.config.NpcAnimation
 import app.simplecloud.npc.core.config.NpcConfig
+import app.simplecloud.npc.core.hologram.HologramLine
 import app.simplecloud.npc.core.platform.NpcPlayer
 import com.github.retrooper.packetevents.PacketEvents
 import com.github.retrooper.packetevents.protocol.entity.data.EntityData
@@ -16,17 +21,14 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEn
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
-import org.bukkit.Location
-import org.bukkit.entity.Display
 import org.bukkit.entity.Player
-import org.bukkit.entity.TextDisplay
 import org.bukkit.plugin.Plugin
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 class PaperNpcEffects(private val plugin: Plugin) : NpcEffects {
 
-    private val bubbles = ConcurrentHashMap<Pair<UUID, String>, UUID>()
+    private val bubbles = ConcurrentHashMap<Pair<UUID, String>, Int>()
 
     override fun animate(npc: NpcConfig, player: NpcPlayer, animation: NpcAnimation) {
         val viewer = Bukkit.getPlayer(player.uniqueId) ?: return
@@ -43,7 +45,9 @@ class PaperNpcEffects(private val plugin: Plugin) : NpcEffects {
     }
 
     fun shutdown() {
-        bubbles.values.forEach { Bukkit.getEntity(it)?.remove() }
+        bubbles.forEach { (key, entityId) ->
+            Bukkit.getPlayer(key.first)?.let { send(it, PacketTextDisplays.destroy(listOf(entityId))) }
+        }
         bubbles.clear()
     }
 
@@ -69,36 +73,35 @@ class PaperNpcEffects(private val plugin: Plugin) : NpcEffects {
         if (viewer.world != world) return
 
         val key = viewer.uniqueId to npc.id
-        bubbles.remove(key)?.let { Bukkit.getEntity(it)?.remove() }
+        bubbles.remove(key)?.let { send(viewer, PacketTextDisplays.destroy(listOf(it))) }
 
-        val at = Location(world, location.x, location.y + bubbleHeight(npc), location.z)
-        val bubble = world.spawn(at, TextDisplay::class.java) { display ->
-            display.isVisibleByDefault = false
-            display.isPersistent = false
-            display.billboard = Display.Billboard.CENTER
-            display.text(text)
-        }
-        viewer.showEntity(plugin, bubble)
-        bubbles[key] = bubble.uniqueId
+        val entityId = EntityIds.next(world)
+        val y = location.y + bubbleHeight(npc)
+        PacketTextDisplays.send(
+            viewer,
+            listOf(
+                PacketTextDisplays.spawn(entityId, UUID.randomUUID(), location.x, y, location.z),
+                PacketTextDisplays.metadata(entityId, BUBBLE_STYLE, PacketComponents.of(text)),
+            ),
+        )
+        bubbles[key] = entityId
 
         Bukkit.getScheduler().runTaskLater(
             plugin,
             Runnable {
-                if (viewer.isOnline) viewer.hideEntity(plugin, bubble)
-                bubble.remove()
-                bubbles.remove(key, bubble.uniqueId)
+                if (!bubbles.remove(key, entityId)) return@Runnable
+                Bukkit.getPlayer(playerId)?.let { send(it, PacketTextDisplays.destroy(listOf(entityId))) }
             },
             BUBBLE_TICKS,
         )
     }
 
     private fun bubbleHeight(npc: NpcConfig): Double {
-        val factor = npc.entity.heightFactor()
         val hologram = npc.hologram
-        if (!hologram.enabled) return HEAD_HEIGHT * factor + GAP
+        if (!hologram.enabled) return HEAD_HEIGHT * npc.entity.heightFactor() + GAP
         val lines = hologram.layouts.maxOfOrNull { it.lines.size } ?: 0
 
-        return hologram.startHeight * factor + LINE_SPACING * lines + GAP
+        return HologramGeometry.topHeight(npc, lines) + GAP
     }
 
     private fun pose(entityId: Int, pose: EntityPose) =
@@ -113,7 +116,7 @@ class PaperNpcEffects(private val plugin: Plugin) : NpcEffects {
         const val CROUCH_TICKS = 8L
         const val BUBBLE_TICKS = 60L
         const val HEAD_HEIGHT = 2.0
-        const val LINE_SPACING = 0.3
         const val GAP = 0.35
+        val BUBBLE_STYLE = HologramLine()
     }
 }

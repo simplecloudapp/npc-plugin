@@ -24,7 +24,7 @@ object GlowMenuBuilder {
             val selected = color.teamName.equals(current, true)
             pane.left(slot, Ui.option(color.icon, color.label, listOf(""), selected)) {
                 context.commitAndBack(player, config.id, refresh = Refresh.ENTITY) { fresh ->
-                    fresh.copy(entity = fresh.entity.copy(glowColor = color.teamName))
+                    fresh.copy(entity = fresh.entity.copy(glowing = true, glowColor = color.teamName))
                 }
             }
         }

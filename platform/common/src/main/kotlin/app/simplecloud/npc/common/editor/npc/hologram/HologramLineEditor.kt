@@ -7,15 +7,10 @@ import app.simplecloud.npc.common.editor.PromptResult
 import app.simplecloud.npc.common.editor.PromptTokens
 import app.simplecloud.npc.common.editor.core.LineAction
 import app.simplecloud.npc.common.editor.core.LineList
-import app.simplecloud.npc.common.editor.core.LinesPane
-import app.simplecloud.npc.common.editor.core.back
-import app.simplecloud.npc.common.editor.menu.EditorMenu
-import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.npc.NpcEditorContext
 import app.simplecloud.npc.common.editor.npc.NpcEditorScreen
 import app.simplecloud.npc.common.editor.npc.NpcFormat
 import app.simplecloud.npc.common.editor.npc.Refresh
-import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.text.Msg
 import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.hologram.HologramLine
@@ -24,24 +19,27 @@ import app.simplecloud.npc.core.text.PlayerPlaceholders
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.flattener.ComponentFlattener
 
-object HologramLinesMenuBuilder {
-    private const val CONTROLS_SLOT = 30
-    private const val LAYOUT_SLOT = 32
+class LineTarget(val npcId: String, val joinState: String, val screen: NpcEditorScreen)
 
+object HologramLineEditor {
     private const val MAX_VISIBLE_LENGTH = 64
 
     private val LINE_GONE = Component.text("That line no longer exists.")
 
     private val PLACEHOLDER = Regex("<[a-z]+_[a-z_]+>|%[^%\\s]+%")
 
-    fun build(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig, joinState: String): EditorMenu {
+    fun lines(
+        context: NpcEditorContext,
+        player: NpcPlayer,
+        config: NpcConfig,
+        joinState: String,
+        screen: NpcEditorScreen,
+    ): LineList<HologramLine> {
         val state = joinState.lowercase()
-        val layoutLines = config.hologram.findLayout(state)?.lines.orEmpty()
-        val screen = NpcEditorScreen.HologramLines(config.id, state)
-        val pane = Pane(LinesPane.SIZE)
+        val target = LineTarget(config.id, state, screen)
 
-        val lines = LineList(
-            lines = layoutLines,
+        return LineList(
+            lines = config.hologram.findLayout(state)?.lines.orEmpty(),
             textOf = HologramLine::shownText,
             withText = { line, text ->
                 if (line.rotating) line.withFrames(listOf(text) + line.texts.drop(1)) else line.copy(text = text)
@@ -52,53 +50,37 @@ object HologramLinesMenuBuilder {
                     fresh.takeIf { mutate(it.hologram.layoutOrCreate(state).lines) }
                 }
             },
-            prompt = { index, current, onText -> promptLine(context, player, screen, index, current, onText) },
+            prompt = { index, current, onText, onDelete ->
+                promptLine(context, player, target, index, current, onText, onDelete)
+            },
             hints = { line ->
                 val rotation = listOf(
                     "<hnt>Rotates <val>${line.texts.size} <hnt>texts every " +
-                        "<val>${NpcFormat.seconds((line.interval * 20).toInt())}<hnt>.",
+                        "<val>${NpcFormat.seconds((line.interval * 20).toInt())}",
                 ).takeIf { line.rotating }.orEmpty()
-                val placeholders = listOf("<hnt>Contains a placeholder; refreshes", "<hnt>every few seconds.")
-                    .takeIf { line.texts.any(PLACEHOLDER::containsMatchIn) }
-                    .orEmpty()
-                val personal = when {
-                    line.texts.none(PlayerPlaceholders::isPersonal) -> emptyList()
-                    line.texts.any(PlayerPlaceholders::usesExternal) -> listOf(
-                        "<hnt>Shown per player; PlaceholderAPI",
-                        "<hnt>values update every <val>${NpcFormat.seconds((line.refreshSeconds * 20).toInt(), 2)}<hnt>.",
-                    )
-                    else -> listOf("<hnt>Shown per player.")
+                val live = when {
+                    line.texts.any(PlayerPlaceholders::isPersonal) -> listOf("<hnt>Shown per player")
+                    line.texts.any(PLACEHOLDER::containsMatchIn) -> listOf("<hnt>Has placeholders")
+                    else -> emptyList()
                 }
 
-                rotation + placeholders + personal
+                rotation + live
             },
             secondary = LineAction("Rotating texts") { index ->
                 context.navigate(player, NpcEditorScreen.HologramFrames(config.id, state, index))
             },
+            opensSecondary = HologramLine::rotating,
         )
-        LinesPane.place(pane, lines, CONTROLS_SLOT)
-        pane[LAYOUT_SLOT] = Ui.item(
-            "GLOW_ITEM_FRAME",
-            "<ttl>Layout <val>${NpcFormat.joinState(state)}",
-            listOf(
-                "<bd><val>${layoutLines.size} <bd>lines",
-                "<bd>Visible while the target's join state",
-                "<bd>is <val>${NpcFormat.joinState(state)}<bd>.",
-            ),
-        )
-        pane.back(context, player)
-        pane.fillNavRow()
-
-        return pane.menu(Ui.title("Lines · ${NpcFormat.joinState(state)}", NpcFormat.displayName(config)))
     }
 
     private fun promptLine(
         context: NpcEditorContext,
         player: NpcPlayer,
-        screen: NpcEditorScreen.HologramLines,
+        screen: LineTarget,
         index: Int?,
         current: String?,
         apply: (String) -> Unit,
+        onDelete: (() -> Unit)?,
     ) {
         var target = index
 
@@ -110,7 +92,8 @@ object HologramLinesMenuBuilder {
                 format = PromptFormat.MINI_MESSAGE,
                 placeholders = PromptTokens.HOLOGRAM,
                 current = current,
-                onCancel = { context.render(player, screen) },
+                onClear = onDelete,
+                onCancel = { context.render(player, screen.screen) },
                 onSubmit = { input ->
                     val text = input.trim()
                     tooLong(text)?.let { return@Prompt it }
@@ -128,11 +111,12 @@ object HologramLinesMenuBuilder {
     private fun promptNextText(
         context: NpcEditorContext,
         player: NpcPlayer,
-        screen: NpcEditorScreen.HologramLines,
+        screen: LineTarget,
         index: Int,
     ) {
         val line = context.npcRepository.find(screen.npcId)
-            ?.hologram?.findLayout(screen.joinState)?.lines?.getOrNull(index) ?: return context.render(player, screen)
+            ?.hologram?.findLayout(screen.joinState)?.lines?.getOrNull(index)
+            ?: return context.render(player, screen.screen)
 
         context.chatPrompt(
             player,
@@ -142,11 +126,11 @@ object HologramLinesMenuBuilder {
                 instructionArgs = listOf(line.texts.size + 1, index + 1),
                 format = PromptFormat.MINI_MESSAGE,
                 placeholders = PromptTokens.HOLOGRAM,
-                onCancel = { context.render(player, screen) },
+                onCancel = { context.render(player, screen.screen) },
                 onSubmit = { input ->
                     val text = input.trim()
                     tooLong(text)?.let { return@Prompt it }
-                    context.commit(player, screen.npcId, screen, Refresh.HOLOGRAM) { fresh ->
+                    context.commit(player, screen.npcId, screen.screen, Refresh.HOLOGRAM) { fresh ->
                         appendText(fresh, screen, index, text)
                     }
                     PromptResult.Accepted
@@ -174,7 +158,7 @@ object HologramLinesMenuBuilder {
     private fun saveLine(
         context: NpcEditorContext,
         player: NpcPlayer,
-        screen: NpcEditorScreen.HologramLines,
+        screen: LineTarget,
         index: Int?,
         text: String,
     ): Int? {
@@ -203,7 +187,7 @@ object HologramLinesMenuBuilder {
 
     private fun appendText(
         fresh: NpcConfig,
-        screen: NpcEditorScreen.HologramLines,
+        screen: LineTarget,
         index: Int,
         text: String,
     ): NpcConfig? {

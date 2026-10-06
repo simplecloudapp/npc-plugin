@@ -57,6 +57,9 @@ object NpcFormat {
         action.sendTitle?.let { add("<bd>Title <val>${Ui.quote(it.title.ifBlank { it.subtitle })}") }
         action.playSound?.let { add("<bd>Sound <val>${plain(it)}") }
         action.executeCommand?.let { add("<bd>Command <val>/${plain(it)}") }
+        action.actionBar?.let { add("<bd>Action bar <val>${Ui.quote(it)}") }
+        action.speech?.let { add("<bd>Says <val>${Ui.quote(it)}") }
+        action.npcAnimation?.let { add("<bd>Animation <val>${it.name.lowercase().replace('_', ' ')}") }
     }
 
     fun soundSettings(options: NpcConfig.SoundOptions): String =
@@ -68,10 +71,6 @@ object NpcFormat {
 
     fun skinLabel(skin: NpcConfig.SkinConfiguration): String =
         skin.sourcePlayer ?: if (skin.texture != null) "custom" else "default"
-
-    fun glowLine(entity: NpcConfig.NpcEntityConfiguration): String =
-        if (entity.glowing) "<bd>Glow <on>on <hnt>· <val>${glowColor(entity)}"
-        else "<bd>Glow <off>off"
 
     fun glowColor(entity: NpcConfig.NpcEntityConfiguration): String = entity.glowColor ?: DEFAULT_GLOW_COLOR
 
@@ -95,6 +94,9 @@ object NpcFormat {
         GlowColor("light_purple", "Light Purple", "MAGENTA_WOOL"),
         GlowColor("dark_purple", "Purple", "PURPLE_WOOL"),
     )
+
+    fun glowLabel(teamName: String): String =
+        GLOW_COLORS.firstOrNull { it.teamName.equals(teamName, true) }?.label ?: teamName
 
     fun glowIcon(teamName: String): String =
         (GLOW_COLORS.firstOrNull { it.teamName.equals(teamName, true) } ?: GLOW_COLORS.first()).icon

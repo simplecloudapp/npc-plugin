@@ -347,7 +347,7 @@ object InventoryPickers {
             },
             onRightClick = { option -> player.playSound(option.value, options) },
             extras = { pane ->
-                SoundTuning.place(pane, context.textPrompts, player, action?.playSound, options) { updated ->
+                SoundTuning.place(pane, player, action?.playSound, options) { updated ->
                     val changed = context.change(player, config.id) { fresh ->
                         val items = fresh.items.filter { it.slot in purpose.slots }
                         val actions = items.mapNotNull { ItemClickActions.of(it, purpose.interaction) }

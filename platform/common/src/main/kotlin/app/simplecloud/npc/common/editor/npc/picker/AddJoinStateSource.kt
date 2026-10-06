@@ -73,6 +73,8 @@ class AddJoinStateSource(override val purpose: PickerPurpose.AddJoinState) : Pic
 
     override fun apply(context: NpcEditorContext, player: NpcPlayer, config: NpcConfig, value: String) {
         val state = value.removePrefix("@").lowercase()
+        val session = context.session(player)
+        if (forHologram) session.hologramState = state else session.actionState = state
         if (forHologram) {
             context.commitAndBack(player, config.id, refresh = Refresh.HOLOGRAM) { fresh ->
                 fresh.apply { hologram.layoutOrCreate(state) }

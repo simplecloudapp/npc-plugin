@@ -21,7 +21,6 @@ import app.simplecloud.npc.paper.bootstrap.PacketStack
 import app.simplecloud.npc.paper.bootstrap.ProviderReadyWait
 import app.simplecloud.npc.paper.command.CommandHandler
 import app.simplecloud.npc.paper.editor.EditorWiring
-import app.simplecloud.npc.paper.hologram.PersonalHolograms
 import app.simplecloud.npc.paper.effects.PaperNpcEffects
 import app.simplecloud.npc.paper.inventory.AttachableInventoryHolder
 import app.simplecloud.npc.paper.inventory.PaperInventoryViewRenderer
@@ -41,7 +40,7 @@ class PaperPlugin : JavaPlugin() {
     private lateinit var pluginContext: NpcPluginContext
     private var editorWiring: EditorWiring? = null
     private var npcEffects: PaperNpcEffects? = null
-    private var personalHolograms: PersonalHolograms? = null
+    private var providerWiring: ProviderWiring? = null
 
     override fun onLoad() = PacketStack.load(this)
 
@@ -65,13 +64,7 @@ class PaperPlugin : JavaPlugin() {
             val resolved = if (player.isSneaking) interaction.shifted() else interaction
             pluginContext.interactionExecutor.execute(id, PaperNpcPlayer(this, player), resolved)
         }
-        val providers = ProviderWiring.load(this, onInteract)
-        PersonalHolograms(this).also { holograms ->
-            personalHolograms = holograms
-            Listeners.register(this, holograms)
-            holograms.start()
-            providers.showPersonalText(holograms)
-        }
+        val providers = ProviderWiring.load(this, onInteract).also { providerWiring = it }
         val inventoryViews = PaperInventoryViewRenderer(this)
         val effects = PaperNpcEffects(this).also { npcEffects = it }
         val editors = EditorWiring.create(this) { pluginContext }.also { editorWiring = it }
@@ -137,7 +130,7 @@ class PaperPlugin : JavaPlugin() {
             }
         }
 
-        personalHolograms?.shutdown()
+        providerWiring?.shutdown()
         BackgroundTasks.shutdown()
         CloudListCache.shutdown()
         GlowTeams.shutdown()

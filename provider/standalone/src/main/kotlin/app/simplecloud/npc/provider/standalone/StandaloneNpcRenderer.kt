@@ -1,5 +1,6 @@
 package app.simplecloud.npc.provider.standalone
 
+import app.simplecloud.npc.bukkit.compat.EntityIds
 import app.simplecloud.npc.bukkit.compat.ServerCompat
 import app.simplecloud.npc.bukkit.equipment.EquipmentItems
 import app.simplecloud.npc.bukkit.glow.GlowTeamPackets
@@ -8,6 +9,7 @@ import app.simplecloud.npc.bukkit.location.requireLoadedWorld
 import app.simplecloud.npc.bukkit.look.LookAtPlayerDriver
 import app.simplecloud.npc.bukkit.look.LookAtPlayerTicker
 import app.simplecloud.npc.bukkit.packet.PacketComponents
+import app.simplecloud.npc.bukkit.packet.PacketViewerTracker
 import app.simplecloud.npc.bukkit.packet.PacketPoses
 import app.simplecloud.npc.bukkit.scheduling.sync
 import app.simplecloud.npc.bukkit.skin.FixedSkinRenderer
@@ -28,22 +30,15 @@ import me.tofaa.entitylib.wrapper.WrapperPlayer
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.HandlerList
-import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerChangedWorldEvent
-import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.event.player.PlayerRespawnEvent
 import org.bukkit.plugin.Plugin
-import org.bukkit.scheduler.BukkitTask
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import java.util.logging.Level
 import com.github.retrooper.packetevents.protocol.player.EquipmentSlot as PacketEquipmentSlot
 import com.github.retrooper.packetevents.protocol.world.Location as PacketLocation
 
 class StandaloneNpcRenderer(
     private val plugin: Plugin,
+    private val tracker: PacketViewerTracker,
 ) : FixedSkinRenderer {
 
     private val npcs = ConcurrentHashMap<String, TrackedNpc>()
@@ -51,47 +46,20 @@ class StandaloneNpcRenderer(
     private val lookTicker = LookAtPlayerTicker()
     private val lookDriver = LookAtPlayerDriver(plugin, lookTicker)
     private val hitboxes = InteractionHitboxes(plugin)
-    private var visibilityTask: BukkitTask? = null
-
-    private val lifecycleListener = object : Listener {
-        @EventHandler
-        fun onQuit(event: PlayerQuitEvent) {
-            val uuid = event.player.uniqueId
-
-            teams.forget(uuid)
-            forget(uuid)
-        }
-
-        @EventHandler
-        fun onRespawn(event: PlayerRespawnEvent) = forget(event.player.uniqueId)
-
-        @EventHandler
-        fun onWorldChange(event: PlayerChangedWorldEvent) = forget(event.player.uniqueId)
-    }
 
     override fun onEnable() {
         hitboxes.onEnable()
-        Bukkit.getPluginManager().registerEvents(lifecycleListener, plugin)
-
-        visibilityTask = Bukkit.getScheduler().runTaskTimer(plugin, ::tickVisibility, 20L, VISIBILITY_TICK_PERIOD)
+        tracker.onQuit(teams::forget)
         lookDriver.start { lookTargets() }
     }
 
     override fun onDisable() {
-        visibilityTask?.cancel()
         lookDriver.stop()
-
         hitboxes.onDisable()
-        HandlerList.unregisterAll(lifecycleListener)
 
         npcs.values.toList().forEach(::removeEntity)
         npcs.clear()
         teams.removeAll()
-    }
-
-    private fun forget(uuid: UUID) {
-        npcs.values.forEach { it.entity.removeViewerSilently(uuid) }
-        lookTicker.forgetViewer(uuid)
     }
 
     fun cleanupStaleHitboxes() {
@@ -107,10 +75,9 @@ class StandaloneNpcRenderer(
         npcs[config.id] = tracked
         InteractableEntities.register(tracked.entity.entityId, config.id, realEntity = false)
         tracked.entity.spawn(toPacketLocation(config.entity.location))
+        tracker.add(tracked.visibility)
 
-        Bukkit.getOnlinePlayers().forEach { tryShow(tracked, it) }
-
-        hitboxes.spawn(config)?.let { hitboxId -> npcs[config.id] = tracked.copy(hitboxId = hitboxId) }
+        tracked.hitboxId = hitboxes.spawn(config)
 
         config
     }
@@ -121,8 +88,7 @@ class StandaloneNpcRenderer(
 
     private fun despawnNow(id: String) {
         val tracked = npcs.remove(id) ?: return
-        val viewers = tracked.entity.viewers.mapNotNull(Bukkit::getPlayer)
-        removeEntity(tracked)
+        val viewers = removeEntity(tracked)
 
         val teamName = GlowTeamPackets.hiddenNameTagTeamFor(tracked.glowColor)
         viewers.forEach { player ->
@@ -133,11 +99,13 @@ class StandaloneNpcRenderer(
         tracked.hitboxId?.let(hitboxes::remove)
     }
 
-    private fun removeEntity(tracked: TrackedNpc) {
+    private fun removeEntity(tracked: TrackedNpc): List<Player> {
         InteractableEntities.unregister(tracked.entity.entityId)
-        val viewers = tracked.entity.viewers.mapNotNull(Bukkit::getPlayer)
+        val viewers = tracker.remove(tracked.visibility)
         tracked.entity.remove()
         viewers.forEach { removeProfile(tracked, it) }
+
+        return viewers
     }
 
     private fun removeProfile(tracked: TrackedNpc, player: Player) {
@@ -157,7 +125,9 @@ class StandaloneNpcRenderer(
                     return@sync
                 }
 
-            tracked.entity.teleport(toPacketLocation(config.entity.location))
+            val location = config.entity.location
+            tracked.entity.teleport(toPacketLocation(location))
+            tracked.visibility.moveTo(location.world, location.x, location.y, location.z)
             tracked.hitboxId?.let { hitboxes.teleport(config, it) }
         }
     }
@@ -179,8 +149,7 @@ class StandaloneNpcRenderer(
         }
 
         val profile = UserProfile(NpcProfiles.uuidFor(config), NpcProfiles.nameFor(config.id), textures)
-        @Suppress("DEPRECATION")
-        val entity = WrapperPlayer(profile, Bukkit.getUnsafe().nextEntityId())
+        val entity = WrapperPlayer(profile, EntityIds.next(Bukkit.getWorld(config.entity.location.world)))
 
         entity.isInTablist = false
         entity.getEntityMeta(PlayerMeta::class.java).apply {
@@ -197,8 +166,9 @@ class StandaloneNpcRenderer(
         if (scale != 1.0) entity.attributes.setAttribute(Attributes.SCALE, scale)
 
         return TrackedNpc(
+            id = config.id,
             entity = entity,
-            world = config.entity.location.world,
+            location = config.entity.location,
             viewDistance = config.entity.viewDistance,
             lookAtPlayer = config.entity.lookAtPlayer,
             lookAtPlayerDistance = config.entity.lookAtPlayerDistance,
@@ -220,41 +190,6 @@ class StandaloneNpcRenderer(
         EquipmentSlot.CHESTPLATE -> PacketEquipmentSlot.CHEST_PLATE
         EquipmentSlot.LEGGINGS -> PacketEquipmentSlot.LEGGINGS
         EquipmentSlot.BOOTS -> PacketEquipmentSlot.BOOTS
-    }
-
-    private fun tryShow(tracked: TrackedNpc, player: Player) {
-        if (!tracked.entity.hasViewer(player.uniqueId) && inRange(tracked, player)) showFor(tracked, player)
-    }
-
-    private fun tickVisibility() {
-        val onlinePlayers = Bukkit.getOnlinePlayers().toList()
-
-        npcs.forEach { (id, tracked) ->
-            try {
-                onlinePlayers.forEach { player ->
-                    val withinRange = inRange(tracked, player)
-                    val currentlyVisible = tracked.entity.hasViewer(player.uniqueId)
-
-                    when {
-                        withinRange && !currentlyVisible -> showFor(tracked, player)
-                        !withinRange && currentlyVisible -> hideFor(tracked, player)
-                    }
-                }
-            } catch (exception: Exception) {
-                logger.log(Level.WARNING, "Failed to update visibility for NPC $id", exception)
-            }
-        }
-    }
-
-    private fun inRange(tracked: TrackedNpc, player: Player): Boolean {
-        if (!player.world.name.equals(tracked.world, ignoreCase = true)) return false
-        val entity = tracked.entity
-        val location = player.location
-        val dx = entity.x - location.x
-        val dy = entity.y - location.y
-        val dz = entity.z - location.z
-
-        return dx * dx + dy * dy + dz * dz <= tracked.viewDistance * tracked.viewDistance
     }
 
     private fun showFor(tracked: TrackedNpc, player: Player) {
@@ -297,18 +232,39 @@ class StandaloneNpcRenderer(
     private fun toPacketLocation(location: NpcLocation): PacketLocation =
         PacketLocation(location.x, location.y, location.z, location.yaw, location.pitch)
 
-    private data class TrackedNpc(
+    private inner class TrackedNpc(
+        id: String,
         val entity: WrapperPlayer,
-        val world: String,
-        val viewDistance: Double,
+        location: NpcLocation,
+        viewDistance: Double,
         val lookAtPlayer: Boolean,
         val lookAtPlayerDistance: Double,
-        val glowColor: String? = null,
-        val hitboxId: UUID? = null,
-    )
+        val glowColor: String?,
+    ) {
+        var hitboxId: UUID? = null
+
+        val world: String get() = visibility.world
+
+        val visibility = object : PacketViewerTracker.Entry(
+            "NPC $id",
+            location.world,
+            location.x,
+            location.y,
+            location.z,
+            viewDistance,
+        ) {
+            override fun show(player: Player) = showFor(this@TrackedNpc, player)
+
+            override fun hide(player: Player) = hideFor(this@TrackedNpc, player)
+
+            override fun forget(uuid: UUID) {
+                entity.removeViewerSilently(uuid)
+                lookTicker.forgetPair(entity.entityId, uuid)
+            }
+        }
+    }
 
     private companion object {
-        private const val VISIBILITY_TICK_PERIOD = 10L
         private val logger = NpcLog.logger
     }
 }

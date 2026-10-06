@@ -103,6 +103,9 @@ class InventoryEditor(
             is InventoryEditorScreen.Studio -> StudioMenuBuilder.build(context, player, config, bound)
             is InventoryEditorScreen.Lore -> LoreMenuBuilder.build(context, player, config, bound)
             is InventoryEditorScreen.ItemAction -> ItemActionMenuBuilder.build(context, player, config, bound)
+            is InventoryEditorScreen.ItemActionBlocks ->
+                ItemActionMenuBuilder.buildBlocks(context, player, config, bound)
+
             is InventoryEditorScreen.ItemTitle -> ItemTitleMenuBuilder.build(context, player, config, bound)
             is InventoryEditorScreen.LiveGroup -> LiveGroupMenuBuilder.build(context, player, config, bound.group)
             is InventoryEditorScreen.StateLooks -> StateLooksMenuBuilder.build(context, player, config, bound.group)

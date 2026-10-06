@@ -4,7 +4,6 @@ import app.simplecloud.npc.common.editor.core.back
 import app.simplecloud.npc.common.editor.core.pageKey
 import app.simplecloud.npc.common.editor.core.pager
 import app.simplecloud.npc.common.editor.menu.EditorMenu
-import app.simplecloud.npc.common.editor.menu.MenuClick
 import app.simplecloud.npc.common.editor.menu.Paginator
 import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.npc.NpcEditorContext
@@ -42,11 +41,7 @@ object SkinMenuBuilder {
                 GRID_SLOTS.first + index,
                 Ui.head(
                     if (selected) "<on>${onlinePlayer.name}" else "<ttl>${onlinePlayer.name}",
-                    listOf(
-                        "<bd>Online on <val>this server",
-                        "",
-                        if (selected) "<on>Currently used" else "<key>Left <hnt>Use this skin",
-                    ),
+                    listOf(if (selected) "<on>In use" else "<key>Left <hnt>Use this skin"),
                     owner = onlinePlayer.uniqueId,
                     glowing = selected,
                 ),
@@ -59,31 +54,17 @@ object SkinMenuBuilder {
             context.render(player, screen)
         }
 
-        pane.on(
+        pane.left(
             RESET_SLOT,
             Ui.item(
                 "BARRIER",
                 "<err>Reset Skin",
-                listOf(
-                    "<bd>Currently <val>${NpcFormat.skinLabel(config.entity.skin)}",
-                    "",
-                    "<key>Q <hnt>Back to the default skin",
-                ),
+                listOf("<bd>Now <val>${NpcFormat.skinLabel(config.entity.skin)}", "<key>Left <hnt>Back to default"),
             ),
-            MenuClick.DROP,
         ) { applySkin(context, player, config, NpcConfig.SkinConfiguration()) }
         pane.left(
             INPUT_SLOT,
-            Ui.item(
-                "WRITABLE_BOOK",
-                "<ttl>Username, UUID Or Texture",
-                listOf(
-                    "<hnt>Type a player's name or UUID, or paste",
-                    "<hnt>a texture value and its signature.",
-                    "",
-                    "<key>Left <hnt>Type it in chat",
-                ),
-            ),
+            Ui.item("WRITABLE_BOOK", "<ttl>Username Or UUID", listOf("<key>Left <hnt>Type it in chat")),
         ) { promptSkin(context, player, config) }
         pane.fillNavRow()
 
@@ -94,27 +75,17 @@ object SkinMenuBuilder {
         context.textPrompts.open(
             player,
             title = "Skin",
-            instruction = "Type a username or UUID, or paste the texture value and signature.",
+            instruction = "Type the username or UUID of the player whose skin to use.",
             current = config.entity.skin.sourcePlayer,
             validate = { input ->
-                when (val parsed = SkinInput.parse(input)) {
-                    null -> "That is no username, UUID or texture."
-                    is SkinInput.Texture -> "NPC skins also need the signature after the value.".takeIf {
-                        parsed.signature == null
-                    }
-
+                when (SkinInput.parse(input)) {
+                    null -> "That is no username or UUID."
+                    is SkinInput.Texture -> "Set texture skins in the NPC's config file."
                     else -> null
                 }
             },
         ) { text ->
             when (val parsed = SkinInput.parse(text)) {
-                is SkinInput.Texture -> applySkin(
-                    context,
-                    player,
-                    config,
-                    NpcConfig.SkinConfiguration(parsed.value, parsed.signature),
-                )
-
                 is SkinInput.Uuid -> lookUp(context, player, config, text) {
                     context.renderer.captureSkinByUuid(parsed.uuid)
                 }
@@ -122,7 +93,7 @@ object SkinMenuBuilder {
                     context.renderer.captureSkinByUsername(parsed.name)?.copy(sourcePlayer = parsed.name)
                 }
 
-                null -> context.render(player, NpcEditorScreen.SkinPicker(config.id))
+                is SkinInput.Texture, null -> context.render(player, NpcEditorScreen.SkinPicker(config.id))
             }
         }
     }

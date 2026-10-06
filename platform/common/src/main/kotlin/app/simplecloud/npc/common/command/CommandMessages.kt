@@ -12,6 +12,9 @@ import org.spongepowered.configurate.ConfigurationNode
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.nio.file.Path
 import java.util.logging.Level
+import kotlin.io.path.exists
+import kotlin.io.path.readText
+import kotlin.io.path.writeText
 
 enum class NpcSuccessMessage(val path: String, val verb: String) {
     CREATED("command.npc.create.success", "Created"),
@@ -42,6 +45,12 @@ object CommandMessages {
         NpcFailure.entries.forEach { add(failure(it).first) }
     }
 
+    private const val DEFAULT_PREFIX = "<#0EA5E9>⚡ NPC <#475569>|"
+    private val OLD_DEFAULT_PREFIXES = listOf(
+        "<#0EA5E9><bold>NPCs</bold> <#475569>|",
+        "<#0EA5E9>SimpleCloud NPC <#475569>|",
+    )
+
     private val FIXED_PATHS = setOf(
         "command.help.title",
         "command.help.topic-title",
@@ -52,7 +61,18 @@ object CommandMessages {
 
     fun initialize(path: Path) {
         messagesPath = path
+        runCatching { updateDefaultPrefix(path) }
+            .onFailure { NpcLog.logger.log(Level.WARNING, "Could not update the prefix in messages.yml", it) }
         reload()
+    }
+
+    internal fun updateDefaultPrefix(path: Path) {
+        if (!path.exists()) return
+        val text = path.readText()
+        val updated = OLD_DEFAULT_PREFIXES.fold(text) { acc, old ->
+            acc.replace("prefix: '$old'", "prefix: '$DEFAULT_PREFIX'")
+        }
+        if (updated != text) path.writeText(updated)
     }
 
     fun reload(): Boolean {

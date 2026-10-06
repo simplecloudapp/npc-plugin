@@ -2,7 +2,6 @@ package app.simplecloud.npc.common.editor.core
 
 import app.simplecloud.npc.common.editor.PromptFormat
 import app.simplecloud.npc.common.editor.PromptTokens
-import app.simplecloud.npc.common.editor.menu.MenuClick
 import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.editor.npc.NpcFormat
 import app.simplecloud.npc.common.editor.ui.Stepper
@@ -30,7 +29,7 @@ object TitlePane {
     private fun IntRange.toDoubleRange(): ClosedFloatingPointRange<Double> = first.toDouble()..last.toDouble()
 
     private fun ticksLine(ticks: Double) =
-        "<bd>Value <val>${ticks.toInt()} <hnt>ticks · <val>${NpcFormat.seconds(ticks.toInt(), 2)}"
+        "<val>${NpcFormat.seconds(ticks.toInt(), 2)} <hnt>· ${ticks.toInt()} ticks"
 
     private val FADE_IN = ticksStepper("Fade In", fadeRange, 1.0, DEFAULTS.fadeIn)
     private val STAY = ticksStepper("Stay", stayRange, 5.0, DEFAULTS.stay)
@@ -63,27 +62,17 @@ object TitlePane {
                 current = value,
                 format = PromptFormat.MINI_MESSAGE,
                 placeholders = PromptTokens.PLAYER,
+                onClear = { port.edit { set(it, "") } }.takeIf { value.isNotBlank() },
             ) { text ->
                 port.edit { set(it, text) }
             }
         }
 
-        val titleHint = listOf("<hnt>Empty title with a subtitle set is legal.")
-        pane.on(TITLE_SLOT, textField("Title Text", title.title, titleHint)) { click ->
-            when (click) {
-                MenuClick.LEFT -> ask("Title Text", title.title) { current, text -> current.copy(title = text) }
-                MenuClick.DROP -> if (title.title.isNotBlank()) port.edit { it.copy(title = "") }
-                else -> Unit
-            }
+        pane.left(TITLE_SLOT, textField("Title Text", title.title)) {
+            ask("Title Text", title.title) { current, text -> current.copy(title = text) }
         }
-        pane.on(SUBTITLE_SLOT, textField("Subtitle Text", title.subtitle, emptyList())) { click ->
-            when (click) {
-                MenuClick.LEFT -> ask("Subtitle Text", title.subtitle) { current, text ->
-                    current.copy(subtitle = text)
-                }
-                MenuClick.DROP -> if (title.subtitle.isNotBlank()) port.edit { it.copy(subtitle = "") }
-                else -> Unit
-            }
+        pane.left(SUBTITLE_SLOT, textField("Subtitle Text", title.subtitle)) {
+            ask("Subtitle Text", title.subtitle) { current, text -> current.copy(subtitle = text) }
         }
 
         val total = title.fadeIn + title.stay + title.fadeOut
@@ -92,8 +81,7 @@ object TitlePane {
             "<ttl>Pacing",
             listOf(
                 NpcFormat.pacing(title),
-                "<bd>On screen for <val>${NpcFormat.seconds(total)} <bd>total",
-                "<hnt>${title.fadeIn} / ${title.stay} / ${title.fadeOut} ticks",
+                "<bd>On screen for <val>${NpcFormat.seconds(total)}",
             ),
         )
 
@@ -103,13 +91,13 @@ object TitlePane {
                 pane[slot] = Ui.disabled(stepper.label, hint)
             }
         } else {
-            pane[FADE_IN_SLOT] = FADE_IN.element(port.textPrompts, port.player, title.fadeIn.toDouble()) { value ->
+            pane[FADE_IN_SLOT] = FADE_IN.element(title.fadeIn.toDouble()) { value ->
                 port.edit { it.copy(fadeIn = value.toInt()) }
             }
-            pane[STAY_SLOT] = STAY.element(port.textPrompts, port.player, title.stay.toDouble()) { value ->
+            pane[STAY_SLOT] = STAY.element(title.stay.toDouble()) { value ->
                 port.edit { it.copy(stay = value.toInt()) }
             }
-            pane[FADE_OUT_SLOT] = FADE_OUT.element(port.textPrompts, port.player, title.fadeOut.toDouble()) { value ->
+            pane[FADE_OUT_SLOT] = FADE_OUT.element(title.fadeOut.toDouble()) { value ->
                 port.edit { it.copy(fadeOut = value.toInt()) }
             }
         }
@@ -119,26 +107,17 @@ object TitlePane {
             Ui.item(
                 "RED_CONCRETE",
                 "<err>Remove Title",
-                listOf(
-                    "<bd>Clears all five values and removes",
-                    "<bd>the title from this action.",
-                    "",
-                    "<hnt>Other action fields are untouched.",
-                    "",
-                    "<key>Left <hnt>Remove",
-                ),
+                listOf("<hnt>Other parts of the action stay.", "<key>Left <hnt>Remove"),
             ),
         ) { port.removeAndBack() }
     }
 
-    private fun textField(label: String, value: String, trailing: List<String>): NpcItem = Ui.item(
+    private fun textField(label: String, value: String): NpcItem = Ui.item(
         "ANVIL",
         "<ttl>$label",
-        listOfNotNull(
+        listOf(
             if (value.isBlank()) "<off>Not set" else "<val>${Ui.quote(value)}",
-            "",
             "<key>Left <hnt>Edit in chat",
-            "<key>Q <hnt>Clear".takeIf { value.isNotBlank() },
-        ) + trailing,
+        ),
     )
 }

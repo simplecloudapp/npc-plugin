@@ -73,7 +73,6 @@ class PickSoundSource(override val purpose: PickerPurpose.PickSound) : PickerSou
 
         SoundTuning.place(
             pane,
-            context.textPrompts,
             player,
             currentSound(config),
             soundOptions(config),

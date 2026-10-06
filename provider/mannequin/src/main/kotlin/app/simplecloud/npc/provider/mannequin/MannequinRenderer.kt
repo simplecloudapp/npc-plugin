@@ -9,6 +9,7 @@ import app.simplecloud.npc.bukkit.location.toBukkitLocation
 import app.simplecloud.npc.bukkit.location.toNpcLocation
 import app.simplecloud.npc.bukkit.look.LookAtPlayerDriver
 import app.simplecloud.npc.bukkit.look.LookAtPlayerTicker
+import app.simplecloud.npc.bukkit.packet.PacketViewerTracker
 import app.simplecloud.npc.bukkit.provider.WorldReconciler
 import app.simplecloud.npc.bukkit.scheduling.sync
 import app.simplecloud.npc.bukkit.skin.FixedSkinRenderer
@@ -28,6 +29,7 @@ import org.bukkit.World
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Mannequin
+import org.bukkit.entity.Player
 import org.bukkit.entity.Pose
 import org.bukkit.event.EventHandler
 import org.bukkit.event.HandlerList
@@ -54,14 +56,19 @@ class MannequinRenderer(
     private val configsById = ConcurrentHashMap<String, NpcConfig>()
     private val lookTicker = LookAtPlayerTicker()
     private val lookDriver = LookAtPlayerDriver(plugin, lookTicker)
+    private val viewers = PacketViewerTracker(plugin)
+    private val ranges = ConcurrentHashMap<String, RangeEntry>()
 
     override fun onEnable() {
         Bukkit.getPluginManager().registerEvents(this, plugin)
+        viewers.start()
         lookDriver.start { lookTargets() }
     }
 
     override fun onDisable() {
         lookDriver.stop()
+        viewers.stop()
+        ranges.clear()
         HandlerList.unregisterAll(this)
 
         networkIdByEntityId.values.forEach(InteractableEntities::unregister)
@@ -85,12 +92,14 @@ class MannequinRenderer(
         configure(mannequin, config)
         track(config.id, mannequin)
         configsById[config.id] = config
+        updateRange(config)
 
         config
     }
 
     override fun despawn(config: NpcConfig) {
         plugin.sync {
+            ranges.remove(config.id)?.let(viewers::remove)
             untrack(config.id)?.let { entityId ->
                 GlowTeams.clear(entityId)
                 Bukkit.getEntity(entityId)?.remove()
@@ -111,7 +120,7 @@ class MannequinRenderer(
 
             val world = Bukkit.getWorld(config.entity.location.world) ?: return@sync
             entity.teleport(config.entity.location.toBukkitLocation(world))
-
+            updateRange(config)
         }
     }
 
@@ -174,6 +183,7 @@ class MannequinRenderer(
             isCollidable = false
             isSilent = true
             isPersistent = true
+            isVisibleByDefault = false
             isGlowing = config.entity.glowing
         }
         GlowTeams.set(mannequin, config.entity.glowColor)
@@ -208,6 +218,37 @@ class MannequinRenderer(
             .onFailure { logger.log(Level.FINE, "Could not set the mannequin pose", it) }
 
         mannequin.getAttribute(Attribute.SCALE)?.baseValue = config.entity.effectiveScale()
+    }
+
+    private fun updateRange(config: NpcConfig) {
+        val location = config.entity.location
+        val entry = ranges.getOrPut(config.id) {
+            RangeEntry(config.id, location.world, location.x, location.y, location.z, config.entity.viewDistance)
+                .also(viewers::add)
+        }
+        entry.range = config.entity.viewDistance
+        entry.moveTo(location.world, location.x, location.y, location.z)
+    }
+
+    private inner class RangeEntry(
+        private val npcId: String,
+        world: String,
+        x: Double,
+        y: Double,
+        z: Double,
+        range: Double,
+    ) : PacketViewerTracker.Entry("Mannequin $npcId", world, x, y, z, range) {
+        override fun show(player: Player) {
+            trackedEntity(npcId)?.let { player.showEntity(plugin, it) }
+        }
+
+        override fun hide(player: Player) {
+            trackedEntity(npcId)?.let { player.hideEntity(plugin, it) }
+        }
+
+        override fun forget(uuid: UUID) {
+            Bukkit.getPlayer(uuid)?.let(::hide)
+        }
     }
 
     private fun buildProfile(config: NpcConfig): PlayerProfile =

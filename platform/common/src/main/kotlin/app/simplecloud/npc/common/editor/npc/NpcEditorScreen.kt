@@ -18,26 +18,29 @@ sealed interface SoundField {
 }
 
 sealed interface ConfirmPurpose {
-    data object DeleteNpc : ConfirmPurpose
-
-    data class WipeAction(val interaction: PlayerInteraction, val joinState: String) : ConfirmPurpose
     data class RemoveJoinState(val joinState: String) : ConfirmPurpose
     data class RemoveLayout(val joinState: String) : ConfirmPurpose
 }
 
+enum class NpcTab(val label: String, val material: String, val description: String) {
+    NPC("NPC", "PLAYER_HEAD", "Summon, copy or delete it"),
+    LOOKS("Looks", "ARMOR_STAND", "Skin, name, glow, pose"),
+    BEHAVIOR("Behavior", "PISTON", "Looking and pushing"),
+    HOLOGRAM("Hologram", "GLOW_ITEM_FRAME", "Lines above its head"),
+    ACTIONS("Actions", "LEVER", "What a click does"),
+    TARGETS("Targets", "COMPASS", "Where it sends players"),
+}
+
 sealed class NpcEditorScreen(val npcId: String) {
-    data class Hub(private val id: String) : NpcEditorScreen(id)
-    data class Appearance(private val id: String) : NpcEditorScreen(id)
+    data class Tab(private val id: String, val tab: NpcTab) : NpcEditorScreen(id)
     data class SkinPicker(private val id: String) : NpcEditorScreen(id)
     data class Glow(private val id: String) : NpcEditorScreen(id)
     data class Equipment(private val id: String) : NpcEditorScreen(id)
-    data class Behavior(private val id: String) : NpcEditorScreen(id)
-    data class Targets(private val id: String) : NpcEditorScreen(id)
-    data class Hologram(private val id: String) : NpcEditorScreen(id)
-    data class HologramLines(private val id: String, val joinState: String) : NpcEditorScreen(id)
     data class HologramFrames(private val id: String, val joinState: String, val line: Int) : NpcEditorScreen(id)
-    data class ActionMatrix(private val id: String) : NpcEditorScreen(id)
     data class ActionEditor(private val id: String, val interaction: PlayerInteraction, val joinState: String) :
+        NpcEditorScreen(id)
+
+    data class ActionBlocks(private val id: String, val interaction: PlayerInteraction, val joinState: String) :
         NpcEditorScreen(id)
 
     data class TitleEditor(private val id: String, val interaction: PlayerInteraction, val joinState: String) :

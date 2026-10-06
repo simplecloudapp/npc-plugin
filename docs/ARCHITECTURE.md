@@ -9,7 +9,7 @@
 | `platform/paper` | `app.simplecloud.npc.paper` | The Paper plugin. Builds the jar. |
 | `api` | `app.simplecloud.npc.api` | Public developer API: Bukkit events and the `SimpleCloudNpcs` service. |
 | `provider/base` | `app.simplecloud.npc.bukkit` | Shared Bukkit code for providers: click packets, glow teams, skins, look-at-player. |
-| `provider/standalone` | `app.simplecloud.npc.provider.standalone` | Packet NPCs (PacketEvents/EntityLib) and the TextDisplay holograms. |
+| `provider/standalone` | `app.simplecloud.npc.provider.standalone` | Packet NPCs (PacketEvents/EntityLib). |
 | `provider/mannequin` | `app.simplecloud.npc.provider.mannequin` | Mannequin entities, 1.21.9 and newer. |
 | `provider/citizens`, `fancynpcs`, `znpcsplus`, `mythicmobs` | `app.simplecloud.npc.provider.<name>` | Wrappers for the other NPC plugins. |
 | `libs/packetevents` | | PacketEvents and EntityLib, relocated, with their own Adventure. No code. |
@@ -64,8 +64,12 @@ A provider implements `NpcRenderer` from `core`. Wrappers for other plugins
 extend `LinkedProviderRenderer`, which tracks whether an NPC is ours or linked
 and runs every call on the main thread.
 
-Holograms don't go through providers. Every NPC gets the TextDisplay hologram
-from `TextDisplayHologramRenderer`.
+Holograms don't go through providers. Every NPC gets a packet-only TextDisplay
+hologram from `PacketHologramRenderer` in `provider/base`. Each line is sent per
+player, so `<playername>` and PlaceholderAPI text go straight into that player's
+packets (`ViewerTexts`). Holograms show and hide with the NPC's `view-distance`
+through `PacketViewerTracker`. `LegacyHologramCleanup` removes the persisted
+TextDisplays older versions left in the worlds.
 
 Clicks and glow colors work through packets:
 

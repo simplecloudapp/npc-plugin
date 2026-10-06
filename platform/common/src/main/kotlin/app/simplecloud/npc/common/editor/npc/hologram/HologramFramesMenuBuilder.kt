@@ -22,9 +22,9 @@ import app.simplecloud.npc.core.text.PlayerPlaceholders
 
 object HologramFramesMenuBuilder {
     private const val SIZE = 27
-    private const val CONTROLS_SLOT = 21
-    private const val INTERVAL_SLOT = 23
-    private const val REFRESH_SLOT = 25
+    private const val INTERVAL_SLOT = 22
+    private const val REFRESH_SLOT = 24
+    private val FRAME_SLOTS = (0..17).toList()
 
     private val INTERVAL = Stepper(
         label = "Interval",
@@ -43,11 +43,7 @@ object HologramFramesMenuBuilder {
         default = HologramLine.DEFAULT_REFRESH,
         decimals = 2,
         unit = "seconds",
-        hints = listOf(
-            "<hnt>How often PlaceholderAPI values",
-            "<hnt>are looked up for each viewer.",
-            "<hnt>Raise it for slow placeholders.",
-        ),
+        hints = listOf("<hnt>How often PlaceholderAPI values update."),
     )
 
     fun build(
@@ -78,16 +74,18 @@ object HologramFramesMenuBuilder {
                     if (mutate(updated)) current.withFrames(updated) else null
                 }
             },
-            prompt = { _, current, onText -> promptFrame(context, player, screen, current, onText) },
+            prompt = { _, current, onText, onDelete ->
+                promptFrame(context, player, screen, current, onText, onDelete)
+            },
         )
-        LinesPane.place(pane, frames, CONTROLS_SLOT, "<hnt>Add a second text to start rotating.", "Add Text")
+        LinesPane.place(pane, frames, FRAME_SLOTS, "Add Text")
 
         val interval = line?.interval ?: HologramLine.DEFAULT_FRAME_INTERVAL
-        pane[INTERVAL_SLOT] = INTERVAL.element(context.textPrompts, player, interval) { value ->
+        pane[INTERVAL_SLOT] = INTERVAL.element(interval) { value ->
             editLine { it.copy(frameInterval = value) }
         }
         if (line != null && line.texts.any(PlayerPlaceholders::usesExternal)) {
-            pane[REFRESH_SLOT] = REFRESH.element(context.textPrompts, player, line.refreshSeconds) { value ->
+            pane[REFRESH_SLOT] = REFRESH.element(line.refreshSeconds) { value ->
                 editLine { it.copy(refresh = value) }
             }
         }
@@ -105,6 +103,7 @@ object HologramFramesMenuBuilder {
         screen: NpcEditorScreen.HologramFrames,
         current: String?,
         apply: (String) -> Unit,
+        onDelete: (() -> Unit)?,
     ) {
         context.chatPrompt(
             player,
@@ -114,10 +113,11 @@ object HologramFramesMenuBuilder {
                 current = current,
                 format = PromptFormat.MINI_MESSAGE,
                 placeholders = PromptTokens.HOLOGRAM,
+                onClear = onDelete,
                 onCancel = { context.render(player, screen) },
                 onSubmit = { input ->
                     val text = input.trim()
-                    HologramLinesMenuBuilder.tooLong(text)?.let { return@Prompt it }
+                    HologramLineEditor.tooLong(text)?.let { return@Prompt it }
                     apply(text)
                     PromptResult.Accepted
                 },

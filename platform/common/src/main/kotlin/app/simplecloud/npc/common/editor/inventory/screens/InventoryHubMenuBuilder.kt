@@ -190,7 +190,7 @@ object InventoryHubMenuBuilder {
         pane.fill(HEADER_FILLER_SLOTS)
         pane.fillNavRow()
 
-        return pane.menu(Ui.title("Menu Editor", config.id))
+        return pane.menu(Ui.title("⚡ Menu Editor", config.id))
     }
 
     private fun promptRename(context: InventoryEditorContext, player: NpcPlayer, config: InventoryConfiguration) {

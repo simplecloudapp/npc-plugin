@@ -1,8 +1,6 @@
 package app.simplecloud.npc.common.editor.ui
 
-import app.simplecloud.npc.common.editor.menu.Pane
 import app.simplecloud.npc.common.item.NpcItem
-import app.simplecloud.npc.core.config.NpcConfig
 import java.util.UUID
 
 object Ui {
@@ -16,6 +14,7 @@ object Ui {
         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTU2YTM2MTg0NTllNDNiMjg3YjIyYjdlMjM1ZWM2OTk1OTQ1NDZjNmZjZDZkYzg0YmZjYTRjZjMwYWI5MzExIn19fQ=="
 
     private const val TITLE_NAME_LENGTH = 18
+    private const val DISABLED_MATERIAL = "LIGHT_GRAY_DYE"
 
     fun item(
         material: String,
@@ -47,9 +46,6 @@ object Ui {
         glowing = glowing,
     )
 
-    fun npcHead(skin: NpcConfig.SkinConfiguration, name: String, lore: List<String>): NpcItem =
-        head(name, lore, texture = skin.texture, signature = skin.signature, glowing = true)
-
     fun option(material: String, name: String, lore: List<String>, selected: Boolean): NpcItem = item(
         material,
         if (selected) "<on>$name" else "<ttl>$name",
@@ -57,10 +53,10 @@ object Ui {
         glowing = selected,
     )
 
-    fun disabled(name: String, lore: List<String>): NpcItem = item(Pane.GRAY_PANE, "<off>$name", lore)
+    fun disabled(name: String, lore: List<String>): NpcItem = item(DISABLED_MATERIAL, "<off>$name", lore)
 
     fun unavailable(name: String, lore: List<String>, reason: String): NpcItem =
-        disabled(name, lore + listOf("", "<err>$reason"))
+        disabled(name, lore + listOf("<err>$reason"))
 
     fun field(material: String, label: String, valueLine: String?, setVerb: String): NpcItem = item(
         material,
@@ -82,15 +78,10 @@ object Ui {
     ): NpcItem = item(
         material ?: if (enabled) "LIME_DYE" else "GRAY_DYE",
         "<ttl>$label",
-        listOf(
-            if (enabled) "<bd>State <on>ON" else "<bd>State <off>OFF",
-            "",
-            if (enabled) "<key>Left <hnt>Turn off" else "<key>Left <hnt>Turn on",
-        ) + extraLore,
+        listOf(if (enabled) "<on>On" else "<off>Off") + extraLore +
+            listOf(if (enabled) "<key>Left <hnt>Turn off" else "<key>Left <hnt>Turn on"),
+        glowing = enabled,
     )
-
-    fun <T> cycleLines(options: List<T>, selected: T, label: (T) -> String): List<String> =
-        options.map { if (it == selected) "<on>▶ ${label(it)}" else "<hnt>  ${label(it)}" }
 
     fun addHead(label: String, lore: List<String> = emptyList()): NpcItem =
         head("<ttl>$label", lore, texture = ADD_HEAD_TEXTURE)

@@ -5,10 +5,12 @@ import app.simplecloud.npc.bukkit.skin.HeadTextures
 import app.simplecloud.npc.common.editor.menu.MenuClick
 import app.simplecloud.npc.common.item.NpcItem
 import app.simplecloud.npc.common.text.Msg
+import com.google.common.collect.ImmutableMultimap
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.event.inventory.ClickType
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 
@@ -37,6 +39,8 @@ object PaperNpcItem {
             item.maxStackSize?.let(meta::setMaxStackSize)
             ArmorLooks.apply(meta, item.armorColor, item.armorTrim, null)
             if (item.glowing) meta.setEnchantmentGlintOverride(true)
+            meta.attributeModifiers = ImmutableMultimap.of()
+            meta.addItemFlags(*ItemFlag.entries.toTypedArray())
         }
     }
 

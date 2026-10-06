@@ -12,7 +12,6 @@ import app.simplecloud.npc.common.editor.ui.Stepper
 import app.simplecloud.npc.common.editor.ui.Ui
 import app.simplecloud.npc.common.editor.ui.after
 import app.simplecloud.npc.common.utils.InputChecks
-import app.simplecloud.npc.core.config.ActionFields
 import app.simplecloud.npc.core.config.NpcAnimation
 import app.simplecloud.npc.core.config.NpcConfig
 import app.simplecloud.npc.core.config.NpcConfig.ActionConfiguration
@@ -20,28 +19,18 @@ import app.simplecloud.npc.core.platform.NpcPlayer
 import net.kyori.adventure.text.Component
 
 object ActionFieldsPane {
-    const val SIZE = 54
+    const val SIZE = 45
     const val HEADER_SLOT = 4
-    const val COPY_SLOT = 48
-    const val WIPE_SLOT = 50
+    const val DELETE_SLOT = 44
 
-    private const val JOIN_TARGET_SLOT = 10
-    private const val MENU_SLOT = 12
-    private const val SERVER_SLOT = 14
-    private const val TELEPORT_SLOT = 16
-    private const val TRANSFER_SLOT = 19
-    private const val MESSAGE_SLOT = 21
-    private const val TITLE_SLOT = 23
-    private const val SOUND_SLOT = 25
-    private const val COMMAND_SLOT = 28
-    private const val ACTION_BAR_SLOT = 30
-    private const val SCOPED_FIRST_SLOT = 32
-    private const val SCOPED_SECOND_SLOT = 34
-    private const val COOLDOWN_SLOT = 39
-    private const val PERMISSION_SLOT = 41
+    private const val COOLDOWN_SLOT = 40
+    private val BLOCK_SLOTS = (10..16) + (19..25) + (28..34)
+
+    const val ADD_SIZE = 45
+    private const val ADD_COLUMNS = 8
 
     private const val SILENT = "silent"
-    private val ANIMATIONS: List<NpcAnimation?> = listOf(null) + NpcAnimation.entries
+    private val ANIMATIONS = NpcAnimation.entries
 
     private val COOLDOWN = Stepper(
         label = "Cooldown",
@@ -51,7 +40,7 @@ object ActionFieldsPane {
         default = NpcConfig.DEFAULT_COOLDOWN_MILLIS / 1000.0,
         decimals = 1,
         unit = "s",
-        hints = listOf("<hnt>Repeat clicks inside it are ignored.", "<hnt>0 turns it off."),
+        hints = listOf("<hnt>Clicks inside it are ignored."),
     )
 
     enum class Scope { NPC, MENU }
@@ -60,7 +49,6 @@ object ActionFieldsPane {
         val scope: Scope,
         val player: NpcPlayer,
         val action: ActionConfiguration,
-        val textPrompts: TextPrompts,
         val edit: ((ActionConfiguration) -> Unit) -> Unit,
         val toggleJoinTarget: () -> Unit,
         val prompt: (Prompt) -> Unit,
@@ -69,336 +57,198 @@ object ActionFieldsPane {
         val pickServer: () -> Unit,
         val pickSound: () -> Unit,
         val openTitle: () -> Unit,
+        val openAdd: () -> Unit,
+        val closeAdd: () -> Unit,
     )
 
-    fun fieldCount(scope: Scope): Int = ActionFields.NAMES.size + when (scope) {
-        Scope.NPC -> ActionFields.NPC_ONLY.size
-        Scope.MENU -> ActionFields.MENU_ONLY.size
+    private enum class Group(val label: String, val material: String) {
+        GO_TO("Go To", "LIGHT_BLUE_STAINED_GLASS_PANE"),
+        MESSAGE("Message", "YELLOW_STAINED_GLASS_PANE"),
+        EFFECT("Effect", "LIME_STAINED_GLASS_PANE"),
+        ADVANCED("Advanced", "ORANGE_STAINED_GLASS_PANE"),
     }
 
-    fun fill(pane: Pane, port: Port) {
-        val action = port.action
+    private class Block(
+        val group: Group,
+        val material: String,
+        val label: String,
+        val describe: String,
+        val scope: Scope? = null,
+        val available: (ActionConfiguration) -> Boolean = { true },
+        val summary: (ActionConfiguration) -> String?,
+        val editHint: String? = "Edit",
+        val edit: ((Port) -> Unit)?,
+        val add: (Port) -> Unit = { port -> edit?.invoke(port) },
+        val clear: (ActionConfiguration) -> Unit,
+    )
 
-        fun clearOnDrop(click: MenuClick, isSet: Boolean, clear: (ActionConfiguration) -> Unit) {
-            if (click == MenuClick.DROP && isSet) port.edit(clear)
-        }
-
-        fun chat(
-            title: String,
-            instruction: String,
-            current: String?,
-            args: List<Any?> = emptyList(),
-            format: PromptFormat = PromptFormat.MINI_MESSAGE,
-            placeholders: List<PromptPlaceholder> = PromptTokens.PLAYER,
-            clear: ((ActionConfiguration) -> Unit)? = null,
-            validate: (String) -> PromptResult.Rejected? = PromptResult::rejectInvalidMiniMessage,
-            apply: (ActionConfiguration, String) -> Unit,
-        ) {
-            port.prompt(
-                Prompt(
-                    title = title,
-                    instruction = instruction,
-                    instructionArgs = args,
-                    current = current,
-                    format = format,
-                    placeholders = placeholders,
-                    onClear = clear?.let { { port.edit(it) } },
-                    onCancel = port.rerender,
-                    onSubmit = { input ->
-                        val text = input.trim()
-                        validate(text)?.let { return@Prompt it }
-                        port.edit { apply(it, text) }
-                        PromptResult.Accepted
-                    },
-                ),
-            )
-        }
-
-        val joinTargetHint = when (port.scope) {
-            Scope.MENU -> "<hnt>Joins the opening NPC's target."
-            Scope.NPC -> "<hnt>Joins the NPC's target."
-        }
-        pane.toggle(
-            JOIN_TARGET_SLOT,
-            "Join Target",
-            action.joinTarget,
-            extraLore = listOf(joinTargetHint),
-            material = "NETHER_STAR",
-        ) { port.toggleJoinTarget() }
-
-        pane.on(
-            MENU_SLOT,
-            Ui.field(
-                "CHEST",
-                "Open Menu",
-                action.openInventory?.let { "<bd>Menu <val>${NpcFormat.plain(it)}" },
-                "<key>Left <hnt>Pick a menu",
-            ),
-        ) { click ->
-            if (click == MenuClick.LEFT) port.pickMenu()
-            clearOnDrop(click, action.openInventory != null) { it.openInventory = null }
-        }
-
-        pane.on(
-            SERVER_SLOT,
-            Ui.field(
-                "COMPASS",
-                "Send To Server",
-                action.sendToServer?.let { "<bd>Server <val>${NpcFormat.plain(it)}" },
-                "<key>Left <hnt>Pick a server",
-            ),
-        ) { click ->
-            if (click == MenuClick.LEFT) port.pickServer()
-            clearOnDrop(click, action.sendToServer != null) { it.sendToServer = null }
-        }
-
-        pane.on(
-            TELEPORT_SLOT,
-            Ui.field(
-                "RECOVERY_COMPASS",
-                "Teleport",
-                action.teleport?.let { "<bd>To <val>${NpcFormat.position(it)}" },
-                "<key>Shift+Right <hnt>Capture my position",
-            ),
-        ) { click ->
-            if (click == MenuClick.SHIFT_RIGHT) {
+    private val BLOCKS: List<Block> = listOf(
+        Block(
+            Group.GO_TO, "NETHER_STAR", "Join Target", "Sends the player to the best target server.",
+            summary = { a -> "<on>On".takeIf { a.joinTarget } },
+            editHint = null,
+            edit = null,
+            add = { port -> port.toggleJoinTarget() },
+            clear = { it.joinTarget = false },
+        ),
+        Block(
+            Group.GO_TO, "CHEST", "Open Menu", "Opens one of your menus.",
+            summary = { a -> a.openInventory?.let { "<val>${NpcFormat.plain(it)}" } },
+            edit = { it.pickMenu() },
+            clear = { it.openInventory = null },
+        ),
+        Block(
+            Group.GO_TO, "COMPASS", "Send To Server", "Sends the player to one server.",
+            summary = { a -> a.sendToServer?.let { "<val>${NpcFormat.plain(it)}" } },
+            edit = { it.pickServer() },
+            clear = { it.sendToServer = null },
+        ),
+        Block(
+            Group.GO_TO, "RECOVERY_COMPASS", "Teleport", "Teleports the player to where you stand.",
+            summary = { a -> a.teleport?.let { "<val>${NpcFormat.position(it)}" } },
+            editHint = "Move here",
+            edit = { port ->
                 val at = port.player.location()
                 port.edit { it.teleport = at }
-            }
-            clearOnDrop(click, action.teleport != null) { it.teleport = null }
-        }
-
-        pane.on(
-            TRANSFER_SLOT,
-            Ui.field(
-                "ENDER_EYE",
-                "Transfer To Host",
-                action.transferToServer?.let { "<bd>Host <val>${NpcFormat.plain(it)}" },
-                "<key>Left <hnt>Type host:port in chat",
-            ),
-        ) { click ->
-            if (click == MenuClick.LEFT) chat(
-                "Transfer To Host",
-                "Type the host to transfer to in chat, as host:port.",
-                action.transferToServer,
-                format = PromptFormat.PLAIN,
-                placeholders = emptyList(),
-                clear = { it.transferToServer = null },
-                validate = {
-                    if (InputChecks.isValidHostPort(it)) {
-                        null
-                    } else {
-                        PromptResult.Rejected(Component.text("Expected host:port."))
-                    }
-                },
-            ) { a, text -> a.transferToServer = text }
-            clearOnDrop(click, action.transferToServer != null) { it.transferToServer = null }
-        }
-
-        val messageLines = NpcFormat.messageLines(action.sendMessage)
-        pane.on(
-            MESSAGE_SLOT,
-            if (messageLines.isEmpty()) {
-                Ui.field("WRITABLE_BOOK", "Chat Message", null, "<key>Left <hnt>Type it in chat")
-            } else {
-                Ui.item(
-                    "WRITABLE_BOOK",
-                    "<ttl>Chat Message",
-                    listOfNotNull(
-                        "<bd><val>${messageLines.size} <bd>lines set",
-                        "<val>${Ui.quote(messageLines.first())}",
-                        "<hnt>+${messageLines.size - 1} more".takeIf { messageLines.size > 1 },
-                        "",
-                        "<key>Left <hnt>Type it in chat",
-                        "<key>Q <hnt>Clear",
-                    ),
-                    glowing = true,
-                )
             },
-        ) { click ->
-            if (click == MenuClick.LEFT) chat(
-                "Chat Message",
-                "Type the chat message, {} starts a new line.",
-                action.sendMessage?.let { NpcFormat.messageLines(it).joinToString("<newline>") },
-                args = listOf("<newline>"),
-                clear = { it.sendMessage = null },
-            ) { a, text -> a.sendMessage = text }
-            clearOnDrop(click, action.sendMessage != null) { it.sendMessage = null }
-        }
-
-        pane.on(
-            TITLE_SLOT,
-            action.sendTitle?.let { title ->
-                Ui.item(
-                    "PAINTING",
-                    "<ttl>On-Screen Title",
-                    listOf(
-                        "<bd>Title <val>${Ui.quote(title.title)}",
-                        "<bd>Subtitle <val>${Ui.quote(title.subtitle)}",
-                        "<bd>Pacing ${NpcFormat.pacing(title)}",
-                        "",
-                        "<key>Left <info>Open title editor",
-                        "<key>Q <err>Remove title entirely",
-                    ),
-                    glowing = true,
-                )
-            } ?: Ui.field("PAINTING", "On-Screen Title", null, "<key>Left <info>Open title editor"),
-        ) { click ->
-            if (click == MenuClick.LEFT) port.openTitle()
-            clearOnDrop(click, action.sendTitle != null) { it.sendTitle = null }
-        }
-
-        pane.on(
-            SOUND_SLOT,
-            Ui.field(
-                "NOTE_BLOCK",
-                "Sound",
-                action.playSound?.let { "<bd>Sound <val>${NpcFormat.plain(it)}" },
-                "<key>Left <hnt>Pick a sound",
-            ),
-        ) { click ->
-            if (click == MenuClick.LEFT) port.pickSound()
-            clearOnDrop(click, action.playSound != null) { it.playSound = null }
-        }
-
-        pane.on(
-            COMMAND_SLOT,
-            Ui.field(
-                "COMMAND_BLOCK",
-                "Run Command",
-                action.executeCommand?.let { "<bd>/<val>${NpcFormat.plain(it)}" },
-                "<key>Left <hnt>Type it in chat, without /",
-            ),
-        ) { click ->
-            if (click == MenuClick.LEFT) chat(
-                "Run Command",
-                "Type the command the player runs, without the leading /.",
-                action.executeCommand,
-                format = PromptFormat.PLAIN,
-                clear = { it.executeCommand = null },
-                validate = { if (it.isBlank()) PromptResult.Rejected(Component.text("Type a command.")) else null },
-            ) { a, text -> a.executeCommand = text.removePrefix("/") }
-            clearOnDrop(click, action.executeCommand != null) { it.executeCommand = null }
-        }
-
-        pane.on(
-            ACTION_BAR_SLOT,
-            Ui.field(
-                "NAME_TAG",
-                "Action Bar",
-                action.actionBar?.let { "<val>${Ui.quote(it)}" },
-                "<key>Left <hnt>Type it in chat",
-            ),
-        ) { click ->
-            if (click == MenuClick.LEFT) {
+            clear = { it.teleport = null },
+        ),
+        Block(
+            Group.GO_TO, "ENDER_EYE", "Transfer", "Moves the player to another host.",
+            summary = { a -> a.transferToServer?.let { "<val>${NpcFormat.plain(it)}" } },
+            edit = { port ->
                 chat(
-                    "Action Bar",
-                    "Type the action bar text in chat.",
-                    action.actionBar,
-                    clear = { it.actionBar = null },
-                ) { a, text -> a.actionBar = text }
-            }
-            clearOnDrop(click, action.actionBar != null) { it.actionBar = null }
-        }
-
-        when (port.scope) {
-            Scope.NPC -> {
-                val animation = action.npcAnimation
-                val animationLines = Ui.cycleLines(ANIMATIONS, animation, ::animationLabel)
-                pane.on(
-                    SCOPED_FIRST_SLOT,
-                    Ui.item(
-                        "FEATHER",
-                        "<ttl>NPC Animation",
-                        animationLines + listOf(
-                            "",
-                            "<hnt>Only the clicking player sees it.",
-                            "",
-                            "<key>Left <hnt>Next",
-                        ),
-                        glowing = animation != null,
-                    ),
-                ) { click ->
-                    if (click == MenuClick.LEFT) {
-                        val next = ANIMATIONS.after(animation)
-                        port.edit { it.npcAnimation = next }
-                    }
-                    clearOnDrop(click, animation != null) { it.npcAnimation = null }
-                }
-
-                pane.on(
-                    SCOPED_SECOND_SLOT,
-                    Ui.field(
-                        "PAPER",
-                        "Speech Bubble",
-                        action.speech?.let { "<val>${Ui.quote(it)}" },
-                        "<key>Left <hnt>Type what the NPC says",
-                    ),
-                ) { click ->
-                    if (click == MenuClick.LEFT) chat(
-                        "Speech Bubble",
-                        "Type what the NPC says above its head.",
-                        action.speech,
-                        clear = { it.speech = null },
-                    ) { a, text -> a.speech = text }
-                    clearOnDrop(click, action.speech != null) { it.speech = null }
-                }
-            }
-
-            Scope.MENU -> {
-                pane.toggle(
-                    SCOPED_FIRST_SLOT,
-                    "Close Menu",
-                    action.closeMenu,
-                    extraLore = listOf("<hnt>Closes the menu after the click."),
-                    material = "OAK_DOOR",
-                ) { port.edit { it.closeMenu = !action.closeMenu } }
-
-                pane.toggle(
-                    SCOPED_SECOND_SLOT,
-                    "Previous Menu",
-                    action.previousMenu,
-                    extraLore = listOf("<hnt>Goes back to the menu", "<hnt>this one was opened from."),
-                    material = "ARROW",
-                ) { port.edit { it.previousMenu = !action.previousMenu } }
-            }
-        }
-
-        pane[COOLDOWN_SLOT] = COOLDOWN.element(port.textPrompts, port.player, action.cooldown / 1000.0) { seconds ->
-            port.edit { it.cooldown = (seconds * 1000).toLong() }
-        }
-
-        val permission = action.permission?.takeIf { it.isNotBlank() }
-        val denyMessage = action.denyMessage
-        pane.on(
-            PERMISSION_SLOT,
-            Ui.item(
-                "IRON_DOOR",
-                "<ttl>Permission",
-                listOfNotNull(
-                    permission?.let { "<bd>Needs <val>$it" } ?: "<off>Everyone may use it",
-                    permission?.let {
-                        when {
-                            denyMessage == null -> "<bd>Others see the default message"
-                            denyMessage.isBlank() -> "<bd>Others are ignored silently"
-                            else -> "<bd>Others see <val>${Ui.quote(denyMessage)}"
-                        }
-                    },
-                    "",
-                    "<key>Left <hnt>Type the permission",
-                    "<key>Right <hnt>Type what others see".takeIf { permission != null },
-                    "<key>Q <hnt>Everyone again".takeIf { permission != null },
-                ),
-                glowing = permission != null,
-            ),
-        ) { click ->
-            when (click) {
-                MenuClick.LEFT -> chat(
-                    "Permission",
-                    "Type the permission a player needs.",
-                    permission,
+                    port,
+                    "Transfer To Host",
+                    "Type the host to transfer to in chat, as host:port.",
+                    port.action.transferToServer,
                     format = PromptFormat.PLAIN,
                     placeholders = emptyList(),
+                    clear = { it.transferToServer = null },
+                    validate = {
+                        if (InputChecks.isValidHostPort(it)) null
+                        else PromptResult.Rejected(Component.text("Expected host:port."))
+                    },
+                ) { a, text -> a.transferToServer = text }
+            },
+            clear = { it.transferToServer = null },
+        ),
+        Block(
+            Group.GO_TO, "OAK_DOOR", "Close Menu", "Closes the menu after the click.", Scope.MENU,
+            summary = { a -> "<on>On".takeIf { a.closeMenu } },
+            editHint = null,
+            edit = null,
+            add = { port -> port.edit { it.closeMenu = true } },
+            clear = { it.closeMenu = false },
+        ),
+        Block(
+            Group.GO_TO, "ARROW", "Previous Menu", "Goes back to the menu before.", Scope.MENU,
+            summary = { a -> "<on>On".takeIf { a.previousMenu } },
+            editHint = null,
+            edit = null,
+            add = { port -> port.edit { it.previousMenu = true } },
+            clear = { it.previousMenu = false },
+        ),
+        Block(
+            Group.MESSAGE, "WRITABLE_BOOK", "Chat Message", "Sends the player a chat message.",
+            summary = { a ->
+                NpcFormat.messageLines(a.sendMessage).takeIf { it.isNotEmpty() }?.let { lines ->
+                    "<val>${Ui.quote(lines.first())}" + if (lines.size > 1) " <hnt>+${lines.size - 1}" else ""
+                }
+            },
+            edit = { port ->
+                chat(
+                    port,
+                    "Chat Message",
+                    "Type the chat message, {} starts a new line.",
+                    port.action.sendMessage?.let { NpcFormat.messageLines(it).joinToString("<newline>") },
+                    args = listOf("<newline>"),
+                    clear = { it.sendMessage = null },
+                ) { a, text -> a.sendMessage = text }
+            },
+            clear = { it.sendMessage = null },
+        ),
+        Block(
+            Group.MESSAGE, "PAINTING", "Title", "Shows a big title on screen.",
+            summary = { a -> a.sendTitle?.let { "<val>${Ui.quote(it.title.ifBlank { it.subtitle })}" } },
+            edit = { it.openTitle() },
+            clear = { it.sendTitle = null },
+        ),
+        Block(
+            Group.MESSAGE, "NAME_TAG", "Action Bar", "Shows text above the hotbar.",
+            summary = { a -> a.actionBar?.let { "<val>${Ui.quote(it)}" } },
+            edit = { port ->
+                chat(
+                    port,
+                    "Action Bar",
+                    "Type the action bar text in chat.",
+                    port.action.actionBar,
+                    clear = { it.actionBar = null },
+                ) { a, text -> a.actionBar = text }
+            },
+            clear = { it.actionBar = null },
+        ),
+        Block(
+            Group.MESSAGE, "PAPER", "Speech Bubble", "The NPC says something above its head.", Scope.NPC,
+            summary = { a -> a.speech?.let { "<val>${Ui.quote(it)}" } },
+            edit = { port ->
+                chat(
+                    port,
+                    "Speech Bubble",
+                    "Type what the NPC says above its head.",
+                    port.action.speech,
+                    clear = { it.speech = null },
+                ) { a, text -> a.speech = text }
+            },
+            clear = { it.speech = null },
+        ),
+        Block(
+            Group.EFFECT, "NOTE_BLOCK", "Sound", "Plays a sound to the player.",
+            summary = { a -> a.playSound?.let { "<val>${NpcFormat.plain(it)}" } },
+            edit = { it.pickSound() },
+            clear = { it.playSound = null },
+        ),
+        Block(
+            Group.EFFECT, "FEATHER", "Animation", "The NPC moves; only this player sees it.", Scope.NPC,
+            summary = { a -> a.npcAnimation?.let { "<val>${animationLabel(it)}" } },
+            editHint = "Next",
+            edit = { port ->
+                val next = port.action.npcAnimation?.let(ANIMATIONS::after) ?: ANIMATIONS.first()
+                port.edit { it.npcAnimation = next }
+            },
+            clear = { it.npcAnimation = null },
+        ),
+        Block(
+            Group.EFFECT, "COMMAND_BLOCK", "Command", "The player runs a command.",
+            summary = { a -> a.executeCommand?.let { "<val>/${NpcFormat.plain(it)}" } },
+            edit = { port ->
+                chat(
+                    port,
+                    "Run Command",
+                    "Type the command the player runs, without the leading /.",
+                    port.action.executeCommand,
+                    format = PromptFormat.PLAIN,
+                    clear = { it.executeCommand = null },
+                    validate = { if (it.isBlank()) PromptResult.Rejected(Component.text("Type a command.")) else null },
+                ) { a, text -> a.executeCommand = text.removePrefix("/") }
+            },
+            clear = { it.executeCommand = null },
+        ),
+        Block(
+            Group.ADVANCED, "IRON_DOOR", "Permission", "Only players with it may use the click.",
+            summary = { a -> a.permission?.takeIf { it.isNotBlank() }?.let { "<val>$it" } },
+            edit = { port ->
+                chat(
+                    port,
+                    "Permission",
+                    "Type the permission a player needs.",
+                    port.action.permission,
+                    format = PromptFormat.PLAIN,
+                    placeholders = emptyList(),
+                    clear = {
+                        it.permission = null
+                        it.denyMessage = null
+                    },
                     validate = {
                         if (it.isBlank() || it.any(Char::isWhitespace)) {
                             PromptResult.Rejected(Component.text("No spaces in a permission."))
@@ -407,23 +257,134 @@ object ActionFieldsPane {
                         }
                     },
                 ) { a, text -> a.permission = text }
-                MenuClick.RIGHT -> if (permission != null) chat(
+            },
+            clear = {
+                it.permission = null
+                it.denyMessage = null
+            },
+        ),
+        Block(
+            Group.ADVANCED, "OAK_SIGN", "Deny Message", "What players without the permission see.",
+            available = { a -> !a.permission.isNullOrBlank() },
+            summary = { a ->
+                a.denyMessage?.let { if (it.isBlank()) "<hnt>nothing (silent)" else "<val>${Ui.quote(it)}" }
+            },
+            edit = { port ->
+                chat(
+                    port,
                     "Deny Message",
                     "Type what players without it see, or {} to show nothing.",
-                    denyMessage?.ifBlank { SILENT },
+                    port.action.denyMessage?.ifBlank { SILENT },
                     args = listOf(SILENT),
+                    clear = { it.denyMessage = null },
                 ) { a, text -> a.denyMessage = if (text.equals(SILENT, true)) "" else text }
-                MenuClick.DROP -> if (permission != null) port.edit {
-                    it.permission = null
-                    it.denyMessage = null
+            },
+            clear = { it.denyMessage = null },
+        ),
+    )
+
+    private fun blocks(scope: Scope): List<Block> = BLOCKS.filter { it.scope == null || it.scope == scope }
+
+    private fun isSet(block: Block, action: ActionConfiguration): Boolean = block.summary(action) != null
+
+    fun fill(pane: Pane, port: Port) {
+        val action = port.action
+        val set = blocks(port.scope).filter { isSet(it, action) }
+
+        set.zip(BLOCK_SLOTS).forEach { (block, slot) ->
+            val lore = listOfNotNull(
+                block.summary(action),
+                listOfNotNull(
+                    block.editHint?.let { "<key>Left <hnt>$it" },
+                    "<key>Right <err>Remove",
+                ).joinToString(" <hnt>· "),
+            )
+            pane.on(slot, Ui.item(block.material, "<ttl>${block.label}", lore, glowing = true)) { click ->
+                when (click) {
+                    MenuClick.LEFT -> block.edit?.invoke(port)
+                    MenuClick.RIGHT -> port.edit(block.clear)
+                    else -> Unit
                 }
-                else -> Unit
+            }
+        }
+
+        val free = blocks(port.scope).count { !isSet(it, action) && it.available(action) }
+        BLOCK_SLOTS.getOrNull(set.size)?.takeIf { free > 0 }?.let { slot ->
+            val hint = if (set.isEmpty()) "<hnt>Nothing happens on this click yet." else null
+            pane.left(slot, Ui.addHead("Add", listOfNotNull(hint, "<key>Left <hnt>Pick what happens"))) {
+                port.openAdd()
+            }
+        }
+
+        pane[COOLDOWN_SLOT] = COOLDOWN.element(action.cooldown / 1000.0) { seconds ->
+            port.edit { it.cooldown = (seconds * 1000).toLong() }
+        }
+    }
+
+    fun fillAdd(pane: Pane, port: Port) {
+        val action = port.action
+        val all = blocks(port.scope)
+
+        Group.entries.forEachIndexed { row, group ->
+            val first = row * 9
+            pane[first] = Ui.item(group.material, "<ttl><b>${group.label}")
+
+            all.filter { it.group == group }.take(ADD_COLUMNS).forEachIndexed { column, block ->
+                val slot = first + 1 + column
+                when {
+                    isSet(block, action) -> pane[slot] = Ui.disabled(block.label, listOf("<hnt>Already added"))
+                    !block.available(action) ->
+                        pane[slot] = Ui.disabled(block.label, listOf("<hnt>Set a permission first"))
+
+                    else -> pane.left(
+                        slot,
+                        Ui.item(
+                            block.material,
+                            "<ttl>${block.label}",
+                            listOf("<bd>${block.describe}", "<key>Left <hnt>Add"),
+                        ),
+                    ) {
+                        port.closeAdd()
+                        block.add(port)
+                    }
+                }
             }
         }
     }
 
-    private fun animationLabel(animation: NpcAnimation?): String = when (animation) {
-        null -> "None"
+    private fun chat(
+        port: Port,
+        title: String,
+        instruction: String,
+        current: String?,
+        args: List<Any?> = emptyList(),
+        format: PromptFormat = PromptFormat.MINI_MESSAGE,
+        placeholders: List<PromptPlaceholder> = PromptTokens.PLAYER,
+        clear: ((ActionConfiguration) -> Unit)? = null,
+        validate: (String) -> PromptResult.Rejected? = PromptResult::rejectInvalidMiniMessage,
+        apply: (ActionConfiguration, String) -> Unit,
+    ) {
+        port.prompt(
+            Prompt(
+                title = title,
+                instruction = instruction,
+                instructionArgs = args,
+                current = current,
+                format = format,
+                placeholders = placeholders,
+                onClear = clear?.takeIf { current != null }?.let { { port.edit(it) } },
+                onCancel = port.rerender,
+                onSubmit = { input ->
+                    val text = input.trim()
+                    validate(text)?.let { return@Prompt it }
+                    port.edit { apply(it, text) }
+                    PromptResult.Accepted
+                },
+            ),
+        )
+    }
+
+    private fun animationLabel(animation: NpcAnimation): String = when (animation) {
         NpcAnimation.SWING_MAIN_HAND -> "Swing arm"
         NpcAnimation.SWING_OFF_HAND -> "Swing off hand"
         NpcAnimation.CROUCH -> "Crouch"

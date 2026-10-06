@@ -10,7 +10,6 @@ object ItemLooks {
 
     fun of(stack: ItemStack): InventoryItemConfiguration {
         val meta = stack.itemMeta
-        @Suppress("DEPRECATION")
         val customModelData = meta?.takeIf { it.hasCustomModelData() }?.customModelData
         val head = (meta as? SkullMeta)?.playerProfile?.properties
             ?.firstOrNull { it.name == "textures" }

@@ -17,7 +17,6 @@ object ArmorLooks {
     fun apply(meta: ItemMeta, color: String?, trim: NpcConfig.ArmorTrim?, customModelData: Int?) {
         color?.let(::parseColor)?.let { (meta as? LeatherArmorMeta)?.setColor(it) }
         trim?.let(::armorTrim)?.let { (meta as? ArmorMeta)?.trim = it }
-        @Suppress("DEPRECATION")
         customModelData?.let(meta::setCustomModelData)
     }
 
@@ -27,7 +26,6 @@ object ArmorLooks {
         val texture = (meta as? SkullMeta)?.playerProfile?.properties?.firstOrNull { it.name == "textures" }
         val dyed = (meta as? LeatherArmorMeta)?.color?.takeUnless { it == DEFAULT_LEATHER }
         val trim = (meta as? ArmorMeta)?.takeIf { it.hasTrim() }?.trim
-        @Suppress("DEPRECATION")
         val customModelData = meta?.takeIf { it.hasCustomModelData() }?.customModelData
 
         return NpcConfig.EquipmentItem(
