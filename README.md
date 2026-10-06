@@ -25,59 +25,70 @@
 
 > All information about this project can be found in our detailed [documentation][docs-thisproject].
 
-Create NPCs on your server that allow your players to access other subservers through the NPCs. Perform various actions such as sending messages, titles, or sounds, and use your favourite supported NPC provider such as Citizens or FancyNPCs.
+Create NPCs on your server that allow your players to access other subservers through the NPCs. Perform various actions such as sending messages, titles, or sounds. NPCs are rendered natively, so no third-party NPC plugin is needed, but Citizens, FancyNpcs, ZNPCsPlus and MythicMobs NPCs can still be used.
 
 ## Features
 
 - [x] **Custom Join NPC**: Create NPCs to let your players join sub-servers seamlessly!  
-- [x] **Custom Inventories**: Design the paginated inventory exactly the way you need it!  
-- [x] **Holograms**: Add beautiful holograms above your NPCs!  
+- [x] **Use it as a Standalone**: No third-party plugins needed—just drag and drop!  
+- [x] **In-Game Editor**: Change everything about an NPC without touching a file!  
+- [x] **Custom Inventories**: Build server selectors on a drag-and-drop canvas with live server lists!  
+- [x] **Holograms**: Add beautiful holograms above your NPCs, with rotating lines!  
 - [x] **Placeholders**: Use placeholders anywhere—in holograms, items, and more!  
 - [x] **Customize with Actions**: Trigger messages, action bars, titles, sounds, and more when a player interacts with an NPC!  
-- [x] **Support for Other NPC Plugins**: Integrate NPCs from other plugins like Citizens, FancyNPCs, and more!  
-- [ ] **Use it as a Standalone**: No third-party plugins needed—just drag and drop!  
+- [x] **Knows When Servers Are Offline**: Holograms and click actions switch on their own.  
+- [x] **Lively NPCs**: Equipment, poses, sizes, click animations and speech bubbles.  
+- [x] **Support for Other NPC Plugins**: Attach NPCs from Citizens, FancyNpcs, ZNPCsPlus or MythicMobs!  
+
+## Supported servers
+
+Paper (and its forks) from **1.20.6 up to the latest release**, on **Java 21** or newer.
+The SimpleCloud API plugin is required; use its build for your server version.
+From 1.21.9 on, NPCs are native Mannequin entities.
 
 ## Quick start
 
-Install Citizens, FancyNPCs, or ZNPCsPlus, stand where the NPC should appear, and run:
+Stand where the NPC should appear, and run:
 
 ```text
-/scnpcs create <id> <group-or-persistent-server> [provider]
+/scnpcs create <id> <group-or-persistent-server>
 ```
 
-For example, `/scnpcs create lobby Lobby` creates the provider NPC, links it to the
-SimpleCloud target, writes its configuration, adds a default hologram, and makes
-right-click join the target. If multiple creation providers are installed, add
-`citizens`, `fancynpcs`, or `znpcsplus` to the command.
+For example, `/scnpcs create lobby Lobby` spawns an NPC wearing your skin, links it
+to the SimpleCloud target, adds a default hologram, and makes right-click join the
+target. The editor opens right away; later, `/scnpcs edit` while looking at the NPC
+brings it back.
 
-Target names do not need `group:` or `ps:` prefixes. A name that exists as both a
-group and persistent server is rejected so that it can never resolve silently to
-the wrong target.
+Existing NPCs from other plugins can be attached with
+`/scnpcs link <id> <provider> <reference> <target>`. They keep belonging to their
+plugin, SimpleCloud adds the click handling. A hologram can be turned on in the editor.
 
-Use `/scnpcs edit <id>` to discover the target, hologram, action, and pushback
-editors. Existing provider NPCs can be attached with
-`/scnpcs link <id> <provider> <reference> <target>`.
+Menus are built with `/scnpcs inventory create <id>` and opened from an NPC or with
+`/scnpcs inventory open <id>`. Run `/scnpcs help` for all commands.
 
-## Hologram placeholders
+## Upgrading
 
-Run `/scnpcs placeholders` in-game for the current list. The placeholders shared
-by group and persistent-server targets are:
+Drop the new jar over the old one. NPC files are migrated on the first start, and a
+backup of every old file is kept next to it.
+
+## Placeholders
+
+Run `/scnpcs placeholders` in-game for the full list. Holograms and menus understand
+the placeholders of the NPC's target:
 
 ```text
 <target_name>
-<target_type>
 <target_online_players>
 <target_max_players>
-<target_min_memory>
-<target_max_memory>
 <target_property:key>
 ```
 
-Persistent servers also expose `<target_id>`, `<target_pretty_name>`, and
-`<target_motd>`. Join-state values in NPC files are always written in lower case.
+Holograms and action texts also understand `<playername>` and `<playeruuid>`, and with
+PlaceholderAPI installed `%placeholders%`. Holograms render them for each player.
 
 ## Contributing
 Contributions to SimpleCloud are welcome and highly appreciated. However, before you jump right into it, we would like you to read our [Contribution Guide][docs-contribute].
+For this repository, [`docs/ARCHITECTURE.md`](https://github.com/simplecloudapp/npc-plugin/blob/main/docs/ARCHITECTURE.md) explains the modules.
 
 ## License
 This repository is licensed under [Apache 2.0][license].
@@ -93,19 +104,9 @@ This repository is licensed under [Apache 2.0][license].
 [docs-contribute]: https://docs.simplecloud.app/contribute
 
 [modrinth]: https://modrinth.com/plugin/npcs-plugin
-[maven-central]: https://central.sonatype.com/artifact/app.simplecloud.controller/controller-api
-[dev]: https://repo.simplecloud.app/#/snapshots/app/simplecloud/controller/controller-api
-
-
-[artifacts]: https://repo.simplecloud.app/#/snapshots/app/simplecloud/controller/controller-api
-[dev-artifacts]: https://repo.simplecloud.app/#/snapshots/app/simplecloud/controller/controller-api
-
-[badge-maven-central]: https://img.shields.io/maven-central/v/app.simplecloud.controller/controller-api?labelColor=18181b&style=flat-square&color=65a30d&label=Release
-[badge-dev]: https://repo.simplecloud.app/api/badge/latest/snapshots/app/simplecloud/controller/controller-api?name=Dev&style=flat-square&color=0ea5e9
 
 <!-- ⛔ DON'T TOUCH -->
 [license]: https://opensource.org/licenses/Apache-2.0
-[snapshots]: https://repo.simplecloud.app/#/snapshots
 
 [social-x]: https://x.com/simplecloudapp
 [social-bluesky]: https://bsky.app/profile/simplecloud.app

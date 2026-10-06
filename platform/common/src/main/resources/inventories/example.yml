@@ -1,0 +1,158 @@
+# Example SimpleCloud NPC menu.
+# Reference it from an NPC via:  /scnpcs edit <npc-id> action open-inventory right_click public example
+# or open it directly, e.g. from a compass item:  /scnpcs inventory open example
+# This file is only written once, on the very first start, edit or delete it freely.
+
+version: 1
+id: example
+title: "<#0ea5e9><bold>Server Browser"
+rows: 5
+# Optional: only players with this permission can open the menu.
+# open-permission: lobby.servers
+# Optional: played once when the menu opens.
+open-sound: UI_BUTTON_CLICK
+
+# Every slot is just an item. Give one a `live-group` and it becomes a "Live Slot":
+# its own material/name/lore/actions become the template for whatever `live` matches,
+# and every other slot sharing the same live-group forms one paginated, live-updating
+# list with it; servers appearing/stopping and player counts tick live while the menu
+# is open. In-game, open the canvas (/scnpcs inventory edit <id>), click "New Live
+# Group" in the toolbox under the menu, and drag the swatch across the slots it
+# should fill; or hand-author them here.
+items:
+  # A player head can show whoever opens the menu (`viewer: true`), a player
+  # (`owner: Notch` or a UUID; looked up once and cached) or a fixed `texture`.
+  - slot: 0
+    material: PLAYER_HEAD
+    head:
+      viewer: true
+    name: "<#0ea5e9>Server Browser"
+    lore:
+      - "<#94a3b8>Hey <#f8fafc><playername><#94a3b8>, pick a server"
+      - "<#94a3b8>below, or let the star pick one."
+      - "<#475569>Page <page>/<max_page>"
+  - slot: 4
+    material: NETHER_STAR
+    name: "<#f8fafc>Join a Server"
+    glowing: true
+    lore:
+      - "<#94a3b8>Joins the emptiest server of"
+      - "<#94a3b8>this NPC's target group."
+    actions:
+      # join-target uses the target servers of the NPC that opened this menu.
+      - join-target: true
+  - slot: 40
+    material: BARRIER
+    name: "<#dc2626>Close"
+    actions:
+      - close-menu: true
+  # Only players with the permission see this item at all.
+  # - slot: 8
+  #   material: DIAMOND
+  #   name: "<#38bdf8>VIP Lounge"
+  #   view-permission: lobby.vip
+  #   actions:
+  #     - send-to-server: "VIP-1"
+  #       cooldown: 3000
+
+  # The 17 slots below are one live group ("servers"). Only the first slot needs the
+  # `live:` block, it's the shared filter for the whole group. Every slot has its own
+  # look, resolved per matched server via <entry_*> placeholders:
+  # <entry_name>, <entry_numerical_id>, <entry_state>, <entry_online_players>,
+  # <entry_max_players>, <entry_motd>, <entry_property:key>, ...
+  - slot: 9
+    live-group: servers
+    live:
+      # Built-in sources: group-servers, persistent-servers, groups, static.
+      type: group-servers
+      # "<target>" (or omitting `group`) resolves the opening NPC's first target group;
+      # put an explicit group name here to always show that group instead.
+      group: "<target>"
+      # ServerState filter; empty = everything except STOPPING/CLEANUP.
+      states: [AVAILABLE, INGAME]
+      # NUMERICAL_ID (default) or PLAYER_COUNT.
+      sort: NUMERICAL_ID
+      # How an entry looks per server state; unset fields keep the slot's own look.
+      # States: AVAILABLE, FULL, STARTING, INGAME (and OFFLINE for groups/persistent servers).
+      looks:
+        FULL:
+          material: RED_CONCRETE
+          lore:
+            - "<#94a3b8>Players: <#f8fafc><entry_online_players>/<entry_max_players>"
+            - ""
+            - "<#dc2626>This server is full"
+        INGAME:
+          material: ORANGE_CONCRETE
+          lore:
+            - "<#94a3b8>Players: <#f8fafc><entry_online_players>/<entry_max_players>"
+            - ""
+            - "<#f59e0b>A round is running"
+    material: GRASS_BLOCK
+    name: "<#a3e635><entry_group_name>-<entry_numerical_id>"
+    lore:
+      - "<#94a3b8>Players: <#f8fafc><entry_online_players>/<entry_max_players>"
+      - "<#94a3b8>State: <#f8fafc><entry_state>"
+      - ""
+      - "<#475569>Click to join this server"
+    # Optional: what to click-do per entry. Omitted here, so the source default
+    # applies; for server sources that is: connect to exactly the clicked server.
+    # actions:
+    #   - send-to-server: "<entry_server>"
+
+    # Filler for slots no server currently occupies; an empty slot in a live group
+    # usually means a server is starting, so say that instead of "free". Also only
+    # meaningful on the first slot.
+    when-empty:
+      material: GRAY_STAINED_GLASS_PANE
+      name: "<#475569>Spinning up..."
+  - { slot: 10, live-group: servers, material: GRASS_BLOCK }
+  - { slot: 11, live-group: servers, material: GRASS_BLOCK }
+  - { slot: 12, live-group: servers, material: GRASS_BLOCK }
+  - { slot: 13, live-group: servers, material: GRASS_BLOCK }
+  - { slot: 14, live-group: servers, material: GRASS_BLOCK }
+  - { slot: 15, live-group: servers, material: GRASS_BLOCK }
+  - { slot: 16, live-group: servers, material: GRASS_BLOCK }
+  - { slot: 17, live-group: servers, material: GRASS_BLOCK }
+  - { slot: 18, live-group: servers, material: GRASS_BLOCK }
+  - { slot: 19, live-group: servers, material: GRASS_BLOCK }
+  - { slot: 20, live-group: servers, material: GRASS_BLOCK }
+  - { slot: 21, live-group: servers, material: GRASS_BLOCK }
+  - { slot: 22, live-group: servers, material: GRASS_BLOCK }
+  - { slot: 23, live-group: servers, material: GRASS_BLOCK }
+  - { slot: 24, live-group: servers, material: GRASS_BLOCK }
+  - { slot: 25, live-group: servers, material: GRASS_BLOCK }
+
+  # Shown only when there are more servers than group slots.
+  - slot: 37
+    live-group: servers
+    page-control: previous
+    material: ARROW
+    name: "<#0ea5e9>Previous page"
+  - slot: 43
+    live-group: servers
+    page-control: next
+    material: ARROW
+    name: "<#0ea5e9>Next page"
+
+  # More examples (commented out):
+  #
+  # A live group listing every group; clicking joins the emptiest AVAILABLE server of it.
+  # - slot: 28
+  #   live-group: groups
+  #   live:
+  #     type: groups
+  #   material: COMPASS
+  #   name: "<#0ea5e9><entry_name>"
+  #   lore:
+  #     - "<#94a3b8>Online: <#f8fafc><entry_online_players>"
+  #
+  # A hand-authored paged static list.
+  # - slot: 28
+  #   live-group: content
+  #   live:
+  #     type: static
+  #     entries:
+  #       - material: DIAMOND_SWORD
+  #         name: "<#f8fafc>PvP"
+  #         actions:
+  #           - send-to-server: "PvP-1"

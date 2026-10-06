@@ -1,90 +1,53 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-
 plugins {
-    alias(libs.plugins.kotlin)
-    alias(libs.plugins.shadow)
+    alias(libs.plugins.kotlin) apply false
 }
 
-val baseVersion = "0.1.6"
-val commitHash = System.getenv("COMMIT_HASH")
-val snapshotVersion = "${baseVersion}-dev.$commitHash"
+val baseVersion = "0.2.0"
+val commitHash: String? = System.getenv("COMMIT_HASH")
 
 allprojects {
-    group = "app.simplecloud.plugin"
-    version = if (commitHash != null) snapshotVersion else baseVersion
-
-    repositories {
-        mavenCentral()
-        mavenLocal()
-        maven("https://oss.sonatype.org/content/repositories/snapshots")
-        maven("https://libraries.minecraft.net")
-        maven("https://repo.papermc.io/repository/maven-public/")
-        maven("https://repo.pyr.lol/snapshots")
-        maven("https://maven.citizensnpcs.co/repo")
-        maven("https://repo.minebench.de")
-        maven("https://buf.build/gen/maven")
-        maven("https://repo.fancyinnovations.com/releases")
-        maven("https://mvn.lumine.io/repository/maven-public/")
-        maven("https://repo.ranull.com/maven/external")
-        maven("https://maven.noxcrew.com/public")
-        maven("https://repo.simplecloud.app/snapshots")
-        maven("https://buf.build/gen/maven")
-    }
+    group = "app.simplecloud.npc"
+    version = commitHash?.let { "$baseVersion-dev.$it" } ?: baseVersion
 }
 
+val adventureFloor = libs.versions.adventure.floor.get()
+val serverProvidedAdventure = setOf(
+    "adventure-api",
+    "adventure-key",
+    "adventure-text-minimessage",
+    "adventure-text-serializer-commons",
+    "adventure-text-serializer-gson",
+    "adventure-text-serializer-json",
+    "adventure-text-serializer-legacy",
+    "adventure-text-serializer-plain",
+    "adventure-text-logger-slf4j",
+)
+
 subprojects {
-    apply(plugin = "org.jetbrains.kotlin.jvm")
-    apply(plugin = "com.gradleup.shadow")
+    plugins.withId("org.jetbrains.kotlin.jvm") {
+        dependencies {
+            "implementation"(rootProject.libs.kotlin.coroutines)
+            "testImplementation"(rootProject.libs.kotlin.test)
+        }
 
-    dependencies {
-        testImplementation(rootProject.libs.kotlin.test)
-        implementation(rootProject.libs.kotlin.jvm)
-        implementation(rootProject.libs.kotlin.coroutines)
+        extensions.configure<JavaPluginExtension> {
+            toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+        }
 
-        compileOnly(rootProject.libs.paper.api)
+        configurations.matching {
+            it.name == "compileClasspath" || it.name.endsWith("CompileClasspath")
+        }.configureEach {
+            resolutionStrategy.eachDependency {
+                if (requested.group == "net.kyori" && requested.name in serverProvidedAdventure) {
+                    val target = findProperty("npc.adventureVersion")?.toString() ?: adventureFloor
+                    useVersion(target)
+                    because("the paper-api this module compiles against provides Adventure $target")
+                }
+            }
+        }
 
-        compileOnly(rootProject.libs.simplecloud)
-        compileOnly(rootProject.libs.simplecloud.plugin)
-    }
-
-    java {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
-    }
-
-    kotlin {
-        jvmToolchain(21)
-        compilerOptions {
-            apiVersion.set(KotlinVersion.KOTLIN_2_2)
-            jvmTarget.set(JvmTarget.JVM_21)
+        tasks.withType<Test>().configureEach {
+            useJUnitPlatform()
         }
     }
-
-    tasks.test {
-        useJUnitPlatform()
-    }
-
-    tasks.processResources {
-        expand(
-            "version" to project.version,
-            "name" to project.name
-        )
-    }
-
-    /* TODO: fix here
-    tasks.shadowJar {
-        exclude("kotlin")
-        exclude("kotlinx")
-        mergeServiceFiles()
-
-        relocate("com.google.protobuf", "app.simplecloud.relocate.google.protobuf")
-        relocate("com.google.common", "app.simplecloud.relocate.google.common")
-        relocate("io.grpc", "app.simplecloud.relocate.io.grpc")
-
-        relocate("org.incendo", "app.simplecloud.npc.plugin.relocate.incendo")
-        relocate("org.spongepowered", "app.simplecloud.npc.plugin.relocate.spongepowered")
-        relocate("app.simplecloud.plugin.api", "app.simplecloud.npc.plugin.relocate.plugin.api")
-    }
-
-     */
 }
