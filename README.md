@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> **Moved:** NPCs now lives in [simplecloud-plugins](https://github.com/simplecloudapp/simplecloud-plugins/tree/main/server/npcs). This repository is archived.
+
 # NPC Plugin
 
 ![Banner][banner]
